@@ -633,12 +633,22 @@ function renderCard(){
   const c=C(st.to);
   document.getElementById("front").innerHTML=frontHTML(st.front);
   const n=[...st.text].length,bad=issues();
-  document.getElementById("back").innerHTML=`<div class="msg"><textarea id="txt" maxlength="200" placeholder="寫下想說的話（最多 ${maxLen()} 字）">${esc(st.text)}</textarea>
-    <div class="cnt${bad.length?" bad":""}" id="cnt">${n}／${maxLen()}</div></div>
-    <div class="to"><div class="ln"><small>寄件人</small>${esc(ME)}</div>
+  /* 寫信的輸入框不重建（v0.51.1）：iPhone 上每秒有信件在送，render() 每次把輸入框整個換掉，鍵盤就收起來、打不了字 */
+  const toHTML=`<div class="ln"><small>寄件人</small>${esc(ME)}</div>
     <div class="ln"><small>收件人</small>${esc(c.name)}</div>
     <div class="ln"><small>${c.kind==="friend"?"城市（對方自己填的）":"國家／地區"}</small>${esc(c.where)}</div>
-    <div class="stampbox"><div class="mini">${art(st.courier)}</div>郵差</div></div>`;
+    <div class="stampbox"><div class="mini">${art(st.courier)}</div>郵差</div>`;
+  const back=document.getElementById("back"),ta=document.getElementById("txt"),to=back.querySelector(".to");
+  if(ta&&to&&document.getElementById("cnt")){
+    ta.placeholder=`寫下想說的話（最多 ${maxLen()} 字）`;
+    if(ta.value!==st.text)ta.value=st.text;
+    const cn=document.getElementById("cnt");cn.textContent=`${n}／${maxLen()}`;cn.classList.toggle("bad",!!bad.length);
+    to.innerHTML=toHTML;
+  }else{
+    back.innerHTML=`<div class="msg"><textarea id="txt" maxlength="200" placeholder="寫下想說的話（最多 ${maxLen()} 字）">${esc(st.text)}</textarea>
+    <div class="cnt${bad.length?" bad":""}" id="cnt">${n}／${maxLen()}</div></div>
+    <div class="to">${toHTML}</div>`;
+  }
   document.getElementById("pc").classList.toggle("flip",st.flip);
   document.getElementById("flip").textContent=st.flip?"看正面":"翻面寫信";
 }
