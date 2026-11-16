@@ -1,0 +1,814 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EARTH POST 圖鑑卡</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&family=Noto+Sans+TC:wght@500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --grass:#7cb342; --grass-d:#4f8a2b; --grass-dd:#386b1f;
+  --cream:#fff8e7; --cream-2:#fbefd2; --cream-line:#efdfb8;
+  --wood:#8a5a32; --wood-d:#5e3a1d; --wood-l:#b07a46;
+  --seal:#d9473b; --ink:#3d2a17; --ink-2:#7a6248;
+  --sky1:#bfe6ff; --sky2:#e9f7ff;
+  --gold:#f4c542;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:#2f4a22;font-family:"Noto Sans TC",system-ui,sans-serif;color:var(--ink)}
+body{display:flex;align-items:center;justify-content:center;padding:16px}
+.stage{
+  position:relative;width:min(100%, calc((100vh - 32px) * 16 / 9));aspect-ratio:16/9;
+  border-radius:28px;overflow:hidden;container-type:inline-size;
+  background:
+    radial-gradient(ellipse 60% 35% at 15% 100%, #8fcf5a 0 60%, transparent 61%),
+    radial-gradient(ellipse 70% 30% at 70% 102%, #9ad466 0 60%, transparent 61%),
+    radial-gradient(ellipse 45% 30% at 40% 78%, #a9d98a 0 55%, transparent 56%),
+    radial-gradient(ellipse 50% 28% at 85% 72%, #b4dd95 0 55%, transparent 56%),
+    linear-gradient(#bfe6ff 0%, #e4f5ff 45%, #cde9b4 62%, #9fd06f 100%);
+  box-shadow:0 20px 60px rgba(0,0,0,.35);
+}
+/* painted scene */
+.scene{position:absolute;inset:0;width:100%;height:100%}
+/* sign */
+.sign{position:absolute;left:17.5cqw;top:1.2cqw;width:31cqw;height:10.2cqw}
+.sign .rope{position:absolute;top:-1.4cqw;width:.45cqw;height:3.2cqw;border-radius:.3cqw;
+  background:repeating-linear-gradient(160deg,#9b7447 0 .35cqw,#7a5530 .35cqw .7cqw)}
+.sign .rope.l{left:17%}.sign .rope.r{right:17%}
+.plank{position:absolute;left:0;right:0;top:1.4cqw;height:7.6cqw;display:grid;place-items:center;
+  border-radius:2.6cqw 2.2cqw 2.8cqw 2.3cqw/2.4cqw 2.6cqw 2.2cqw 2.6cqw;border:.32cqw solid #6b4220;
+  background:
+    radial-gradient(ellipse 1.6cqw .5cqw at 22% 68%,rgba(90,50,20,.28),transparent 70%),
+    radial-gradient(ellipse 1.2cqw .4cqw at 80% 30%,rgba(90,50,20,.22),transparent 70%),
+    repeating-linear-gradient(177deg,transparent 0 1.1cqw,rgba(110,62,25,.16) 1.1cqw 1.25cqw,transparent 1.25cqw 1.9cqw,rgba(255,225,180,.12) 1.9cqw 2cqw),
+    linear-gradient(#c58d55,#a36a37 55%,#8d5a2c);
+  box-shadow:inset 0 .4cqw 0 rgba(255,232,195,.45),inset 0 -.5cqw 0 rgba(80,40,12,.3),0 .55cqw 0 #5a361a,0 1.4cqw 2cqw rgba(60,30,0,.28)}
+.plank b{font-family:Fredoka,sans-serif;font-weight:700;font-size:4.5cqw;letter-spacing:.2cqw;color:#fff7e0;line-height:1;
+  text-shadow:.16cqw 0 0 #6b4220,-.16cqw 0 0 #6b4220,0 .16cqw 0 #6b4220,0 -.16cqw 0 #6b4220,
+    .12cqw .12cqw 0 #6b4220,-.12cqw .12cqw 0 #6b4220,.12cqw -.12cqw 0 #6b4220,-.12cqw -.12cqw 0 #6b4220,0 .45cqw 0 #6b4220}
+.sign .env{position:absolute;left:50%;top:-1.1cqw;width:6cqw;transform:translateX(-50%) rotate(-4deg);filter:drop-shadow(0 .3cqw .2cqw rgba(80,40,10,.3))}
+.sign .leaf{position:absolute;width:5cqw;filter:drop-shadow(0 .2cqw .15cqw rgba(40,70,20,.3))}
+.sign .leaf.l{left:-4.2cqw;top:6.4cqw;width:4.4cqw;transform:rotate(-25deg)}
+.sign .leaf.l2{left:-1.6cqw;top:8.4cqw;width:3cqw;transform:rotate(30deg)}
+.sign .leaf.r{right:-2cqw;top:.4cqw;transform:rotate(150deg) scaleY(-1)}
+.sign .leaf.r2{right:.4cqw;top:6.4cqw;width:3.4cqw;transform:rotate(200deg)}
+.sub{position:absolute;left:21cqw;top:10.4cqw;font-weight:700;font-size:1.25cqw;color:var(--grass-dd);background:rgba(255,255,255,.7);padding:.3cqw 1cqw;border-radius:99px}
+/* avatar rail */
+.rail{position:absolute;left:1.6cqw;top:2cqw;bottom:2cqw;width:12.5cqw;border-radius:6cqw;
+  background:linear-gradient(#8fc163,#6fa848);border:.3cqw solid #5d9638;
+  display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:1cqw;padding:1.4cqw 0;overflow-y:auto;scrollbar-width:none}
+.rail::-webkit-scrollbar{display:none}
+.av{flex:none;width:7.8cqw;height:7.8cqw;border-radius:50%;border:.5cqw solid var(--cream);background:var(--cream-2);
+  display:grid;place-items:center;cursor:pointer;overflow:hidden;position:relative;transition:transform .15s;
+  box-shadow:0 .4cqw 0 rgba(0,0,0,.15);padding:0}
+.av:hover{transform:scale(1.04)}
+.av.on{border-color:var(--gold);box-shadow:0 0 0 .5cqw #fff3c2,0 0 2cqw #ffe27a}
+.av img{width:84%;height:84%;object-fit:contain}
+.av .ph{font-weight:900;font-size:1.3cqw;color:var(--ink-2);text-align:center;line-height:1.2}
+/* 圖鑑分組（v0.26.0）：生物類型分組＋收集進度；棲地篩選；郵差／只觀察／家養標記 */
+.rail .hf{flex:none;width:10.6cqw;font:inherit;font-weight:900;font-size:1.05cqw;color:var(--wood-d);background:var(--cream);border:.2cqw solid var(--cream-line);border-radius:99px;padding:.35cqw .6cqw;cursor:pointer}
+.rail .grp{flex:none;width:10.6cqw;display:flex;justify-content:space-between;align-items:baseline;gap:.4cqw;padding:.25cqw .7cqw;margin-top:.4cqw;border-radius:99px;background:var(--wood-d,#6b4220);color:#fff8e7}
+.rail .grp b{font-size:1.1cqw}.rail .grp small{font-size:.9cqw;font-weight:900;opacity:.9}
+.rail .none{font-size:.95cqw;color:var(--ink-2);text-align:center;padding:0 .6cqw}
+.av .bd{position:absolute;right:-.1cqw;bottom:.1cqw;width:2.9cqw;height:2.9cqw;border-radius:50%;background:#fff8e7 center/78% no-repeat;border:.2cqw solid var(--cream-line);box-shadow:0 .15cqw .25cqw rgba(0,0,0,.25)}
+.av .bd.c{width:3.4cqw;height:3.4cqw;background-size:90%;background-image:url(art/ui/ic_courier_cap.png);background-color:#dff2d6;border-color:#5f9e34}
+.av .bd.c.fly{background-image:url(art/ui/ic_courier_cap_fly.png)}   /* 會飛的郵差：帽子加羽毛 */
+.av .bd.o{background-image:url(art/ui/ic_observe.png)}
+.rail .grp i{flex:none;width:1.6cqw;height:1.6cqw;background:center/contain no-repeat;align-self:center}
+.rail .grp b{flex:1}
+.av .ch{position:absolute;left:50%;bottom:-.1cqw;transform:translateX(-50%);font-size:.8cqw;font-weight:900;background:#fff1c9;color:#8a5a12;border-radius:99px;padding:.05cqw .5cqw;white-space:nowrap}
+/* hero */
+.hero{position:absolute;left:30cqw;top:11cqw;width:28cqw;height:27cqw;display:grid;place-items:end center}
+.hero .art{width:25cqw;height:25cqw;border-radius:50%;position:relative;display:grid;place-items:center;
+  background:radial-gradient(circle at 50% 40%,rgba(255,255,255,.85),rgba(255,255,255,.35) 60%,transparent 70%)}
+.hero .art img{max-width:100%;max-height:100%;object-fit:contain;filter:drop-shadow(0 1.2cqw 1cqw rgba(0,0,0,.25))}
+.hero .art .ph{width:19cqw;height:19cqw;border-radius:50%;border:.4cqw dashed var(--wood-l);display:grid;place-items:center;
+  text-align:center;color:var(--wood);font-weight:900;font-size:1.6cqw;background:rgba(255,248,231,.7)}
+.ground{position:absolute;bottom:.5cqw;width:20cqw;height:3cqw;border-radius:50%;background:rgba(80,60,20,.18);filter:blur(.4cqw)}
+.namecard{position:absolute;left:16cqw;top:35.5cqw;background:var(--cream);border:.3cqw solid var(--cream-line);border-radius:2cqw;
+  padding:1cqw 1.8cqw;box-shadow:0 .5cqw 0 var(--cream-line);width:40cqw}
+.namecard h1{margin:0;font-size:3cqw;font-weight:900;line-height:1.1}
+.namecard .sci{font-style:italic;font-size:1.25cqw;color:var(--ink-2);margin-top:.3cqw}
+.namecard .fam{font-size:1.15cqw;color:var(--ink-2)}
+.tags{display:flex;gap:.6cqw;flex-wrap:wrap;margin-top:.7cqw}
+.tag{font-size:1.05cqw;font-weight:700;padding:.25cqw .9cqw;border-radius:99px;background:#e5f2d5;color:var(--grass-dd)}
+.tag.v{background:#fde6c4;color:#9a5a12}
+.tag.t{background:#e8e1f7;color:#5b4796}
+/* panel */
+.panel{position:absolute;right:1.8cqw;top:2cqw;bottom:7.2cqw;width:39cqw;border-radius:2.6cqw;
+  background:var(--cream);border:.35cqw solid var(--cream-line);box-shadow:0 .7cqw 0 #e3cf9f,0 1.5cqw 3cqw rgba(0,0,0,.18);
+  display:flex;flex-direction:column;padding:1.4cqw}
+.tabs{display:flex;gap:.6cqw;background:var(--cream-2);padding:.5cqw;border-radius:99px}
+.tabs button{flex:1;border:0;background:transparent;font:inherit;font-weight:900;font-size:1.45cqw;color:var(--ink-2);
+  padding:.75cqw 0;border-radius:99px;cursor:pointer}
+.tabs button.on{background:linear-gradient(#8bc34a,#5f9e34);color:#fff;box-shadow:0 .35cqw 0 var(--grass-dd)}
+.note{margin:1cqw 0 .6cqw;font-size:1.05cqw;color:#8a5a12;background:#fff1d0;border-radius:1cqw;padding:.55cqw 1cqw}
+.rows{flex:1;overflow:auto;display:flex;flex-direction:column;gap:.55cqw;padding-right:.3cqw}
+.row{display:grid;grid-template-columns:3cqw 1fr;gap:1cqw;align-items:center;background:#fffdf6;border:.2cqw solid var(--cream-line);
+  border-radius:1.4cqw;padding:.6cqw 1cqw;box-shadow:0 .3cqw 0 var(--cream-line)}
+.ic{width:3cqw;height:3cqw;border-radius:1cqw;display:grid;place-items:center;font-size:1.7cqw;background:var(--cream-2)}
+.lbl{display:flex;align-items:center;gap:.6cqw;font-size:1.1cqw;font-weight:700;color:var(--ink-2)}
+.val{font-size:1.35cqw;font-weight:900;line-height:1.35;margin-top:.15cqw}
+.val.sm{font-size:1.2cqw;font-weight:700}
+.src{font-size:.95cqw;color:var(--ink-2);margin-top:.2cqw}
+.badge{font-size:.9cqw;font-weight:900;padding:.1cqw .7cqw;border-radius:99px}
+.b-s{background:#e1efd0;color:var(--grass-dd)}     /* 物種資料 */
+.b-g{background:#e4ecfb;color:#3c5e9e}             /* 遊戲估算 */
+.st{font-size:.9cqw;font-weight:700;color:var(--ink-2)}
+.pend{color:#b0874f}
+.foot{text-align:center;font-size:.95cqw;color:var(--ink-2);margin-top:.6cqw}
+/* bottom bar */
+.bar{position:absolute;left:16cqw;right:43cqw;bottom:2cqw;height:4.4cqw;border-radius:99px;background:var(--cream);
+  border:.3cqw solid var(--cream-line);box-shadow:0 .4cqw 0 #e3cf9f;display:flex;align-items:center;gap:1.2cqw;padding:0 1.8cqw;font-weight:900;font-size:1.3cqw}
+.bar .dot{width:1cqw;height:1cqw;border-radius:50%;background:var(--grass)}
+.bar .sep{width:.2cqw;height:2.2cqw;background:var(--cream-line)}
+.go svg{width:4.4cqw;filter:drop-shadow(0 .25cqw .1cqw rgba(30,60,10,.35))}
+.go{display:flex;align-items:center;justify-content:center;gap:1.4cqw;
+  position:absolute;right:1.8cqw;bottom:1.6cqw;width:39cqw;height:4.8cqw;border:0;border-radius:99px;cursor:pointer;
+  background:linear-gradient(#8bc34a,#4f8a2b);color:#fff;font:inherit;font-weight:900;font-size:2cqw;letter-spacing:.3cqw;
+  box-shadow:0 .55cqw 0 var(--grass-dd),0 1cqw 2cqw rgba(0,0,0,.2)}
+.go:active{transform:translateY(.3cqw);box-shadow:0 .25cqw 0 var(--grass-dd)}
+[hidden]{display:none!important}
+.modes{position:absolute;z-index:6;left:24cqw;top:10.6cqw;display:flex;gap:.4cqw;background:rgba(255,248,231,.85);padding:.35cqw;border-radius:99px;
+  border:.2cqw solid var(--cream-line)}
+.modes a{font-weight:900;font-size:1.2cqw;color:var(--ink-2);text-decoration:none;padding:.3cqw 1.4cqw;border-radius:99px}
+.modes a.on{background:linear-gradient(#8bc34a,#5f9e34);color:#fff}
+@media (max-width:640px){ body{padding:8px} }
+
+/* ===== v0.14 2D 介面：GPT 畫的零件 ===== */
+:root{--line:#5b3a1e}
+.scene{object-fit:cover}
+.sign{left:23cqw;top:-.8cqw;width:19cqw;height:auto}
+.sign img{display:block;width:100%;filter:drop-shadow(0 .5cqw .4cqw rgba(60,30,0,.25))}
+.sign b{position:absolute;left:0;right:0;top:56%;transform:translateY(-50%);text-align:center;font-family:Fredoka,sans-serif;font-weight:700;font-size:2.8cqw;letter-spacing:.2cqw;color:#fff7e0;line-height:1;
+  text-shadow:.16cqw 0 0 var(--line),-.16cqw 0 0 var(--line),0 .16cqw 0 var(--line),0 -.16cqw 0 var(--line),.12cqw .12cqw 0 var(--line),-.12cqw .12cqw 0 var(--line),.12cqw -.12cqw 0 var(--line),-.12cqw -.12cqw 0 var(--line),0 .4cqw 0 var(--line)}
+.rail{background:rgba(255,248,231,.55);border:.3cqw solid var(--line);backdrop-filter:blur(2px)}
+.av{width:8.4cqw;height:8.4cqw;border:0;border-radius:50%;background:url(art/ui/frame.png) center/contain no-repeat;box-shadow:none;overflow:visible}
+.av.on{border:0;background-image:url(art/ui/frame_on.png);box-shadow:none;transform:scale(1.06)}
+.av img{width:66%;height:66%}
+.av .ph{color:#b9ab8b}
+.hero .art{background:radial-gradient(circle at 50% 55%,rgba(255,255,255,.55),rgba(255,255,255,.15) 55%,transparent 68%)}
+.namecard,.panel,.bar{border-color:var(--line);border-width:.3cqw}
+.namecard{box-shadow:0 .5cqw 0 #c9a46a}
+.panel{box-shadow:0 .7cqw 0 #c9a46a,0 1.5cqw 3cqw rgba(0,0,0,.18)}
+.bar{box-shadow:0 .4cqw 0 #c9a46a}
+.tabs{border:.2cqw solid var(--cream-line)}
+.tabs button.on{border:.2cqw solid var(--line)}
+.row{border-color:#e6cf9f}
+.ic{background:transparent;width:3.2cqw;height:3.2cqw}
+.ic img{width:100%;height:100%;object-fit:contain}
+.modes{background:transparent;border:0;gap:.3cqw;padding:0;left:16.5cqw;top:11cqw}
+.hero{top:15.5cqw;height:21cqw}.hero .art{width:21cqw;height:21cqw}
+.modes a{background:url(art/ui/pill.png) center/100% 100% no-repeat;color:var(--wood-d);padding:.4cqw 1cqw;font-size:1.1cqw}
+.modes a.on{background:url(art/ui/pill_on.png) center/100% 100% no-repeat;color:var(--wood-d);padding-right:1.6cqw}
+.go{border:.3cqw solid #2f5a17}
+.modes a{display:inline-flex;align-items:center;gap:.35cqw}
+.modes a::before{content:"";width:1.6cqw;height:1.6cqw;background:center/contain no-repeat;margin-left:-.5cqw}
+.modes a:nth-child(1)::before{background-image:url(art/ui/nav_dex.png)}
+.modes a:nth-child(2)::before{background-image:url(art/ui/nav_explore.png)}
+.modes a:nth-child(3)::before{background-image:url(art/ui/nav_postcard.png)}
+.modes a:nth-child(4)::before{background-image:url(art/ui/nav_station.png)}
+.modes a:nth-child(5)::before{background-image:url(art/ui/nav_friends.png)}
+.modes a:nth-child(6)::before{background-image:url(art/ui/nav_me.png)}
+.scene{transition:filter .3s}
+.scene.soft{filter:blur(.35cqw) saturate(.75) brightness(1.08);transform:scale(1.04)}
+/* 手機橫放時 Safari 會自動放大文字，造成狀態列、導覽列超出（2026-11-12 使用者回報） */
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+.bar{overflow:hidden;white-space:nowrap}
+.bar>span{min-width:0;overflow:hidden;text-overflow:ellipsis;flex-shrink:1}
+.bar>.sep,.bar>.dot{flex-shrink:0}
+.modes{white-space:nowrap;flex-wrap:nowrap}
+/* 選取中的頭像框右上角腳印被名單上緣切掉（2026-11-12 使用者回報）：名單上下多留空間 */
+.rail{padding-top:2.4cqw;padding-bottom:2cqw}
+.av.on{transform:scale(1.04)}
+/* 腳印在圓框外的右上角：按鈕本身是圓形會把背景切成圓的，所以按鈕改成方形（框的圖本身就是圓的） */
+.av,.av.on{border-radius:0}
+.av:focus-visible{outline:.3cqw solid var(--wood);outline-offset:.2cqw;border-radius:50%}
+/* ===== 直式（iPhone）版面（v0.28.0，2026-11-13 使用者決定：iPhone 直式為主）=====
+   做法：舞台寬度＝手機寬度 ÷ 0.39，只顯示左邊 39%（39cqw＝手機寬）。原本橫向版右側面板就是 39cqw 寬，
+   所以面板裡用 cqw 寫的字級、間距在手機上大小差不多，不用每個字重寫；只要把各區塊重新排位置。
+   已改成直式的頁面在 <main> 加 class="pt"；還沒改的頁面維持橫向。 */
+body:has(.stage.pt){padding:0;overflow:hidden;align-items:stretch}
+.stage.pt{--vw:min(100vw,440px);--st:env(safe-area-inset-top,0px);--sb:env(safe-area-inset-bottom,0px);--tab:calc(6.4cqw + var(--sb));
+  width:calc(var(--vw) / .39);flex:none;height:100dvh;aspect-ratio:auto;border-radius:0;box-shadow:none;
+  clip-path:inset(0 61% 0 0);transform:translateX(30.5%)}
+@media (min-width:600px){body:has(.stage.pt){padding:16px 0;align-items:center}.stage.pt{height:min(calc(100dvh - 32px),900px);clip-path:inset(0 61% 0 0 round 28px)}}
+.stage.pt .scene{width:39cqw}
+.stage.pt .sign{display:none}
+/* 底部導覽列 */
+.stage.pt .modes{left:0;width:39cqw;top:auto;bottom:0;height:var(--tab);padding:.5cqw .4cqw var(--sb);background:var(--cream);border-top:.25cqw solid var(--cream-line);
+  display:grid;grid-template-columns:repeat(6,1fr);gap:.2cqw;z-index:15;border-radius:0}
+.stage.pt .modes a,.stage.pt .modes a.on{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.2cqw;background:none;padding:0;font-size:1.15cqw;border-radius:1.4cqw;color:var(--ink-2)}
+.stage.pt .modes a.on{background:#e4f2d6;color:var(--grass-dd);font-weight:900}
+.stage.pt .modes a::before{width:2.7cqw;height:2.7cqw;margin:0}
+/* 抽屜整個一起捲動（v0.32.1：手機畫面比較矮時，只捲中間資料區會被擠到幾乎 0 高度、滑不動）；分頁固定在抽屜上方 */
+.stage.pt .panel{overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+.stage.pt .panel .rows{flex:none;overflow:visible}
+.stage.pt .panel .tabs{position:sticky;top:-1.3cqw;z-index:3;flex:none}
+/* 小花：右上角 */
+.stage.pt .flowerhud{right:calc(61% + 1.2cqw)!important;top:calc(var(--st) + 1cqw)!important;font-size:1.4cqw!important;z-index:12!important}
+/* ===== 圖鑑頁直式（v0.29.0）：列表（分組格子）→ 點一隻進詳細頁；詳細頁可返回、左右換 ===== */
+.av .nm{display:none}
+.dexback,.dexnav{display:none}
+.stage.dex .bar{display:none}
+/* 列表 */
+.stage.dex.list .hero,.stage.dex.list .namecard,.stage.dex.list .panel,.stage.dex.list .go{display:none}
+.stage.dex .rail{left:0;top:0;width:39cqw;bottom:var(--tab);border-radius:0;border:0;background:rgba(255,248,231,.9);backdrop-filter:none;
+  display:grid;grid-template-columns:repeat(4,1fr);align-content:start;justify-items:center;gap:.4cqw .4cqw;padding:calc(var(--st) + 1.2cqw) 1.2cqw 3cqw}
+.stage.dex.detail .rail{display:none}
+.stage.dex .rail .dextitle{grid-column:1/-1;justify-self:start;font-weight:900;font-size:2cqw;color:var(--wood-d);background:var(--cream);border:.25cqw solid var(--wood);border-radius:1.2cqw;padding:.2cqw 1.2cqw}
+.stage.dex .rail .dextitle small{font-size:1.25cqw;color:var(--ink-2);margin-left:.6cqw}
+.stage.dex .rail .hf{grid-column:1/-1;justify-self:stretch;width:auto;font-size:max(16px,1.55cqw);padding:.7cqw 1.2cqw;margin-top:.4cqw}
+.stage.dex .rail .grp{grid-column:1/-1;justify-self:stretch;width:auto;margin-top:1cqw;padding:.45cqw 1.2cqw}
+.stage.dex .rail .grp b{font-size:1.5cqw}.stage.dex .rail .grp small{font-size:1.25cqw}.stage.dex .rail .grp i{width:2.1cqw;height:2.1cqw}
+.stage.dex .rail .none{grid-column:1/-1;font-size:1.3cqw;padding:2cqw 0}
+.stage.dex .av{width:8.6cqw;height:8.6cqw;margin-bottom:2cqw}
+.stage.dex .av.on{transform:none;background-image:url(art/ui/frame.png)}
+.stage.dex .av .nm{display:block;position:absolute;left:50%;top:100%;transform:translateX(-50%);margin-top:.1cqw;font-size:1.15cqw;font-weight:700;color:var(--ink-2);white-space:nowrap}
+.stage.dex .av .bd{width:2.6cqw;height:2.6cqw}
+.stage.dex .av .ch{font-size:1cqw;bottom:.2cqw}
+/* 詳細 */
+.stage.dex.detail .hero{left:5.5cqw;width:28cqw;top:calc(var(--st) + 3.5cqw);height:calc(min(24cqw, 36%) - 3cqw)}
+.stage.dex.detail .hero .art{width:auto;height:100%;max-height:20cqw;aspect-ratio:1}
+.stage.dex.detail .dexback{display:block;position:absolute;z-index:9;left:1.2cqw;top:calc(var(--st) + 1cqw);font:inherit;font-weight:900;font-size:1.4cqw;color:var(--wood-d);background:var(--cream);border:.25cqw solid var(--cream-line);border-radius:99px;padding:.5cqw 1.4cqw;cursor:pointer}
+.stage.dex.detail .dexnav{display:grid;place-items:center;position:absolute;z-index:9;top:calc(var(--st) + min(12cqw, 16%));width:4.4cqw;height:4.4cqw;border-radius:50%;border:.25cqw solid var(--cream-line);background:rgba(255,248,231,.92);font:inherit;font-weight:900;font-size:2.2cqw;color:var(--wood-d);cursor:pointer;padding:0}
+.stage.dex.detail .dexnav.p{left:1cqw}.stage.dex.detail .dexnav.n{left:33.6cqw}
+.stage.dex.detail .panel{left:0;right:auto;width:39cqw;top:calc(var(--st) + min(24cqw, 36%));bottom:var(--tab);border-radius:2.4cqw 2.4cqw 0 0;border-width:.3cqw 0 0;padding:1.4cqw 1.4cqw 7cqw;z-index:8}
+.stage.dex.detail .namecard{position:static;width:auto;border:0;box-shadow:none;background:none;padding:0 0 .8cqw}
+.stage.dex.detail .namecard h1{font-size:2.6cqw}.stage.dex.detail .namecard .sci,.stage.dex.detail .namecard .fam{font-size:1.25cqw}
+.stage.dex.detail .tag{font-size:1.15cqw}
+.stage.dex.detail .tabs button{font-size:1.5cqw;padding:.9cqw 0}
+.stage.dex.detail .note{font-size:1.2cqw}
+.stage.dex.detail .rows{gap:.7cqw}
+.stage.dex.detail .val{font-size:1.5cqw}.stage.dex.detail .val.sm{font-size:1.35cqw}.stage.dex.detail .lbl{font-size:1.2cqw}.stage.dex.detail .src{font-size:1.15cqw}
+.stage.dex.detail .badge{font-size:1.05cqw}.stage.dex.detail .foot{font-size:1.1cqw}
+.stage.dex.detail .go{left:1.4cqw;right:auto;width:36.2cqw;bottom:calc(var(--tab) + 1cqw);height:5cqw;font-size:1.8cqw;z-index:9}
+.stage.dex.detail .go svg{width:3.6cqw}
+</style>
+</head>
+<body>
+<main class="stage" id="stage">
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs>
+      <linearGradient id="g-env" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fffaf0"/><stop offset="1" stop-color="#f6e2bd"/></linearGradient>
+      <radialGradient id="g-seal" cx=".38" cy=".35" r=".7"><stop offset="0" stop-color="#ff8a74"/><stop offset=".55" stop-color="#e2493a"/><stop offset="1" stop-color="#b9302a"/></radialGradient>
+      <linearGradient id="g-leaf" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#a6d96a"/><stop offset="1" stop-color="#5c9e34"/></linearGradient>
+      <symbol id="env" viewBox="0 0 72 56">
+        <rect x="3" y="6" width="66" height="46" rx="10" fill="url(#g-env)" stroke="#caa173" stroke-width="2.6"/>
+        <path d="M8 12 Q36 34 64 12" fill="none" stroke="#d3ad80" stroke-width="2.6" stroke-linecap="round"/>
+        <path d="M9 46 Q20 36 27 31 M63 46 Q52 36 45 31" fill="none" stroke="#e7cfa5" stroke-width="2.2" stroke-linecap="round"/>
+        <path d="M27.2 32.5 a8.8 8.6 0 1 1 17.6 0 c0 1.2 1.8 1.6 1.4 3 c-.4 1.3-2.2.9-2.8 2.1 c-1.6 3.4-5.2 5.4-8.4 5.4 c-4.6 0-9.2-4-8.8-8.6 c-1.6-.4-2.4-1.6-1.6-2.6 c.6-.8 1.8-.6 2.6.7z" fill="url(#g-seal)"/>
+        <path d="M36 39.2 c-3.8-2.6-5.6-4.6-5.6-6.7 c0-1.7 1.3-3 2.9-3 c1.1 0 2.1.6 2.7 1.6 c.6-1 1.6-1.6 2.7-1.6 c1.6 0 2.9 1.3 2.9 3 c0 2.1-1.8 4.1-5.6 6.7z" fill="#ffd7cc" opacity=".9"/>
+        <ellipse cx="31.5" cy="27.5" rx="2.2" ry="1.3" fill="#fff" opacity=".55" transform="rotate(-30 31.5 27.5)"/>
+      </symbol>
+      <symbol id="leaf" viewBox="0 0 60 30">
+        <path d="M2 15 C14 0 42 -2 58 15 C42 32 14 30 2 15z" fill="url(#g-leaf)" stroke="#4d8a2a" stroke-width="1.6"/>
+        <path d="M4 15 C22 13 40 13 56 15" fill="none" stroke="#4d8a2a" stroke-width="1.4" stroke-linecap="round" opacity=".7"/>
+      </symbol>
+      <symbol id="flower" viewBox="-12 -12 24 24">
+        <g fill="#fff"><circle cx="0" cy="-6" r="5"/><circle cx="5.7" cy="-1.9" r="5"/><circle cx="3.5" cy="4.9" r="5"/><circle cx="-3.5" cy="4.9" r="5"/><circle cx="-5.7" cy="-1.9" r="5"/></g>
+        <circle r="3.6" fill="#ffcf3d"/>
+      </symbol>
+      <symbol id="tree" viewBox="0 0 120 150">
+        <rect x="52" y="90" width="16" height="60" rx="6" fill="#8b5e34"/>
+        <circle cx="60" cy="60" r="44" fill="#5f9e3a"/><circle cx="35" cy="78" r="30" fill="#6aab42"/><circle cx="86" cy="76" r="30" fill="#5a9636"/>
+        <circle cx="48" cy="44" r="22" fill="#8cc95a" opacity=".85"/><circle cx="76" cy="38" r="12" fill="#a3d870" opacity=".7"/>
+      </symbol>
+    </defs>
+  </svg>
+  <img class="scene" id="bgscene" src="art/ui/bg_forest.jpg" alt="" aria-hidden="true">
+
+  <nav class="rail" id="rail" aria-label="選擇生物"></nav>
+
+  <div class="sign"><img src="art/ui/sign.png" alt=""><b>EARTH POST</b></div>
+  <nav class="modes"><a class="on" href="#">圖鑑</a><a href="explore_mockup.html" id="toSend">探索</a><a href="postcard_mockup.html">明信片</a><a href="station_mockup.html">郵站</a><a href="postcard_mockup.html?view=friends">好友</a><a href="profile_mockup.html">我的</a></nav>
+
+  <section class="hero"><div class="ground"></div><div class="art" id="art"></div></section>
+  <div class="namecard" id="namecard"></div>
+
+  <section class="panel">
+    <div class="tabs" role="tablist" id="tabs">
+      <button class="on" data-tab="dex">介紹</button>
+      <button data-tab="eco">生態</button>
+      <button data-tab="post">傳信能力</button>
+    </div>
+    <div class="note" id="note"></div>
+    <div class="rows" id="rows"></div>
+    <div class="foot">遊戲估算與真實生物資料分開呈現</div>
+  </section>
+
+  <div class="bar" id="bar"></div>
+  <button class="go" id="go"><svg viewBox="0 0 72 56" aria-hidden="true"><use href="#env"/></svg><span>派牠送信</span></button>
+</main>
+
+<script src="player.js"></script>
+<script>
+/* 內容來源：drafts/card_content_v0.2.md。角色圖：放在 drafts/mockup/art/<id>.png，沒有圖時顯示佔位。 */
+const S = {
+ dolphin:{name:"台灣白海豚",sci:"Sousa chinensis taiwanensis",fam:"海豚科 Delphinidae｜台灣西海岸",type:"野生動物",check:"部分查核",endangered:true,
+  intro:"只生活在台灣西海岸淺水區的白海豚，俗稱「媽祖魚」；出生時深灰，長大後變成粉白色。",
+  enc:[["🗺️","出現地點","海邊"],["🌤️","較常遇到","白天、天氣晴朗時；夜間看不到"],["🔭","偏好互動","保持距離觀察"]],
+  eco:[["🌊","分布與棲地","台灣西海岸中部（苗栗至雲林一帶），多在水深 5 m 以內的淺海與河口","中文維基、英文維基","🟡"],
+       ["🐟","食性與活動","以小魚、魷魚、蝦類為食；通常少於 10 隻的小群（物種層級資料）","中文維基、英文維基","🟡"],
+       ["📏","外形","成體 2–3.5 m、150–230 kg；出生深灰，隨年齡變淡為粉白色（物種層級）","英文維基","🟡"],
+       ["⚠️","族群與威脅","研究者估計 2025 年約剩 45–50 隻；威脅包括沿岸開發、污染、刺網誤捕、水下噪音","英文維基、報導","🟡"],
+       ["🛡️","保育資訊","瀕危｜台灣一級保育類（2008 公告）｜IUCN：物種 VU（2017）、台灣族群 CR（2008）","監察院文件、報導、維基","🟡"]],
+  tax:"哺乳綱｜鯨偶蹄目｜海豚科",
+  game:null,
+  real:""},
+ heron:{name:"黑冠麻鷺",sci:"Gorsachius melanolophus",fam:"鷺科 Ardeidae｜台灣繁殖留鳥",type:"野生動物",check:"部分查核",
+  intro:"常在林下慢慢覓食的留鳥，以蚯蚓為主要食物；受驚時會伸頸靜止。",
+  enc:[["🗺️","出現地點","市區公園・河岸・淺山森林"],["🌤️","較常遇到","清晨、黃昏；雨天也常出現"],["🤫","偏好互動","安靜等待"]],
+  eco:[["🌳","分布與棲地","平地至低海拔的溪畔林、竹林、山麓、公園與農墾地；台灣是分布北界之一","科博館・農業部","🟡"],
+       ["🪱","食性與活動","以蚯蚓為主，也吃昆蟲、蛙類、魚蝦；常單獨活動，清晨較活躍","科博館・農業部","🟡"],
+       ["📏","外形","體長約 46–49 cm、體重約 417–450 g","示意卡所列來源，待核對","🟡"],
+       ["🥚","繁殖","繁殖季約 3–9 月，每窩 2–6 卵，雙親共同育雛","台北市立動物園","🟡"],
+       ["🛡️","保育資訊","全球 LC（2023）｜台灣紅皮書 NLC（2016）｜法定保育類：未列","2024 台灣鳥類紅皮書","🟡"]],
+  tax:"鳥綱｜鵜形目｜鷺科",
+  game:{spd:"8 km/h",dist:"單次 14 km",sta:"100%",route:"溪畔／濕地路線 +15%",duty:"不限時段・雨天加速"},
+  real:"覓食以步行為主，多在地面與附近樹上短程飛行，較少長距離飛行。速度、耐力：待查"},
+ dog:{name:"台灣犬",sci:"Canis lupus familiaris（FCI No. 348）",fam:"犬科｜台灣原產犬種",type:"家犬品種",check:"部分查核",
+  intro:"台灣原產的中型犬，三角形頭、杏仁眼、直立薄耳、鐮刀狀尾；FCI 於 2015 年正式承認。",
+  enc:[["🗺️","出現地點","農田／聚落・市區公園"],["🌤️","較常遇到","清晨到黃昏；多半有飼主陪同"],["👋","偏好互動","向飼主打招呼"]],
+  eco:[["🏡","原產地與用途","原產台灣；標準用途為狩獵、看守、伴侶犬","FCI 標準","✅"],
+       ["🦴","飼養與活動","家養動物，活動量與飲食依個體、訓練和飼養環境而定","依查核原則","✅"],
+       ["📏","外形","中型犬，體態乾練、肌肉結實勻稱；毛色：待查（角色圖全黑為美術設定）","FCI 標準","✅"],
+       ["🛡️","保育資訊","未評估／資料不足（不適用 IUCN）","範圍決策 v0.3","✅"]],
+  tax:"FCI 第 5 群第 7 類（原始型獵犬）",
+  game:{spd:"10 km/h",dist:"單次 20 km",sta:"100%",route:"農田／聚落路線 +15%",duty:"清晨～黃昏・天氣不限"},
+  real:"會步行與奔跑。品種專屬速度、耐力：待查"},
+ cat:{name:"野化家貓",sci:"Felis catus",fam:"貓科｜非原生（家貓）",type:"原型限定",check:"部分查核",
+  intro:"生活在人類聚落周邊、沒有固定飼主的家貓，多在清晨與黃昏活動。",
+  enc:[["🗺️","出現地點","河岸・農田／聚落・市區公園"],["🌤️","較常遇到","清晨、黃昏；雨天少見"],["🤫","偏好互動","安靜等待"]],
+  eco:[["🏘️","分布與棲地","依賴人類聚落：都市、郊區、農村","國際資料","🟡"],
+       ["🌗","食性與活動","活動呈晨昏雙峰；台灣的食性資料：待查","IUCN GISD","🟡"],
+       ["🛡️","保育資訊","未評估／資料不足；IUCN 外來入侵種資料庫收錄，會捕食野生動物，請勿餵食","IUCN GISD","🟡"]],
+  tax:"哺乳綱｜食肉目｜貓科（待附來源）",
+  game:{spd:"6 km/h",dist:"單次 5 km",sta:"100%",route:"市區巷弄路線 +20%",duty:"清晨・黃昏・夜間；雨天延誤"},
+  real:"速度、耐力：待查"},
+ butterfly:{name:"淡紋青斑蝶",sci:"Tirumala limniace limniace",fam:"蛺蝶科（斑蝶亞科）｜台灣原生",type:"野生動物",check:"部分查核",
+  intro:"台灣原生的斑蝶，幼蟲以夾竹桃科藤本植物為食。別名「青斑蝶」，和「東方淡紋青斑蝶」是不同種。",
+  enc:[["🗺️","出現地點","五個探索點都有"],["🌤️","較常遇到","白天、晴天；雨天與夜間幾乎遇不到"],["🤫","偏好互動","安靜等待"]],
+  eco:[["⛰️","分布與棲地","低地至山區（海拔上限 1,500 或 2,000 m，來源不一致）","Wang 1990 等","🟡"],
+       ["🌿","食性與活動","幼蟲寄主：Dregea formosana、Heterostemma brownii；成蝶蜜源、活動時段：待查","Wang 1990（摘要）","🟡"],
+       ["📏","外形","待查","—","⬜"],
+       ["🍂","季節","發生季節、是否參與北台灣越冬集團：待查","—","⬜"],
+       ["🛡️","保育資訊","台灣紅皮書 LC（2025-05）｜IUCN、法定保育類：待查","TBN","✅"]],
+  tax:"昆蟲綱｜鱗翅目｜蛺蝶科｜青斑蝶屬",
+  game:{spd:"5 km/h",dist:"單次 40 km",sta:"100%",route:"晴天 +15%",duty:"只在白天・雨天不出勤"},
+  real:"會遷移（南印度紀錄，非台灣）。速度、距離：待查"},
+ macaque:{name:"台灣獼猴",sci:"Macaca cyclopis",fam:"獼猴科｜台灣原生",type:"野生動物",check:"部分查核",
+  intro:"日行、群居的猴子，在森林與岩地間活動，以植物性食物為主。",
+  enc:[["🗺️","出現地點","淺山森林・山區"],["🌤️","較常遇到","清晨、黃昏；夜間不出現"],["🔭","偏好互動","保持距離觀察"]],
+  eco:[["🌲","分布與棲地","低地至高海拔的闊葉林、針闊葉混合林、竹林及草地","MDD・玉山國家公園","🟡"],
+       ["🍎","食性與活動","雜食，以果實、種子、嫩芽、嫩葉為主；日行、群居，清晨及黃昏較活躍","profile v0.10","🟡"],
+       ["📏","外形","待查","—","⬜"],
+       ["🐣","繁殖","繁殖季約 10 月至翌年 2 月，幼猴多在 4–6 月出生（待覆核）","政府出版資料","🟡"],
+       ["🛡️","保育資訊","IUCN LC（2019-01-29 評估）｜台灣紅皮書 LC（2024）｜一般類（2019-01-09 移出保育類）；請勿餵食","IUCN、TBN、林業及自然保育署","✅"]],
+  tax:"哺乳綱｜靈長目｜獼猴科",
+  game:{spd:"7 km/h",dist:"單次 10 km",sta:"100%",route:"森林／山區路線 +20%",duty:"清晨～黃昏・雨天延誤"},
+  real:"樹棲與地面移動。速度、耐力：待查"},
+ /* v0.10.0 第一批新生物。生態資料照抄 EARTH_POST_R01_TAIWAN_PROFILE_RESEARCH_v0.13 的查核狀態；遊戲數值為暫定規則 */
+ bluemagpie:{name:"台灣藍鵲",sci:"Urocissa caerulea",fam:"鴉科 Corvidae｜台灣特有種",type:"野生動物",check:"部分查核",
+  intro:"台灣特有的鴉科鳥類，常成群活動，群飛時排成一列。",
+  enc:[["🗺️","出現地點","淺山森林・市區公園・山區"],["🌤️","較常遇到","清晨到黃昏；夜間不出現"],["🔭","偏好互動","保持距離觀察"]],
+  eco:[["🌳","分布與棲地","台灣特有種；主要在中低海拔闊葉林、次生林，巢常築在林冠高枝","三山國家風景區管理處","🟡"],
+       ["👥","活動與社會","常成群活動，群飛時呈隊列；有合作育雛（幫手）行為","三山國家風景區管理處","🟡"],
+       ["🍒","食性與繁殖","雜食，以種子、果實、昆蟲為主；繁殖季約 4–8 月，每窩 4–6 卵","三山國家風景區管理處","🟡"],
+       ["🛡️","保育資訊","IUCN LC（2019-01-29 評估）｜台灣紅皮書 LC（2024）｜法定保育類 III 級（其他應予保育）","TBN、保育類野生動物名錄","✅"]],
+  tax:"鳥綱｜雀形目｜鴉科",
+  game:{spd:"9 km/h",dist:"單次 18 km",sta:"100%",route:"森林路線 +15%",duty:"清晨～黃昏・夜間休息"},
+  real:"會飛；實測飛行速度、耐力：待查（群飛不是速度證據）"},
+ barbet:{name:"五色鳥",sci:"Psilopogon nuchalis",fam:"鬚鴷科｜台灣特有種（標準名：台灣擬啄木）",type:"野生動物",check:"部分查核",
+  intro:"台灣特有種，頭部有藍、黃、紅、黑色塊；會在樹幹或枯木上挖洞築巢。",
+  enc:[["🗺️","出現地點","市區公園・淺山森林"],["🌤️","較常遇到","白天；夜間不出現"],["🤫","偏好互動","安靜等待"]],
+  eco:[["🌳","分布與棲地","全台約 0–2,400 m 闊葉林，也利用樹木多的公園、校園與庭園","陽明山國家公園","🟡"],
+       ["🍎","食性","以野生及栽培果實為主，少量昆蟲","陽明山國家公園・太魯閣國家公園","🟡"],
+       ["🪵","繁殖","繁殖期在樹幹或枯木挖洞築巢，約 4–8 月；枯木被移除會減少巢洞","林業試驗所・太魯閣國家公園","🟡"],
+       ["🧬","分類","過去曾作特有亞種，後經分類研究提升為種","陽明山國家公園","🟡"],
+       ["🛡️","保育資訊","IUCN 最新類別與年份、台灣法規現況：待查","—","⬜"]],
+  tax:"鳥綱｜啄木鳥目｜鬚鴷科",
+  game:{spd:"6 km/h",dist:"單次 8 km",sta:"100%",route:"市區／公園路線 +15%",duty:"白天・雨天休息"},
+  real:"會飛；資料描述較不善飛、較少活動。速度、耐力：待查"},
+ thrush:{name:"台灣紫嘯鶇",sci:"Myophonus insularis",fam:"鶲科｜台灣特有繁殖種、留鳥",type:"野生動物",check:"部分查核",
+  intro:"全身深藍紫色、帶金屬光澤的特有鳥，常在溪邊岩石上活動。",
+  enc:[["🗺️","出現地點","河岸・山區"],["🌤️","較常遇到","清晨、黃昏；夜間不出現"],["🔭","偏好互動","保持距離觀察"]],
+  eco:[["🏞️","分布與棲地","林地與溪流，海拔約 400–2,400 m；常在潮濕溪谷、溪邊活動","BirdLife・林業試驗所扇平","🟡"],
+       ["🐟","活動與食性","常單獨或成對、具領域性，受驚時沿溪低飛；吃昆蟲，也捕食小魚、兩棲類","台灣國家公園・林業試驗所","🟡"],
+       ["🛡️","保育資訊","全球 LC（2025）；台灣法定等級：待查","BirdLife DataZone","🟡"]],
+  tax:"鳥綱｜雀形目｜鶲科",
+  game:{spd:"8 km/h",dist:"單次 12 km",sta:"100%",route:"溪流路線 +20%",duty:"清晨～黃昏・夜間休息"},
+  real:"會飛，受驚時沿溪低飛；速度、耐力：待查"},
+ frog:{name:"莫氏樹蛙",sci:"Zhangixalus moltrechti",fam:"樹蛙科｜台灣特有種",type:"野生動物",check:"部分查核",
+  intro:"台灣特有的綠色樹蛙，平時躲在樹上，繁殖時在水邊比較活躍。",
+  enc:[["🗺️","出現地點","淺山森林・農田／聚落"],["🌤️","較常遇到","黃昏、夜間；雨天也常出現"],["🤫","偏好互動","安靜等待"]],
+  eco:[["🌳","分布與棲地","全台約 2,500 m 以下的果園、樹林及開墾地","林業試驗所長期生態研究平台","🟡"],
+       ["💧","活動與繁殖","平時隱蔽在樹上；繁殖期因地區不同：北部與東北部春夏、中南部夏秋、花東冬季","林業試驗所","🟡"],
+       ["🪲","食性","待查","—","⬜"],
+       ["🛡️","保育資訊","全球 LC（2022 刊載）｜台灣紅皮書 LC（2024）","IUCN・TBN","🟡"]],
+  tax:"兩生綱｜無尾目｜樹蛙科",
+  game:{spd:"3 km/h",dist:"單次 4 km",sta:"100%",route:"潮濕路線 +20%",duty:"黃昏～夜間・雨天加速"},
+  real:"受驚時會跳躍逃逸；跳躍距離、速度、耐力：待查"},
+ /* v0.11.0 第二批一般生物。生態資料照抄 profile v0.13 的查核狀態；遊戲數值為暫定規則 */
+ eagle:{name:"大冠鷲",sci:"Spilornis cheela（台灣特有亞種 S. c. hoya）",fam:"鷹科 Accipitridae｜台灣普遍留鳥",type:"野生動物",check:"部分查核",
+  intro:"中低海拔常見的猛禽，常利用熱氣流在天空緩慢盤旋。",
+  enc:[["🗺️","出現地點","山區・淺山森林"],["🌤️","較常遇到","白天、晴天；夜間不出現"],["🔭","偏好互動","保持距離觀察"]],
+  eco:[["🌳","分布與棲地","中低海拔闊葉林；台灣為特有亞種、普遍留鳥","台北市立動物園","🟡"],
+       ["🐍","食性","以蛇類為主，也捕食小型哺乳類、鳥類與蜥蜴","台北市立動物園","🟡"],
+       ["🦅","飛行","少拍翅，利用熱氣流緩慢、長時間盤旋（定性描述，不是速度數據）","台北市立動物園","🟡"],
+       ["🛡️","保育資訊","全球 LC（2025）｜台灣紅皮書 NLC（2024）｜台灣法定保育等級 II","IUCN／BirdLife・林業及自然保育署","🟡"]],
+  tax:"鳥綱｜鷹形目｜鷹科",
+  game:{spd:"12 km/h",dist:"單次 30 km",sta:"100%",route:"山區路線 +20%",duty:"白天・雨天休息"},
+  real:"會飛、擅長盤旋；空速、連續飛行時間、載重：待查"},
+ bpartridge:{name:"台灣竹雞",sci:"Bambusicola sonorivox",fam:"雉科｜台灣繁殖特有種、非遷徙",type:"野生動物",check:"部分查核",
+  intro:"圓胖的地棲鳥，常在草叢和灌叢底下活動。",
+  enc:[["🗺️","出現地點","農田／聚落・淺山森林"],["🌤️","較常遇到","清晨、黃昏；夜間不出現"],["🤫","偏好互動","安靜等待"]],
+  eco:[["🌳","分布與棲地","森林、草地與灌叢；海拔 0–2,370 m","BirdLife DataZone","🟡"],
+       ["🌱","食性","種子（含堅果）、芽鞘、葉片及無脊椎動物","BirdLife DataZone・台北市立動物園","🟡"],
+       ["🥚","繁殖","在樹基部、灌叢或草叢築巢，每窩 3–7 卵，雌鳥孵卵","台北市立動物園","🟡"],
+       ["🛡️","保育資訊","IUCN LC（2024）；台灣地方法定分類：待查","BirdLife DataZone","🟡"]],
+  tax:"鳥綱｜雞形目｜雉科",
+  game:{spd:"6 km/h",dist:"單次 8 km",sta:"100%",route:"草叢路線 +15%",duty:"清晨～黃昏・夜間休息"},
+  real:"地面行走與短距離飛行；速度、耐力：待查"},
+ hare:{name:"台灣野兔",sci:"Lepus sinensis（台灣亞種 L. s. formosanus）",fam:"兔科｜台灣亞種",type:"野生動物",check:"部分查核",
+  intro:"在低丘陵、河岸草地常見的野兔，夜間和晨昏比較活躍。",
+  enc:[["🗺️","出現地點","農田／聚落・河岸"],["🌤️","較常遇到","清晨、黃昏、夜間"],["🔭","偏好互動","保持距離觀察"]],
+  eco:[["🌾","分布與棲地","台灣各地均有紀錄；低丘陵、溪河岸草地及開闊灌草環境較常見","國立臺灣博物館・台灣環境資訊協會","🟡"],
+       ["🌿","食性與活動","草食；偏夜行：林業及自然保育署 2015–2022 自動相機監測，多在傍晚 6 點至清晨 5 點被拍到。白天藏在草叢或灌叢、有固定通路的說法，引述較早的資料，年代較舊","林業及自然保育署自動相機監測（2015–2022）・墾丁國家公園・國立臺灣博物館","🟡"],
+       ["🥚","繁殖","繁殖季、窩仔數：待查","—","⬜"],
+       ["🛡️","保育資訊","IUCN LC（華南兔整個物種的評估，2018-05-15 評估、2019 刊載；不等於台灣亞種的評估）｜台灣紅皮書 LC（2024）｜未列入保育類名錄","IUCN・TBN・林業及自然保育署","🟡"]],
+  tax:"哺乳綱｜兔形目｜兔科",
+  game:{spd:"12 km/h",dist:"單次 10 km",sta:"100%",route:"草地路線 +20%",duty:"晨昏與夜間・白天休息"},
+  real:"跳躍奔跑；速度、耐力：待查"},
+ civet:{name:"白鼻心",sci:"Paguma larvata",fam:"靈貓科｜台灣原生",type:"野生動物",check:"部分查核",
+  intro:"臉中央有一條白線的夜行動物，會爬樹，也會到果園找果實。",
+  enc:[["🗺️","出現地點","農田／聚落・淺山森林"],["🌤️","較常遇到","黃昏、夜間"],["🤫","偏好互動","安靜等待"]],
+  eco:[["🌳","分布與棲地","丘陵低至中海拔闊葉林、果園與鄰近人為環境；陽明山約 0–1,000 m","陽明山國家公園・衛福部教學藥園","🟡"],
+       ["🍊","食性與活動","夜行、雜食：果實、鼠類、昆蟲及蝸牛等；可攀爬，利用樹冠與地面","衛福部教學藥園・陽明山國家公園","🟡"],
+       ["🥚","繁殖與社群","繁殖季、每胎數：各來源記錄不一致，待原始研究核對。台灣都市研究（無線電追蹤）曾記錄兩隻成年雌性共同育幼、夜間活動範圍重疊；這是單一研究，不代表普遍行為","國科會研究摘要・台大論文典藏","🟡"],
+       ["🛡️","保育資訊","IUCN LC（2015-03-03 評估；2024 刊載修訂版，IUCN 註記「需要更新」）｜台灣紅皮書 LC（2024）｜未列入保育類名錄（一般類，2025-02-07 現行名錄）｜族群量：待查","IUCN・TBN・林業及自然保育署","🟡"]],
+  tax:"哺乳綱｜食肉目｜靈貓科",
+  game:{spd:"7 km/h",dist:"單次 10 km",sta:"100%",route:"果園／森林路線 +15%",duty:"黃昏～夜間・白天休息"},
+  real:"地面行走與攀爬；速度、耐力：待查"},
+ /* v0.11.0 觀察限定（只觀察、不當郵差；記錄後解鎖特別明信片） */
+ mikado:{name:"帝雉",sci:"Syrmaticus mikado",fam:"雉科｜台灣特有種、留鳥",type:"野生動物",check:"部分查核",obs:true,
+  intro:"中高海拔森林的特有雉類，機警隱密，常在地面行走覓食。",
+  enc:[["🗺️","出現地點","山區"],["🌤️","較常遇到","清晨、黃昏；陰天也常出現"],["🔭","偏好互動","保持距離觀察"]],
+  eco:[["⛰️","分布與棲地","中高海拔約 1,800–3,800 m 的針闊葉混合林、針葉林，也見於次生林與人工林；偏好陡坡與落葉覆蓋處","陽明山國家公園・玉山國家公園","🟡"],
+       ["🚶","活動","地棲，機警隱密；晨昏覓食，陰雨或起霧時也較活動；飛行能力不佳","陽明山國家公園","🟡"],
+       ["🫐","食性","雜食：嫩葉、漿果、草籽、蚯蚓、螞蟻及昆蟲幼蟲","陽明山國家公園","🟡"],
+       ["🛡️","保育資訊","台灣法規等級「珍貴稀有」（待核現行公告）；IUCN 類別與年份：待查","陽明山國家公園","🟡"]],
+  tax:"鳥綱｜雞形目｜雉科",game:null,obsNote:"稀有、高海拔的生物只觀察記錄，不會成為郵差",obsHow:"走在步道上遠遠觀察；注意山區天候與裝備，不要為了找牠冒險",real:""},
+ swinhoe:{name:"藍腹鷴",sci:"Lophura swinhoii",fam:"雉科｜台灣特有種",type:"野生動物",check:"部分查核",obs:true,
+  intro:"台灣特有的森林雉類，雄鳥有白色頭冠、白色背部和藍色身體。",
+  enc:[["🗺️","出現地點","山區・淺山森林"],["🌤️","較常遇到","清晨、黃昏"],["🔭","偏好互動","保持距離觀察"]],
+  eco:[["🌳","分布與棲地","玉山舊調查（1985–1986）記錄主要在 2,000 m 以下闊葉林，較常見於坡度較緩處；舊族群數不可外推為現況","玉山國家公園","🟡"],
+       ["🚶","活動與食性","日常行為、食性：待查","—","⬜"],
+       ["🛡️","保育資訊","BirdLife 舊資料曾列 NT；最新 IUCN 評估與台灣法定身分：待查","台灣重要野鳥棲地第二版","🟡"]],
+  tax:"鳥綱｜雞形目｜雉科",game:null,obsNote:"稀有、高海拔的生物只觀察記錄，不會成為郵差",obsHow:"走在步道上遠遠觀察；注意山區天候與裝備，不要為了找牠冒險",real:""},
+ tpartridge:{name:"台灣山鷓鴣",sci:"Arborophila crudigularis",fam:"雉科｜台灣特有、單型種",type:"野生動物",check:"部分查核",obs:true,
+  intro:"只分布在台灣山區森林的地棲鳥，臉部黑白分明，俗稱深山竹雞。",
+  enc:[["🗺️","出現地點","山區・淺山森林"],["🌤️","較常遇到","清晨、黃昏"],["🤫","偏好互動","安靜等待"]],
+  eco:[["⛰️","分布與棲地","全世界只分布在台灣本島中低海拔山區；山區森林地棲鳥","林業及自然保育署《台灣鳥類誌》","🟡"],
+       ["🚶","活動與食性","活動節律、群居結構、食物組成：待查","—","⬜"],
+       ["🛡️","保育資訊","全球 LC（2023）｜台灣國家類別 NLC（2016）｜法規等級 III","2024 臺灣鳥類紅皮書・林業及自然保育署","🟡"]],
+  tax:"鳥綱｜雞形目｜雉科",game:null,obsNote:"稀有、山區的生物只觀察記錄，不會成為郵差",obsHow:"走在步道上遠遠觀察；注意山區天候與裝備，不要為了找牠冒險",real:""},
+ warbler:{name:"冠羽柳鶯",sci:"Phylloscopus coronatus",fam:"柳鶯科｜台灣為過境（稀有）",type:"野生動物",check:"部分查核",obs:true,
+  intro:"在東亞北部繁殖的小型柳鶯，遷徙時偶爾經過台灣。",
+  enc:[["🗺️","出現地點","市區公園・淺山森林・河岸"],["🌤️","較常遇到","清晨、白天"],["🔭","偏好互動","保持距離觀察"]],
+  eco:[["🧭","分布與遷徙","繁殖於東亞北部及日本等地；台灣名錄列本島及離島「過境、稀」，出現於平原","中華民國野鳥學會 2020 名錄・《台灣鳥類誌》","🟡"],
+       ["🛡️","保育資訊","全球 LC（2016 評估；資料頁 2024 仍為 LC）；台灣非特有種","IUCN／BirdLife","🟡"],
+       ["🌿","棲地與食性（台灣）","停棲棲地、活動時段、食物：待查","—","⬜"]],
+  tax:"鳥綱｜雀形目｜柳鶯科",game:null,obsNote:"稀有過境的鳥只觀察記錄，不會成為郵差",obsHow:"安靜遠觀，不要追逐或播放鳥音引誘",real:""},
+ viper:{name:"赤尾青竹絲",sci:"Trimeresurus stejnegeri",fam:"蝮蛇科｜台灣常見毒蛇",type:"野生動物",check:"部分查核",obs:true,
+  intro:"全身翠綠、尾端磚紅色的毒蛇，常在潮濕的溪溝、水池旁的樹枝上靜靜伏著。",
+  enc:[["🗺️","出現地點","淺山森林・河岸・農田／聚落"],["🌤️","較常遇到","黃昏、夜間"],["⚠️","互動方式","只能保持距離觀察"]],
+  eco:[["🌳","分布與棲地","全台及蘭嶼中低海拔，約 2,000 m 以下；山區或開墾地附近較潮濕的環境","台灣生命大百科・TBN","🟡"],
+       ["🌙","活動與食性","夜行，在樹枝靜伏伏擊；吃蛙、蜥蜴、鳥和小型哺乳類；善攀爬","台灣生命大百科・台北市立動物園","🟡"],
+       ["⚠️","安全","台灣常見毒蛇：看到請保持距離、慢慢退開，不要靠近或觸碰","台北市立動物園","🟡"],
+       ["🛡️","保育資訊","IUCN LC（2011 評估）｜台灣紅皮書 LC（2024）｜法定身分各來源衝突，待核","IUCN・TBN","🟡"]],
+  tax:"爬行綱｜有鱗目｜蝮蛇科",game:null,obsNote:"要保持距離的生物只觀察記錄，不會成為郵差",obsHow:"遠遠觀察，不要靠近、觸碰或驚擾；看到就慢慢退開",real:""},
+ badger:{name:"台灣鼬獾",sci:"Melogale moschata",fam:"鼬科｜台灣亞種",type:"野生動物",check:"部分查核",obs:true,
+  intro:"臉上有白色斑紋的夜行動物，白天躲在洞裡休息，黃昏後出來找蚯蚓。",
+  enc:[["🗺️","出現地點","淺山森林・山區・農田／聚落"],["🌤️","較常遇到","黃昏、夜間"],["⚠️","互動方式","只能保持距離觀察"]],
+  eco:[["🌳","分布與棲地","低中海拔山區、闊葉林、灌叢及開墾地；曾見於約 2,100 m","衛福部教學藥園・南投相機調查","🟡"],
+       ["🪱","活動與食性","白天在樹洞、土洞或岩洞休息，黃昏後覓食，行動緩慢；以蚯蚓為主，也吃鼠類、鳥類、蜥蜴、蝸牛、大型昆蟲及果實","衛福部教學藥園","🟡"],
+       ["⚠️","公共衛生","曾為狂犬病病毒保毒宿主：不要觸碰或撿拾（這是公共衛生資訊，不是保育級別）","衛福部教學藥園","🟡"],
+       ["🛡️","保育資訊","IUCN 年份與台灣現行法定類別：待查","—","⬜"]],
+  tax:"哺乳綱｜食肉目｜鼬科",game:null,obsNote:"要保持距離的生物只觀察記錄，不會成為郵差",obsHow:"遠遠觀察，不要觸碰或撿拾",real:""},
+ babbler:{name:"小彎嘴",sci:"Pomatorhinus musicus",fam:"林鶥科｜台灣特有種、普遍留鳥",type:"野生動物",check:"部分查核",
+  intro:"台灣特有的留鳥，有向下彎的長嘴和白色眉線，喜歡在竹籬、灌叢底下活動。",
+  enc:[["🗺️","出現地點","淺山森林・農田／聚落"],["🌤️","較常遇到","清晨最多，白天、黃昏也有"],["🤫","偏好互動","安靜等待"]],
+  eco:[["🌳","分布與棲地","台灣特有留鳥，全島普遍；喜在刺竹籬下活動。海拔範圍、森林層位：待查","林業及自然保育署名錄・陽明山國家公園","🟡"],
+       ["🍎","活動與食性","活動時段、食性：待查","—","⬜"],
+       ["🛡️","保育資訊","台灣特有、普遍留鳥｜IUCN 類別與評估年、台灣法定身分：待查","林業及自然保育署名錄","🟡"]],
+  tax:"鳥綱｜雀形目｜林鶥科",
+  game:{spd:"7 km/h",dist:"單次 10 km",sta:"100%",route:"竹林／灌叢路線 +15%",duty:"清晨～黃昏・夜間休息"},
+  real:"短距離飛行、在灌叢底層跳躍；速度、耐力：待查"},
+ yuhina:{name:"冠羽畫眉",sci:"Yuhina brunneiceps",fam:"繡眼科｜台灣特有種、普遍留鳥",type:"野生動物",check:"部分查核",
+  intro:"台灣特有的小鳥，頭上有栗褐色冠羽，常成群在中高海拔的樹冠活動。",
+  enc:[["🗺️","出現地點","山區・淺山森林"],["🌤️","較常遇到","清晨、白天"],["🔭","偏好互動","保持距離觀察"]],
+  eco:[["⛰️","分布與棲地","台灣特有留鳥；中、高海拔闊葉林林冠，冬季可能降到較低海拔（待覆核）","台灣國家公園主題網・玉山國家公園","🟡"],
+       ["🍎","活動與食性","雜食，吃果實、昆蟲；繁殖季群體的活動路線和夜宿地點固定","農業知識入口網（引台灣鳥類誌）・臺北市生物多樣性資料庫","🟡"],
+       ["🛡️","保育資訊","台灣特有、普遍留鳥｜IUCN LC（2019-01-29 評估）｜台灣紅皮書 LC（2024）｜法定保育類 III 級（其他應予保育）","TBN、保育類野生動物名錄","✅"]],
+  tax:"鳥綱｜雀形目｜繡眼科",
+  game:{spd:"9 km/h",dist:"單次 15 km",sta:"100%",route:"山區路線 +15%",duty:"清晨～白天・雨天休息"},
+  real:"飛行；速度、耐力：待查"},
+ shrew:{name:"台灣長尾麝鼩",sci:"Crocidura tadae",fam:"尖鼠科｜台灣原生",type:"野生動物",check:"部分查核",
+  intro:"台灣原生的小型哺乳類，鼻子尖長、尾巴細長，住在中海拔的森林、竹林和灌叢。",
+  enc:[["🗺️","出現地點","淺山森林・山區"],["🌤️","較常遇到","黃昏、夜間（遊戲設定，真實節律待查）"],["🤫","偏好互動","安靜等待"]],
+  eco:[["🌳","分布與棲地","台灣本島、綠島、蘭嶼；本島常見於中海拔；闊葉林、竹林與灌叢","國家教育研究院・TBN","🟡"],
+       ["🚶","活動與食性","日夜節律、食性：待查（舊分類名的資料不能直接套用）","—","⬜"],
+       ["🛡️","保育資訊","台灣紅皮書 LC（2024）｜IUCN 未評估","TBN・MDD","🟡"]],
+  tax:"哺乳綱｜真盲缺目｜尖鼠科",
+  game:{spd:"4 km/h",dist:"單次 3 km",sta:"100%",route:"落葉／草叢路線 +20%",duty:"黃昏～夜間・白天休息"},
+  real:"在地面奔走；速度、耐力：待查"},
+ flyingsq:{name:"台灣紅白大飛鼠",sci:"Petaurista alborufus lena（台灣特有亞種）",fam:"松鼠科｜台灣特有亞種",type:"野生動物",check:"部分查核",
+  intro:"台灣特有亞種的大型鼯鼠，夜晚出來活動，張開翼膜在樹與樹之間滑翔。",
+  enc:[["🗺️","出現地點","山區・淺山森林"],["🌤️","較常遇到","只在夜間"],["🔭","偏好互動","保持距離觀察"]],
+  eco:[["🌲","分布與棲地","針葉林與闊葉林，常見於中高海拔","玉山國家公園・國立自然科學博物館","🟡"],
+       ["🌙","活動與食性","夜行，白天在樹洞休息，多獨居；吃嫩葉、嫩枝、果實及小型昆蟲；用翼膜在樹間滑翔","玉山國家公園・國立自然科學博物館","🟡"],
+       ["🛡️","保育資訊","台灣紅皮書、法定身分、IUCN：待查","—","⬜"]],
+  tax:"哺乳綱｜囓齒目｜松鼠科",
+  game:{spd:"10 km/h",dist:"單次 6 km",sta:"100%",route:"森林樹冠路線 +25%",duty:"只在夜間"},
+  real:"滑翔（不是動力飛行）；滑翔距離、速度：待查"},
+ squirrel:{name:"台灣條紋松鼠",sci:"Tamiops swinhoei formosanus（分類待定，另有 T. maritimus formosanus 的用法）",fam:"松鼠科｜台灣特有亞種",type:"野生動物",check:"部分查核",
+  intro:"背上有三條深色縱紋的小松鼠，白天在森林的樹枝間活動，晚上睡在樹洞裡。",
+  enc:[["🗺️","出現地點","山區・淺山森林"],["🌤️","較常遇到","清晨、白天"],["🔭","偏好互動","保持距離觀察"]],
+  eco:[["🌲","分布與棲地","台灣特有亞種；約 500–3,000 m 的闊葉林、針葉林及混生林","台灣國家公園主題網・臺大動物博物館","🟡"],
+       ["🌿","活動與食性","日行，在樹枝間活動、夜宿樹洞，除繁殖期外多單獨行動；吃嫩葉、嫩芽、花瓣、種子與果實","台灣國家公園主題網・國立臺灣博物館","🟡"],
+       ["🛡️","保育資訊","台灣紅皮書與 IUCN 評估：待查","—","⬜"]],
+  tax:"哺乳綱｜囓齒目｜松鼠科",
+  game:{spd:"8 km/h",dist:"單次 8 km",sta:"100%",route:"森林路線 +15%",duty:"清晨～白天・夜間休息"},
+  real:"在樹上攀爬跳躍；速度、耐力：待查"},
+ keelback:{name:"斯文豪氏遊蛇",sci:"Rhabdophis swinhonis（又稱斯文豪氏頸槽蛇）",fam:"水游蛇科｜台灣特有種",type:"野生動物",check:"部分查核",obs:true,
+  intro:"台灣特有的蛇，白天活動，常在潮濕的林緣、灌叢和溪流附近，會吃蛙和蚯蚓。",
+  enc:[["🗺️","出現地點","河岸・淺山森林・農田／聚落"],["🌤️","較常遇到","白天（雨天較多）"],["⚠️","互動方式","只能保持距離觀察"]],
+  eco:[["🌊","分布與棲地","台灣特有，全島中低海拔廣布，約 2,000 m 以下；潮濕闊葉林邊緣、灌叢底層、溪流附近","國立臺灣博物館・TBN","🟡"],
+       ["🐍","活動與食性","日行；已記錄的食物有蛙類和蚯蚓，比例待研究；卵生","國立臺灣博物館・TBN","🟡"],
+       ["⚠️","安全","是否有對人有害的毒液：目前證據不足，無法確認也無法保證無害；頸部構造的研究互有出入。請保持距離，不要觸碰或撿拾；看到蛇時慢慢繞開並告訴身邊的大人","2018 研究・2025 日本爬蟲學會摘要・屏東科技大學","🟡"],
+       ["🛡️","保育資訊","IUCN LC（2011 評估、2012 發布）｜台灣紅皮書 LC（2024）｜野生動物保育法 III（2019）","IUCN・TBN","🟡"]],
+  tax:"爬行綱｜有鱗目｜水游蛇科",game:null,obsNote:"要保持距離的生物只觀察記錄，不會成為郵差",obsHow:"遠遠觀察，不要靠近、觸碰或撿拾；看到就慢慢退開",real:""},
+ /* ===== 認養地在地生物 12 種（v0.27.0，2026-11-13）：真實資料來自 GPT 兩輪查證（給GPT的指令/回報_2026-11-12_認養地在地生物.md、回報_2026-11-13_…第二輪.md）；
+    「這一帶有紀錄」只代表有紀錄，不代表那裡很常見。遊戲設定（出現地點、時段、郵差數值）是暫定的遊戲規則。 ===== */
+ egret:{name:"小白鷺",sci:"Egretta garzetta",fam:"鷺科 Ardeidae",type:"野生動物",check:"部分查核",
+  intro:"全身白色的鷺鳥，黑嘴黑腳，腳趾卻是黃色，會在淺水裡慢慢找小魚。",
+  enc:[["🗺️","出現地點","河岸・農田／聚落・市區公園"],["🌤️","較常遇到","清晨、白天"],["🤫","偏好互動","安靜等待"],["🏞️","認養地","墾丁南灣・宜蘭冬山河・日月潭（這一帶有紀錄）"]],
+  eco:[["🌊","分布與紀錄","墾丁國家公園有紀錄（海拔 0–600 m）；日月潭管理處列為潭面常見鳥類；宜蘭五十二甲濕地有紀錄","台灣國家公園主題網・日月潭國家風景區・宜蘭縣政府","🟡"],
+       ["🐟","活動與食性","在淺水處慢慢走動找小魚；其他食性：待查","日月潭國家風景區","🟡"],
+       ["🛡️","保育資訊","IUCN LC（2025-06-12 評估）｜台灣紅皮書 LC（2024）｜一般類（不在保育類名錄）","IUCN・TBN","✅"]],
+  tax:"鳥綱｜鵜形目｜鷺科",
+  game:{spd:"9 km/h",dist:"單次 15 km",sta:"100%",route:"水邊／濕地路線 +15%",duty:"清晨～黃昏・夜間休息"},
+  real:"飛行；速度、耐力：待查"},
+ reefheron:{name:"岩鷺",sci:"Egretta sacra",fam:"鷺科 Ardeidae",type:"野生動物",check:"部分查核",
+  intro:"海岸礁石邊的鷺鳥，有白色和深色兩種羽色，常在礁石附近覓食。",
+  enc:[["🗺️","出現地點","海邊"],["🌤️","較常遇到","清晨、白天"],["🔭","偏好互動","保持距離觀察"],["🏞️","認養地","墾丁南灣（這一帶有紀錄）"]],
+  eco:[["🌊","分布與紀錄","墾丁國家公園鳥類名錄有紀錄（園區範圍）；常在海岸礁石附近覓食","墾丁國家公園管理處","🟡"],
+       ["🎨","外形","有白色型和深色型；圖畫的是深色型（全身石板灰），腳較短","墾丁國家公園管理處・燕雀之誌","🟡"],
+       ["🛡️","保育資訊","IUCN LC（2018-08-07 評估）｜台灣紅皮書 LC（2024）｜一般類（不在保育類名錄）","IUCN・TBN","✅"]],
+  tax:"鳥綱｜鵜形目｜鷺科",
+  game:{spd:"9 km/h",dist:"單次 16 km",sta:"100%",route:"海岸路線 +20%",duty:"清晨～黃昏・夜間休息"},
+  real:"飛行；速度、耐力：待查"},
+ nheron:{name:"夜鷺",sci:"Nycticorax nycticorax",fam:"鷺科 Ardeidae",type:"野生動物",check:"部分查核",
+  intro:"紅眼睛、黑頭頂的矮胖鷺鳥，白天常縮著脖子休息，黃昏才活躍。",
+  enc:[["🗺️","出現地點","河岸"],["🌤️","較常遇到","黃昏、夜間；白天常在休息"],["🤫","偏好互動","安靜等待"],["🏞️","認養地","宜蘭冬山河（這一帶有紀錄）"]],
+  eco:[["🌊","分布與紀錄","日月潭管理處列為潭面常見鳥類；宜蘭五十二甲濕地（冬山河親水公園附近）有紀錄","日月潭國家風景區・宜蘭縣政府","🟡"],
+       ["🌙","活動","白天常縮頸休息，黃昏較活躍；食性：待查","GPT 查證回報（待覆核）","🟡"],
+       ["🛡️","保育資訊","IUCN LC（2019-01-29 評估）｜台灣紅皮書 LC（2024）｜一般類（不在保育類名錄）","TBN","✅"]],
+  tax:"鳥綱｜鵜形目｜鷺科",
+  game:{spd:"8 km/h",dist:"單次 14 km",sta:"100%",route:"溪畔／濕地路線 +15%",duty:"黃昏～夜間・白天多休息"},
+  real:"飛行；速度、耐力：待查"},
+ kingfisher:{name:"翠鳥",sci:"Alcedo atthis",fam:"翠鳥科 Alcedinidae",type:"野生動物",check:"部分查核",
+  intro:"橘色肚子、藍色背的小鳥，會先停在枝頭，再俯衝下去抓魚。",
+  enc:[["🗺️","出現地點","河岸"],["🌤️","較常遇到","清晨、白天"],["🔭","偏好互動","保持距離觀察"],["🏞️","認養地","宜蘭冬山河・日月潭（這一帶有紀錄）"]],
+  eco:[["🌊","分布與紀錄","日月潭管理處列為常見鳥類；宜蘭五十二甲濕地有紀錄","日月潭國家風景區・宜蘭縣政府","🟡"],
+       ["🐟","活動與食性","停在枝頭找魚，再俯衝入水捕魚；其他食性：待查","GPT 查證回報（待覆核）","🟡"],
+       ["🛡️","保育資訊","IUCN LC（2019-01-29 評估）｜台灣紅皮書 LC（2024）｜一般類（不在保育類名錄）","TBN","✅"]],
+  tax:"鳥綱｜佛法僧目｜翠鳥科",
+  game:{spd:"12 km/h",dist:"單次 6 km",sta:"100%",route:"溪流路線 +20%",duty:"清晨～白天・雨天休息"},
+  real:"飛行；速度、耐力：待查"},
+ robin:{name:"粟背林鴝",sci:"Tarsiger johnstoniae",fam:"鶲科 Muscicapidae｜台灣特有種",type:"野生動物",check:"部分查核",
+  intro:"白眉毛、橘紅色胸部的小鳥，常站在明顯的枝頭上抖動尾巴，不太怕人。",
+  enc:[["🗺️","出現地點","山區"],["🌤️","較常遇到","清晨、白天"],["👋","偏好互動","輕聲打招呼"],["🏞️","認養地","阿里山（這一帶有紀錄）"]],
+  eco:[["⛰️","分布與紀錄","阿里山森林遊樂區多條步道常可見，「生性大方」","林業及自然保育署","🟡"],
+       ["🛡️","保育資訊","IUCN LC（2019-01-29 評估）｜台灣紅皮書 LC（2024）｜法定保育類 III 級（其他應予保育）","TBN、保育類野生動物名錄","✅"]],
+  tax:"鳥綱｜雀形目｜鶲科",
+  game:{spd:"7 km/h",dist:"單次 8 km",sta:"100%",route:"山區步道路線 +15%",duty:"清晨～黃昏・夜間休息"},
+  real:"飛行；速度、耐力：待查"},
+ liocichla:{name:"藪鳥",sci:"Liocichla steerii",fam:"噪眉科 Leiothrichidae｜台灣特有種",type:"野生動物",check:"部分查核",
+  intro:"灰色頭頂、臉上有黃色斑塊的小鳥，是阿里山步道上常見的鳥。",
+  enc:[["🗺️","出現地點","山區"],["🌤️","較常遇到","清晨、白天"],["🤫","偏好互動","安靜等待"],["🏞️","認養地","阿里山（這一帶有紀錄）"]],
+  eco:[["⛰️","分布與紀錄","阿里山森林遊樂區步道常見鳥","林業及自然保育署","🟡"],
+       ["🎨","外形","灰色頭頂、眼前下方橙黃色斑、橄欖色身體，翅膀和尾巴有紅橘色","燕雀之誌","🟡"],
+       ["🛡️","保育資訊","IUCN LC（2019-01-29 評估）｜台灣紅皮書 LC（2024）｜法定保育類 III 級（其他應予保育）","TBN、保育類野生動物名錄","✅"]],
+  tax:"鳥綱｜雀形目｜噪眉科",
+  game:{spd:"6 km/h",dist:"單次 8 km",sta:"100%",route:"山區灌叢路線 +15%",duty:"清晨～黃昏・夜間休息"},
+  real:"飛行；速度、耐力：待查"},
+ sparrow:{name:"麻雀",sci:"Passer montanus",fam:"麻雀科 Passeridae",type:"野生動物",check:"部分查核",
+  intro:"栗色頭頂、白臉頰上有一塊黑斑，田間和聚落都很常見，會在屋簷縫隙築巢。",
+  enc:[["🗺️","出現地點","農田／聚落・市區公園"],["🌤️","較常遇到","清晨、白天"],["🤫","偏好互動","安靜等待"],["🏞️","認養地","台東池上（池上鄉有機農地有紀錄）"]],
+  eco:[["🌾","分布與紀錄","田間與聚落常見；池上鄉萬安村有機農地平台有 13 筆紀錄","農業部生物多樣性研究所（農地平台）","🟡"],
+       ["🏠","繁殖","繁殖時會利用屋簷縫隙","GPT 查證回報（待覆核）","🟡"],
+       ["🛡️","保育資訊","IUCN LC（2016-10-01 評估）｜台灣紅皮書 LC（2024）｜一般類（不在保育類名錄）","TBN","✅"]],
+  tax:"鳥綱｜雀形目｜麻雀科",
+  game:{spd:"8 km/h",dist:"單次 10 km",sta:"100%",route:"聚落路線 +15%",duty:"清晨～黃昏・夜間休息"},
+  real:"飛行；速度、耐力：待查"},
+ munia:{name:"斑文鳥",sci:"Lonchura punctulata",fam:"梅花雀科 Estrildidae",type:"野生動物",check:"部分查核",
+  intro:"巧克力色的小鳥，胸腹有鱗片狀的花紋，常成群吃草籽。",
+  enc:[["🗺️","出現地點","農田／聚落"],["🌤️","較常遇到","白天"],["🔭","偏好互動","保持距離觀察"],["🏞️","認養地","台東池上（池上鄉有機農地有紀錄）"]],
+  eco:[["🌾","分布與紀錄","池上鄉萬安村有機農地平台有 12 筆紀錄","農業部生物多樣性研究所（農地平台）","🟡"],
+       ["🌱","活動與食性","常成群取食草籽","GPT 查證回報（待覆核）","🟡"],
+       ["🛡️","保育資訊","IUCN LC（2016-10-01 評估）｜台灣紅皮書 LC（2024）｜一般類（不在保育類名錄）","TBN","✅"]],
+  tax:"鳥綱｜雀形目｜梅花雀科",
+  game:{spd:"8 km/h",dist:"單次 12 km",sta:"100%",route:"農田路線 +15%",duty:"白天・夜間休息"},
+  real:"飛行；速度、耐力：待查"},
+ grassfrog:{name:"澤蛙",sci:"Fejervarya limnocharis",fam:"叉舌蛙科 Dicroglossidae",type:"野生動物",check:"部分查核",
+  intro:"常在水田、溝渠邊活動的褐色青蛙，背上有深色斑，嘴唇有深色橫紋。",
+  enc:[["🗺️","出現地點","農田／聚落"],["🌤️","較常遇到","黃昏、夜間；雨天常出現"],["🤫","偏好互動","安靜等待"],["🏞️","認養地","台東池上（池上鄉有機農地有紀錄）"]],
+  eco:[["🌾","分布與紀錄","常在水田、溝渠邊；池上鄉萬安村有機農地平台有 18 筆紀錄","農業部生物多樣性研究所（農地平台）・福山植物園","🟡"],
+       ["⚠️","觀察守則","不要徒手抓；觀察後洗手，不要踩進田裡或水圳","GPT 查證回報","🟡"],
+       ["🛡️","保育資訊","IUCN：待查｜台灣紅皮書 LC（2024 兩棲類）｜一般類（不在保育類名錄）","TBN","🟡"]],
+  tax:"兩生綱｜無尾目｜叉舌蛙科",
+  game:{spd:"3 km/h",dist:"單次 4 km",sta:"100%",route:"水田路線 +20%",duty:"黃昏～夜間・雨天加速"},
+  real:"跳躍；速度、耐力：待查"},
+ firefly:{name:"黃緣螢",sci:"Aquatica ficta",fam:"螢科 Lampyridae",type:"野生動物",check:"部分查核",
+  intro:"橙黃色前胸、黑色翅鞘的螢火蟲，幼蟲住在水裡，會吃小螺。",
+  enc:[["🗺️","出現地點","河岸・淺山森林"],["🌤️","較常遇到","只在夜間"],["🤫","偏好互動","安靜等待（不要用手電筒照牠）"],["🏞️","認養地","日月潭（4–5 月賞螢點有紀錄）"]],
+  eco:[["🌙","分布與紀錄","日月潭 4–5 月七個賞螢點（桃米、東光、大林、水社、頭社、潭南、丹大）有黃緣螢","日月潭國家風景區","🟡"],
+       ["💧","生活史","幼蟲住在水裡，會吃小螺","臺北市立動物園","🟡"],
+       ["⚠️","觀察守則","不要觸摸、捕捉，也不要用強光照牠","日月潭國家風景區","🟡"],
+       ["🛡️","保育資訊","IUCN 未評估（NE）｜台灣紅皮書：未列｜一般類（不在保育類名錄）","臺北市立動物園・保育類名錄","🟡"]],
+  tax:"昆蟲綱｜鞘翅目｜螢科",
+  game:{spd:"4 km/h",dist:"單次 3 km",sta:"100%",route:"溪邊夜路 +20%",duty:"只在夜間・雨天休息"},
+  real:"飛行；速度、耐力：待查（遊戲裡全年都遇得到，真實的賞螢季在春天）"},
+ peacock:{name:"巴黎翠鳳蝶",sci:"Papilio paris nakaharai",fam:"鳳蝶科 Papilionidae",type:"野生動物",check:"部分查核",
+  intro:"黑色翅膀上有一大塊藍綠色，會隨著角度閃閃發光的鳳蝶。",
+  enc:[["🗺️","出現地點","淺山森林"],["🌤️","較常遇到","晴天的白天"],["🤫","偏好互動","安靜等待"],["🏞️","認養地","陽明山（這一帶有紀錄）"]],
+  eco:[["🌸","分布與紀錄","陽明山國家公園四季蝴蝶介紹列為春季可見蝶類，園區有幼蟲寄主植物紀錄","台灣國家公園主題網","🟡"],
+       ["🎨","外形","黑色翅膀撒著藍綠色細鱗片，後翅中央有大塊亮藍綠色，後翅有尾突","iNaturalist","🟡"],
+       ["🛡️","保育資訊","IUCN：待查｜台灣紅皮書 LC（2025 蝶類）｜一般類（不在保育類名錄）","TBN","🟡"]],
+  tax:"昆蟲綱｜鱗翅目｜鳳蝶科",
+  game:{spd:"6 km/h",dist:"單次 30 km",sta:"100%",route:"森林花叢路線 +15%",duty:"晴天白天・雨天休息"},
+  real:"飛行；速度、耐力：待查"},
+ ghostcrab:{name:"角眼沙蟹",sci:"Ocypode ceratophthalmus",fam:"沙蟹科 Ocypodidae",type:"野生動物",check:"部分查核",
+  intro:"眼柄頂端有尖角的沙灘螃蟹，跑得很快，會在沙裡挖洞。",
+  enc:[["🗺️","出現地點","海邊"],["🌤️","較常遇到","黃昏、夜間、清晨"],["🔭","偏好互動","保持距離觀察"],["🏞️","認養地","墾丁南灣（有南灣的照片紀錄）"]],
+  eco:[["🏖️","分布與紀錄","南灣（恆春鎮）有 2022-12-08 的照片紀錄（研究等級待確認）","TaiEOL（iNaturalist）","🟡"],
+       ["⚠️","觀察守則","只遠遠觀察，不挖洞、不徒手抓、不帶走；墾丁國家公園禁止撿拾貝殼、珊瑚礁石等","墾丁國家公園管理處公告（2025-07-08）","🟡"],
+       ["🛡️","保育資訊","IUCN：待查（TBN 標 LC，未列評估日期）｜台灣紅皮書：未列｜一般類（不在保育類名錄）","TBN","🟡"]],
+  tax:"軟甲綱｜十足目｜沙蟹科",
+  game:{spd:"9 km/h",dist:"單次 4 km",sta:"100%",route:"沙灘路線 +25%",duty:"黃昏～清晨・白天多休息"},
+  real:"在沙灘上快跑；速度、耐力：待查"},
+ rissos:{name:"花紋海豚",sci:"Grampus griseus",fam:"海豚科 Delphinidae",type:"野生動物",check:"部分查核",
+  intro:"身上有很多白色抓痕的圓頭海豚（官方名稱叫瑞氏海豚），疤痕會隨年齡越來越多。",
+  enc:[["🗺️","出現地點","海邊（真實分布在台灣東部海域）"],["🌤️","較常遇到","白天；夜間看不到"],["🔭","偏好互動","保持距離觀察"]],
+  eco:[["🌊","分布與紀錄","台灣主要在東部海域目擊，宜蘭南端到屏東都有紀錄；是花蓮、台東賞鯨的主要對象之一","海洋保育署《臺灣百種海洋動物圖鑑》","🟡"],
+       ["📊","常見度","研究稱是台灣海域最常見的鯨豚之一（依特定海域與賞鯨航次的觀察資料，不代表全台都容易遇到）","Taiwania 研究摘要","🟡"],
+       ["🏷️","名稱","官方別名含「花紋海豚」；學名 Grampus griseus","海洋保育署","🟡"],
+       ["🛡️","保育資訊","IUCN：無危 LC（海保署轉述，原始評估頁未能開啟）｜台灣：珍貴稀有保育類（II 級，2020-04-28 公告）｜台灣紅皮書：待查","海洋保育署海洋保育類名錄","🟡"]],
+  tax:"哺乳綱｜鯨偶蹄目｜海豚科",
+  game:{spd:"12 km/h",dist:"單次 40 km",sta:"100%",route:"海路・可跨海到離島",duty:"白天・雨天少出勤"},
+  real:"在海面遠處遇到；速度、耐力：待查"},
+ anemonefish:{name:"克氏海葵魚",sci:"Amphiprion clarkii",fam:"待查",type:"野生動物",check:"部分查核",
+  intro:"深色身體配兩條白帶的小魚，和海葵住在一起（臺灣魚類資料庫的正式中文名是「克氏雙鋸魚」）。",
+  enc:[["🗺️","出現地點","海邊"],["🌤️","較常遇到","白天；夜間看不到"],["🔭","偏好互動","保持距離觀察"]],
+  eco:[["🌊","分布與棲地","棲息於礁區、近海沿岸、潟湖；台灣東、南、北、東北部與澎湖、小琉球、蘭嶼、綠島、東沙、南沙都有紀錄","臺灣魚類資料庫（中研院）","🟡"],
+       ["🪸","共生與食性","和海葵共生；以藻類和浮游生物為食","臺灣魚類資料庫","🟡"],
+       ["🐣","繁殖（單一研究）","水產試驗所 2019 年在人工環境研究繁殖與育苗；單一研究，不代表野外普遍行為","水產試驗所《水產研究》27(2)","🟡"],
+       ["🛡️","保育資訊","台灣海洋保育類名錄：未列出｜IUCN：資料庫標示「不在 IUCN 瀕危名單中」（未附類別與日期）","海洋保育署名錄、臺灣魚類資料庫","🟡"]],
+  tax:"待查",
+  game:{spd:"4 km/h",dist:"單次 5 km",sta:"100%",route:"近岸海路・航程很短",duty:"白天"},
+  real:"在礁區近岸活動；速度、耐力：待查"}
+};
+const ORDER=["dog","cat","butterfly","macaque","heron","bluemagpie","barbet","thrush","frog","eagle","bpartridge","hare","civet","babbler","yuhina","shrew","flyingsq","squirrel","egret","reefheron","nheron","kingfisher","robin","liocichla","sparrow","munia","grassfrog","firefly","peacock","ghostcrab","rissos","anemonefish","dolphin","mikado","swinhoe","tpartridge","warbler","viper","keelback","badger"];
+const FLY=["butterfly","heron","bluemagpie","barbet","thrush","eagle","babbler","yuhina","egret","reefheron","nheron","kingfisher","robin","liocichla","sparrow","munia","firefly","peacock"];
+const SWIM=["rissos","anemonefish"];   /* 會游（v0.51.0）：只走海路 */
+const GLIDE=["flyingsq"];   /* 滑翔（2026-11-11 使用者決定）：可跨河、跨山谷，不能跨海 */
+/* 棲地背景（2026-11-11 使用者決定）：圖鑑大圖用「出現地點」的第一個地點當主要棲地 */
+const HAB_OF={"海邊":"coast","市區公園":"park","河岸":"river","農田／聚落":"farm","淺山森林":"forest","山區":"mountain","五個探索點都有":"park"};
+const habOf=id=>HAB_OF[S[id].enc[0][2].split("・")[0]]||"forest";
+const NOTES={dex:"介紹　認識牠、去哪裡找牠",eco:"生態　真實生物資料，附查核狀態與來源",post:"傳信能力　遊戲設定，可調整，不代表真實移動能力"};
+const st={id:"heron",tab:"dex",hab:"",view:"list"};
+/* 直式（v0.29.0，iPhone 直式為主）：列表→詳細兩層。電腦上也是同一個手機寬直欄。
+   （class 在這裡加，不寫進 <main>，因為 <main> 是其他頁共用的，那些頁還沒改直式） */
+const STAGE=document.getElementById("stage");
+const PT=true;
+if(PT)STAGE.classList.add("pt","dex");
+try{const s=JSON.parse(localStorage.getItem("ep-card")||"{}");if(S[s.id])st.id=s.id;if(NOTES[s.tab])st.tab=s.tab;if(typeof s.hab==="string")st.hab=s.hab}catch(e){}
+st.view="list";
+/* 圖鑑分組（2026-11-12 使用者決定）：主要分組用真實的生物類型；棲地是篩選，郵差／只觀察／家養是標記，不另外分組 */
+const GROUPS=[["鳥類","bird",["heron","bluemagpie","barbet","thrush","eagle","bpartridge","babbler","yuhina","egret","reefheron","nheron","kingfisher","robin","liocichla","sparrow","munia","mikado","swinhoe","tpartridge","warbler"]],
+  ["哺乳類","mammal",["dog","cat","macaque","hare","civet","shrew","flyingsq","squirrel","badger","dolphin","rissos"]],
+  ["兩棲爬行類","amphibian",["frog","grassfrog","keelback","viper"]],
+  ["魚類","fish",["anemonefish"]],
+  ["無脊椎動物","insect",["butterfly","peacock","firefly","ghostcrab"]]];
+const HABS=["淺山森林","山區","河岸","農田／聚落","市區公園","海邊"];
+const HAB_SHORT={"淺山森林":"森林","山區":"山區","河岸":"河岸","農田／聚落":"農田","市區公園":"公園","海邊":"海邊"};
+const habsOf=id=>{const t=S[id].enc[0][2];return t.includes("五個探索點都有")?HABS.filter(h=>h!=="海邊"):HABS.filter(h=>t.includes(h));};
+const DOMESTIC={dog:"家犬",cat:"野化"};
+if(st.hab&&!HABS.includes(st.hab))st.hab="";
+
+const esc=t=>String(t).replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
+const ART={};
+ORDER.forEach(id=>{const im=new Image();im.onload=()=>{ART[id]=true;renderRail();render()};im.src=`art/${id}.png`;});
+const STLBL={none:"未發現",seen:"目擊",recorded:"已記錄",courier:"郵差"};
+const dst=id=>(DEX[id]||{state:"recorded"}).state;
+const locked=id=>dst(id)==="none"||dst(id)==="seen";
+function artHTML(id,big){
+  const c=S[id];
+  if(dst(id)==="none") return `<div class="ph" style="font-size:${big?"6cqw":"2.6cqw"};color:#b9ab8b">？</div>`;
+  if(ART[id]) return `<img src="art/${id}.png" alt="${dst(id)==="seen"?"目擊的剪影":c.name}" ${dst(id)==="seen"?'style="filter:brightness(0) opacity(.45)"':""}>`;
+  return `<div class="ph">${big?c.name+"<br><small>角色圖待放</small>":c.name}</div>`;
+}
+const UI_IC=[["保育","conserve"],["食","diet"],["棲地","habitat"],["遷徙","range"],["分布","range"],["出現地點","route"],["偏好互動","observe"],["互動方式","observe"],["觀察","observe"],["速度","speed"],["體力","stamina"],["可送距離","mail"],["明信片","mail"],["路線","route"],["移動方式","speed"],["飛行","bird"],["較常遇到","dawn"],["出勤條件","sun"],["委託","task"],["認養","adopt"]];
+function uiIcon(lbl,ic){const m=UI_IC.find(([k])=>lbl.includes(k));return m?`<img src="art/ui/${["dawn","sun","task","adopt"].includes(m[1])?"nav":"ic"}_${m[1]}.png" alt="">`:ic;}
+function row(ic,lbl,val,{badge,src,stat,sm}={}){
+  ic=uiIcon(lbl,ic);
+  const b=badge==="g"?'<span class="badge b-g">遊戲估算</span>':badge==="s"?'<span class="badge b-s">物種資料</span>':"";
+  const pend=/待查/.test(val)&&!/[：:]/.test(val.replace(/待查.*/,""))?" pend":"";
+  return `<div class="row"><div class="ic">${ic}</div><div>
+    <div class="lbl">${lbl}${b}${stat?`<span class="st">${stat}</span>`:""}</div>
+    <div class="val${sm?" sm":""}${pend}">${esc(val)}</div>${src?`<div class="src">來源：${esc(src)}</div>`:""}</div></div>`;
+}
+function visibleIds(){return GROUPS.flatMap(g=>st.hab?g[2].filter(id=>habsOf(id).includes(st.hab)):g[2]);}
+function render(){
+  if(PT){STAGE.classList.toggle("list",st.view==="list");STAGE.classList.toggle("detail",st.view==="detail");}
+  const c=S[st.id];
+  document.querySelectorAll(".av").forEach(a=>a.classList.toggle("on",a.dataset.id===st.id));
+  document.querySelectorAll("#tabs button").forEach(b=>b.classList.toggle("on",b.dataset.tab===st.tab));
+  document.getElementById("art").innerHTML=artHTML(st.id,true);
+  const bgs=document.getElementById("bgscene");if(bgs&&document.title.includes("圖鑑"))bgs.src=`art/ui/hab_${habOf(st.id)}.jpg`;
+  const ds=dst(st.id),D=DEX[st.id];
+  document.querySelectorAll("#tabs button").forEach(b=>{const lock=locked(st.id)&&b.dataset.tab!=="dex";b.disabled=lock;b.style.opacity=lock?.4:1;});
+  if(locked(st.id))st.tab="dex";
+  document.getElementById("namecard").innerHTML=locked(st.id)?`<h1>？？？</h1><div class="sci">${ds==="seen"?"看過牠的身影，還沒記錄成功":"還沒遇見過"}</div>
+    <div class="tags"><span class="tag">探索狀態｜${STLBL[ds]}</span></div>`:`<h1>${c.name}</h1><div class="sci">${c.sci}</div><div class="fam">${c.fam}</div>
+    <div class="tags"><span class="tag t">${c.type}</span>${c.endangered?`<span class="tag" style="background:#fde2dc;color:#b1392d">保育旗標｜瀕危</span>`:c.obs?`<span class="tag" style="background:#fff1c9;color:#8a5a12">${obsTag(st.id)}・只觀察</span>`:`<span class="tag">遊戲級別｜常見</span>`}<span class="tag v">${c.check}</span><span class="tag">探索狀態｜${STLBL[ds]}${D?(OBSERVE_ONLY.includes(st.id)?`・觀察 ${D.aff} 次`:`・好感 ${D.aff}／${THRESH[st.id]}`):""}</span></div>`;
+  document.getElementById("note").textContent=NOTES[st.tab];
+  let h="";
+  if(locked(st.id)){
+    h+=row("🗺️","可能出現的地點",c.enc[0][2],{badge:"g"});
+    if(ds==="seen"){h+=row("🔍","線索",c.enc[1][2],{badge:"g"});}
+    h+=row("🔒","尚未解鎖",ds==="none"?"遇見牠之後會出現剪影與線索；成功記錄後解鎖介紹、生態與傳信能力":"成功記錄後解鎖介紹、生態與傳信能力",{sm:true});
+  }else if(st.tab==="dex"){
+    h+=row("📖","一句簡介",c.intro,{badge:"s",sm:true});
+    if(D&&D.notes&&D.notes.length)h+=row("📝","觀察筆記",D.notes.slice(-2).join("；"),{sm:true});
+    c.enc.forEach(e=>h+=row(e[0],e[1],e[2],{badge:e[1]==="認養地"?"s":"g"}));   /* 認養地＝真實紀錄（物種資料） */
+  }else if(st.tab==="eco"){
+    c.eco.forEach(e=>h+=row(e[0],e[1],e[2],{badge:"s",src:e[3],stat:e[4],sm:true}));
+    h+=`<div class="src" style="text-align:center">分類：${esc(c.tax)}</div>`;
+  }else{
+    if(!c.game){h+=row("🔒","不當郵差",c.obsNote||"瀕危物種只觀察記錄，不會成為郵差",{badge:"g",sm:true})+row("👀","觀察方式",c.obsHow||"只在岸上遠遠觀察；不乘船追逐、不靠近、不餵食",{badge:"g",sm:true})+row("🖼️","特別明信片","觀察記錄後，可以用牠當明信片樣式寄給朋友",{badge:"g",sm:true});}
+    else{
+    const g=c.game,up=courierBonus(st.id);
+    h+=(up.tags.length?row("⭐","郵差升級",up.tags.join("、"),{badge:"g",sm:true}):"")+row("⏱️","傳信速度",up.spd>1?`${g.spd} → ${Math.round(parseFloat(g.spd)*up.spd*10)/10} km/h`:g.spd,{badge:"g"})+row("📮","可送距離",g.dist,{badge:"g"})
+      +row("🔋","體力",g.sta+"（滿格可跑完單次距離）",{badge:"g"})+row("🛤️","路線效果",g.route,{badge:"g"})
+      +row("🌦️","出勤條件",g.duty,{badge:"g"})+row(FLY.includes(st.id)?"🪽":SWIM.includes(st.id)?"🌊":GLIDE.includes(st.id)?"🍃":"🐾","移動方式",FLY.includes(st.id)?"飛行：可渡河、可跨海":SWIM.includes(st.id)?"游泳：只走海路，可跨海到離島；不能送陸路的信":GLIDE.includes(st.id)?"滑翔：可跨河、跨山谷，不能跨海；只在夜間出勤":"陸地：可短距離游泳渡河（較慢），不能跨海",{badge:"g"});
+    }
+  }
+  document.getElementById("rows").innerHTML=h;
+  document.querySelector("#go span").textContent=ds==="courier"?"派牠寄明信片":OBSERVE_ONLY.includes(st.id)&&!locked(st.id)?"再去觀察牠":"去探索找牠";
+  document.getElementById("bar").innerHTML=`<span>🏞️ ${locked(st.id)?"？？？":c.name}</span><span class="sep"></span><span style="font-weight:700;font-size:1.1cqw">${c.enc[0][2]}</span><span class="sep"></span><span class="dot"></span><span>狀態：${ds==="courier"?"可出勤":OBSERVE_ONLY.includes(st.id)&&!locked(st.id)?"只觀察":STLBL[ds]}</span>`;
+  try{localStorage.setItem("ep-card",JSON.stringify(st))}catch(e){}
+}
+function avHTML(id){
+  const lk=locked(id),ds=dst(id);
+  const bd=lk?"":ds==="courier"?`<span class="bd c${FLY.includes(id)?" fly":""}" title="${FLY.includes(id)?"郵差（會飛）":"郵差"}"></span>`:OBSERVE_ONLY.includes(id)?`<span class="bd o" title="只觀察"></span>`:"";
+  const ch=!lk&&DOMESTIC[id]?`<span class="ch">${DOMESTIC[id]}</span>`:"";
+  return `<button class="av" data-id="${id}" aria-label="${lk?"未解鎖的生物":S[id].name}">${artHTML(id,false)}${bd}${ch}<span class="nm">${lk?"？？？":S[id].name}</span></button>`;
+}
+function renderRail(){
+  const all=GROUPS.flatMap(g=>g[2]);
+  let h=(PT?`<div class="dextitle">圖鑑<small>收集 ${all.filter(id=>!locked(id)).length}／${all.length}</small></div>`:"")+`<select class="hf" id="habf" aria-label="依棲地篩選"><option value="">全部棲地</option>${HABS.map(x=>`<option value="${x}"${st.hab===x?" selected":""}>只看${HAB_SHORT[x]}</option>`).join("")}</select>`;
+  let any=false;
+  GROUPS.forEach(([nm,ic,ids])=>{
+    const got=ids.filter(id=>!locked(id)).length;
+    const show=st.hab?ids.filter(id=>habsOf(id).includes(st.hab)):ids;
+    if(!show.length)return;any=true;
+    h+=`<div class="grp"><i style="background-image:url(art/ui/ic_${ic}.png)"></i><b>${nm}</b><small>${got}／${ids.length}</small></div>`+show.map(avHTML).join("");
+  });
+  if(!any)h+=`<div class="none">這裡還沒有生物</div>`;
+  const r=document.getElementById("rail");r.innerHTML=h;
+  r.querySelectorAll(".av").forEach(a=>a.classList.toggle("on",a.dataset.id===st.id));
+}
+renderRail();
+document.getElementById("rail").addEventListener("click",e=>{const b=e.target.closest(".av");if(b){st.id=b.dataset.id;if(PT){st.view="detail";st.tab="dex";}render();if(PT)document.querySelector(".rows").scrollTop=0;}});
+if(PT){
+  STAGE.insertAdjacentHTML("beforeend",`<button class="dexback" type="button">← 圖鑑</button><button class="dexnav p" type="button" aria-label="上一隻">‹</button><button class="dexnav n" type="button" aria-label="下一隻">›</button>`);
+  document.querySelector(".panel").prepend(document.getElementById("namecard"));   /* 名牌放進下面的資料卡 */
+  const step=d=>{const L=visibleIds(),i=L.indexOf(st.id);st.id=L[(i+d+L.length)%L.length];if(locked(st.id))st.tab="dex";render();document.querySelector(".rows").scrollTop=0;};
+  const back=()=>{st.view="list";renderRail();render();const a=document.querySelector(`.av[data-id="${st.id}"]`);if(a)a.scrollIntoView({block:"center"});};
+  STAGE.addEventListener("click",e=>{if(e.target.closest(".dexback"))back();else if(e.target.closest(".dexnav.p"))step(-1);else if(e.target.closest(".dexnav.n"))step(1);});
+  const m=document.querySelector(".modes a.on");if(m)m.addEventListener("click",e=>{e.preventDefault();if(st.view==="detail")back();});
+  let tx=null;const hero=document.querySelector(".hero");   /* 在上面的圖左右滑，換上一隻／下一隻 */
+  hero.addEventListener("touchstart",e=>{tx=e.touches[0].clientX},{passive:true});
+  hero.addEventListener("touchend",e=>{if(tx==null)return;const dx=e.changedTouches[0].clientX-tx;tx=null;if(Math.abs(dx)>50)step(dx<0?1:-1);});
+}
+document.getElementById("rail").addEventListener("change",e=>{if(e.target.id==="habf"){st.hab=e.target.value;renderRail();render();document.getElementById("habf").focus()}});
+document.getElementById("tabs").addEventListener("click",e=>{const b=e.target.closest("button");if(b){st.tab=b.dataset.tab;render()}});
+document.getElementById("go").addEventListener("click",()=>{location.href=dst(st.id)==="courier"?`postcard_mockup.html?courier=${st.id}`:"explore_mockup.html"});
+render();
+</script>
+</body>
+</html>

@@ -1,0 +1,747 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EARTH POST 探索</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&family=Noto+Sans+TC:wght@500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --grass:#7cb342; --grass-d:#4f8a2b; --grass-dd:#386b1f;
+  --cream:#fff8e7; --cream-2:#fbefd2; --cream-line:#efdfb8;
+  --wood:#8a5a32; --wood-d:#5e3a1d; --wood-l:#b07a46;
+  --seal:#d9473b; --ink:#3d2a17; --ink-2:#7a6248;
+  --sky1:#bfe6ff; --sky2:#e9f7ff;
+  --gold:#f4c542;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:#2f4a22;font-family:"Noto Sans TC",system-ui,sans-serif;color:var(--ink)}
+body{display:flex;align-items:center;justify-content:center;padding:16px}
+.stage{
+  position:relative;width:min(100%, calc((100vh - 32px) * 16 / 9));aspect-ratio:16/9;
+  border-radius:28px;overflow:hidden;container-type:inline-size;
+  background:
+    radial-gradient(ellipse 60% 35% at 15% 100%, #8fcf5a 0 60%, transparent 61%),
+    radial-gradient(ellipse 70% 30% at 70% 102%, #9ad466 0 60%, transparent 61%),
+    radial-gradient(ellipse 45% 30% at 40% 78%, #a9d98a 0 55%, transparent 56%),
+    radial-gradient(ellipse 50% 28% at 85% 72%, #b4dd95 0 55%, transparent 56%),
+    linear-gradient(#bfe6ff 0%, #e4f5ff 45%, #cde9b4 62%, #9fd06f 100%);
+  box-shadow:0 20px 60px rgba(0,0,0,.35);
+}
+/* painted scene */
+.scene{position:absolute;inset:0;width:100%;height:100%}
+/* sign */
+.sign{position:absolute;left:17.5cqw;top:1.2cqw;width:31cqw;height:10.2cqw}
+.sign .rope{position:absolute;top:-1.4cqw;width:.45cqw;height:3.2cqw;border-radius:.3cqw;
+  background:repeating-linear-gradient(160deg,#9b7447 0 .35cqw,#7a5530 .35cqw .7cqw)}
+.sign .rope.l{left:17%}.sign .rope.r{right:17%}
+.plank{position:absolute;left:0;right:0;top:1.4cqw;height:7.6cqw;display:grid;place-items:center;
+  border-radius:2.6cqw 2.2cqw 2.8cqw 2.3cqw/2.4cqw 2.6cqw 2.2cqw 2.6cqw;border:.32cqw solid #6b4220;
+  background:
+    radial-gradient(ellipse 1.6cqw .5cqw at 22% 68%,rgba(90,50,20,.28),transparent 70%),
+    radial-gradient(ellipse 1.2cqw .4cqw at 80% 30%,rgba(90,50,20,.22),transparent 70%),
+    repeating-linear-gradient(177deg,transparent 0 1.1cqw,rgba(110,62,25,.16) 1.1cqw 1.25cqw,transparent 1.25cqw 1.9cqw,rgba(255,225,180,.12) 1.9cqw 2cqw),
+    linear-gradient(#c58d55,#a36a37 55%,#8d5a2c);
+  box-shadow:inset 0 .4cqw 0 rgba(255,232,195,.45),inset 0 -.5cqw 0 rgba(80,40,12,.3),0 .55cqw 0 #5a361a,0 1.4cqw 2cqw rgba(60,30,0,.28)}
+.plank b{font-family:Fredoka,sans-serif;font-weight:700;font-size:4.5cqw;letter-spacing:.2cqw;color:#fff7e0;line-height:1;
+  text-shadow:.16cqw 0 0 #6b4220,-.16cqw 0 0 #6b4220,0 .16cqw 0 #6b4220,0 -.16cqw 0 #6b4220,
+    .12cqw .12cqw 0 #6b4220,-.12cqw .12cqw 0 #6b4220,.12cqw -.12cqw 0 #6b4220,-.12cqw -.12cqw 0 #6b4220,0 .45cqw 0 #6b4220}
+.sign .env{position:absolute;left:50%;top:-1.1cqw;width:6cqw;transform:translateX(-50%) rotate(-4deg);filter:drop-shadow(0 .3cqw .2cqw rgba(80,40,10,.3))}
+.sign .leaf{position:absolute;width:5cqw;filter:drop-shadow(0 .2cqw .15cqw rgba(40,70,20,.3))}
+.sign .leaf.l{left:-4.2cqw;top:6.4cqw;width:4.4cqw;transform:rotate(-25deg)}
+.sign .leaf.l2{left:-1.6cqw;top:8.4cqw;width:3cqw;transform:rotate(30deg)}
+.sign .leaf.r{right:-2cqw;top:.4cqw;transform:rotate(150deg) scaleY(-1)}
+.sign .leaf.r2{right:.4cqw;top:6.4cqw;width:3.4cqw;transform:rotate(200deg)}
+.sub{position:absolute;left:21cqw;top:10.4cqw;font-weight:700;font-size:1.25cqw;color:var(--grass-dd);background:rgba(255,255,255,.7);padding:.3cqw 1cqw;border-radius:99px}
+/* avatar rail */
+.rail{position:absolute;left:1.6cqw;top:2cqw;bottom:2cqw;width:12.5cqw;border-radius:6cqw;
+  background:linear-gradient(#8fc163,#6fa848);border:.3cqw solid #5d9638;
+  display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:1cqw;padding:1.4cqw 0;overflow-y:auto;scrollbar-width:none}
+.rail::-webkit-scrollbar{display:none}
+.av{flex:none;width:7.8cqw;height:7.8cqw;border-radius:50%;border:.5cqw solid var(--cream);background:var(--cream-2);
+  display:grid;place-items:center;cursor:pointer;overflow:hidden;position:relative;transition:transform .15s;
+  box-shadow:0 .4cqw 0 rgba(0,0,0,.15);padding:0}
+.av:hover{transform:scale(1.04)}
+.av.on{border-color:var(--gold);box-shadow:0 0 0 .5cqw #fff3c2,0 0 2cqw #ffe27a}
+.av img{width:84%;height:84%;object-fit:contain}
+.av .ph{font-weight:900;font-size:1.3cqw;color:var(--ink-2);text-align:center;line-height:1.2}
+/* 圖鑑分組（v0.26.0）：生物類型分組＋收集進度；棲地篩選；郵差／只觀察／家養標記 */
+.rail .hf{flex:none;width:10.6cqw;font:inherit;font-weight:900;font-size:1.05cqw;color:var(--wood-d);background:var(--cream);border:.2cqw solid var(--cream-line);border-radius:99px;padding:.35cqw .6cqw;cursor:pointer}
+.rail .grp{flex:none;width:10.6cqw;display:flex;justify-content:space-between;align-items:baseline;gap:.4cqw;padding:.25cqw .7cqw;margin-top:.4cqw;border-radius:99px;background:var(--wood-d,#6b4220);color:#fff8e7}
+.rail .grp b{font-size:1.1cqw}.rail .grp small{font-size:.9cqw;font-weight:900;opacity:.9}
+.rail .none{font-size:.95cqw;color:var(--ink-2);text-align:center;padding:0 .6cqw}
+.av .bd{position:absolute;right:-.1cqw;bottom:.1cqw;width:2.9cqw;height:2.9cqw;border-radius:50%;background:#fff8e7 center/78% no-repeat;border:.2cqw solid var(--cream-line);box-shadow:0 .15cqw .25cqw rgba(0,0,0,.25)}
+.av .bd.c{width:3.4cqw;height:3.4cqw;background-size:90%;background-image:url(art/ui/ic_courier_cap.png);background-color:#dff2d6;border-color:#5f9e34}
+.av .bd.c.fly{background-image:url(art/ui/ic_courier_cap_fly.png)}   /* 會飛的郵差：帽子加羽毛 */
+.av .bd.o{background-image:url(art/ui/ic_observe.png)}
+.rail .grp i{flex:none;width:1.6cqw;height:1.6cqw;background:center/contain no-repeat;align-self:center}
+.rail .grp b{flex:1}
+.av .ch{position:absolute;left:50%;bottom:-.1cqw;transform:translateX(-50%);font-size:.8cqw;font-weight:900;background:#fff1c9;color:#8a5a12;border-radius:99px;padding:.05cqw .5cqw;white-space:nowrap}
+/* hero */
+.hero{position:absolute;left:30cqw;top:11cqw;width:28cqw;height:27cqw;display:grid;place-items:end center}
+.hero .art{width:25cqw;height:25cqw;border-radius:50%;position:relative;display:grid;place-items:center;
+  background:radial-gradient(circle at 50% 40%,rgba(255,255,255,.85),rgba(255,255,255,.35) 60%,transparent 70%)}
+.hero .art img{max-width:100%;max-height:100%;object-fit:contain;filter:drop-shadow(0 1.2cqw 1cqw rgba(0,0,0,.25))}
+.hero .art .ph{width:19cqw;height:19cqw;border-radius:50%;border:.4cqw dashed var(--wood-l);display:grid;place-items:center;
+  text-align:center;color:var(--wood);font-weight:900;font-size:1.6cqw;background:rgba(255,248,231,.7)}
+.ground{position:absolute;bottom:.5cqw;width:20cqw;height:3cqw;border-radius:50%;background:rgba(80,60,20,.18);filter:blur(.4cqw)}
+.namecard{position:absolute;left:16cqw;top:35.5cqw;background:var(--cream);border:.3cqw solid var(--cream-line);border-radius:2cqw;
+  padding:1cqw 1.8cqw;box-shadow:0 .5cqw 0 var(--cream-line);width:40cqw}
+.namecard h1{margin:0;font-size:3cqw;font-weight:900;line-height:1.1}
+.namecard .sci{font-style:italic;font-size:1.25cqw;color:var(--ink-2);margin-top:.3cqw}
+.namecard .fam{font-size:1.15cqw;color:var(--ink-2)}
+.tags{display:flex;gap:.6cqw;flex-wrap:wrap;margin-top:.7cqw}
+.tag{font-size:1.05cqw;font-weight:700;padding:.25cqw .9cqw;border-radius:99px;background:#e5f2d5;color:var(--grass-dd)}
+.tag.v{background:#fde6c4;color:#9a5a12}
+.tag.t{background:#e8e1f7;color:#5b4796}
+/* panel */
+.panel{position:absolute;right:1.8cqw;top:2cqw;bottom:7.2cqw;width:39cqw;border-radius:2.6cqw;
+  background:var(--cream);border:.35cqw solid var(--cream-line);box-shadow:0 .7cqw 0 #e3cf9f,0 1.5cqw 3cqw rgba(0,0,0,.18);
+  display:flex;flex-direction:column;padding:1.4cqw}
+.tabs{display:flex;gap:.6cqw;background:var(--cream-2);padding:.5cqw;border-radius:99px}
+.tabs button{flex:1;border:0;background:transparent;font:inherit;font-weight:900;font-size:1.45cqw;color:var(--ink-2);
+  padding:.75cqw 0;border-radius:99px;cursor:pointer}
+.tabs button.on{background:linear-gradient(#8bc34a,#5f9e34);color:#fff;box-shadow:0 .35cqw 0 var(--grass-dd)}
+.note{margin:1cqw 0 .6cqw;font-size:1.05cqw;color:#8a5a12;background:#fff1d0;border-radius:1cqw;padding:.55cqw 1cqw}
+.rows{flex:1;overflow:auto;display:flex;flex-direction:column;gap:.55cqw;padding-right:.3cqw}
+.row{display:grid;grid-template-columns:3cqw 1fr;gap:1cqw;align-items:center;background:#fffdf6;border:.2cqw solid var(--cream-line);
+  border-radius:1.4cqw;padding:.6cqw 1cqw;box-shadow:0 .3cqw 0 var(--cream-line)}
+.ic{width:3cqw;height:3cqw;border-radius:1cqw;display:grid;place-items:center;font-size:1.7cqw;background:var(--cream-2)}
+.lbl{display:flex;align-items:center;gap:.6cqw;font-size:1.1cqw;font-weight:700;color:var(--ink-2)}
+.val{font-size:1.35cqw;font-weight:900;line-height:1.35;margin-top:.15cqw}
+.val.sm{font-size:1.2cqw;font-weight:700}
+.src{font-size:.95cqw;color:var(--ink-2);margin-top:.2cqw}
+.badge{font-size:.9cqw;font-weight:900;padding:.1cqw .7cqw;border-radius:99px}
+.b-s{background:#e1efd0;color:var(--grass-dd)}     /* 物種資料 */
+.b-g{background:#e4ecfb;color:#3c5e9e}             /* 遊戲估算 */
+.st{font-size:.9cqw;font-weight:700;color:var(--ink-2)}
+.pend{color:#b0874f}
+.foot{text-align:center;font-size:.95cqw;color:var(--ink-2);margin-top:.6cqw}
+/* bottom bar */
+.bar{position:absolute;left:16cqw;right:43cqw;bottom:2cqw;height:4.4cqw;border-radius:99px;background:var(--cream);
+  border:.3cqw solid var(--cream-line);box-shadow:0 .4cqw 0 #e3cf9f;display:flex;align-items:center;gap:1.2cqw;padding:0 1.8cqw;font-weight:900;font-size:1.3cqw}
+.bar .dot{width:1cqw;height:1cqw;border-radius:50%;background:var(--grass)}
+.bar .sep{width:.2cqw;height:2.2cqw;background:var(--cream-line)}
+.go svg{width:4.4cqw;filter:drop-shadow(0 .25cqw .1cqw rgba(30,60,10,.35))}
+.go{display:flex;align-items:center;justify-content:center;gap:1.4cqw;
+  position:absolute;right:1.8cqw;bottom:1.6cqw;width:39cqw;height:4.8cqw;border:0;border-radius:99px;cursor:pointer;
+  background:linear-gradient(#8bc34a,#4f8a2b);color:#fff;font:inherit;font-weight:900;font-size:2cqw;letter-spacing:.3cqw;
+  box-shadow:0 .55cqw 0 var(--grass-dd),0 1cqw 2cqw rgba(0,0,0,.2)}
+.go:active{transform:translateY(.3cqw);box-shadow:0 .25cqw 0 var(--grass-dd)}
+[hidden]{display:none!important}
+.modes{position:absolute;z-index:6;left:24cqw;top:10.6cqw;display:flex;gap:.4cqw;background:rgba(255,248,231,.85);padding:.35cqw;border-radius:99px;
+  border:.2cqw solid var(--cream-line)}
+.modes a{font-weight:900;font-size:1.2cqw;color:var(--ink-2);text-decoration:none;padding:.3cqw 1.4cqw;border-radius:99px}
+.modes a.on{background:linear-gradient(#8bc34a,#5f9e34);color:#fff}
+@media (max-width:640px){ body{padding:8px} }
+
+/* ===== v0.14 2D 介面：GPT 畫的零件 ===== */
+:root{--line:#5b3a1e}
+.scene{object-fit:cover}
+.sign{left:23cqw;top:-.8cqw;width:19cqw;height:auto}
+.sign img{display:block;width:100%;filter:drop-shadow(0 .5cqw .4cqw rgba(60,30,0,.25))}
+.sign b{position:absolute;left:0;right:0;top:56%;transform:translateY(-50%);text-align:center;font-family:Fredoka,sans-serif;font-weight:700;font-size:2.8cqw;letter-spacing:.2cqw;color:#fff7e0;line-height:1;
+  text-shadow:.16cqw 0 0 var(--line),-.16cqw 0 0 var(--line),0 .16cqw 0 var(--line),0 -.16cqw 0 var(--line),.12cqw .12cqw 0 var(--line),-.12cqw .12cqw 0 var(--line),.12cqw -.12cqw 0 var(--line),-.12cqw -.12cqw 0 var(--line),0 .4cqw 0 var(--line)}
+.rail{background:rgba(255,248,231,.55);border:.3cqw solid var(--line);backdrop-filter:blur(2px)}
+.av{width:8.4cqw;height:8.4cqw;border:0;border-radius:50%;background:url(art/ui/frame.png) center/contain no-repeat;box-shadow:none;overflow:visible}
+.av.on{border:0;background-image:url(art/ui/frame_on.png);box-shadow:none;transform:scale(1.06)}
+.av img{width:66%;height:66%}
+.av .ph{color:#b9ab8b}
+.hero .art{background:radial-gradient(circle at 50% 55%,rgba(255,255,255,.55),rgba(255,255,255,.15) 55%,transparent 68%)}
+.namecard,.panel,.bar{border-color:var(--line);border-width:.3cqw}
+.namecard{box-shadow:0 .5cqw 0 #c9a46a}
+.panel{box-shadow:0 .7cqw 0 #c9a46a,0 1.5cqw 3cqw rgba(0,0,0,.18)}
+.bar{box-shadow:0 .4cqw 0 #c9a46a}
+.tabs{border:.2cqw solid var(--cream-line)}
+.tabs button.on{border:.2cqw solid var(--line)}
+.row{border-color:#e6cf9f}
+.ic{background:transparent;width:3.2cqw;height:3.2cqw}
+.ic img{width:100%;height:100%;object-fit:contain}
+.modes{background:transparent;border:0;gap:.3cqw;padding:0;left:16.5cqw;top:11cqw}
+.hero{top:15.5cqw;height:21cqw}.hero .art{width:21cqw;height:21cqw}
+.modes a{background:url(art/ui/pill.png) center/100% 100% no-repeat;color:var(--wood-d);padding:.4cqw 1cqw;font-size:1.1cqw}
+.modes a.on{background:url(art/ui/pill_on.png) center/100% 100% no-repeat;color:var(--wood-d);padding-right:1.6cqw}
+.go{border:.3cqw solid #2f5a17}
+.modes a{display:inline-flex;align-items:center;gap:.35cqw}
+.modes a::before{content:"";width:1.6cqw;height:1.6cqw;background:center/contain no-repeat;margin-left:-.5cqw}
+.modes a:nth-child(1)::before{background-image:url(art/ui/nav_dex.png)}
+.modes a:nth-child(2)::before{background-image:url(art/ui/nav_explore.png)}
+.modes a:nth-child(3)::before{background-image:url(art/ui/nav_postcard.png)}
+.modes a:nth-child(4)::before{background-image:url(art/ui/nav_station.png)}
+.modes a:nth-child(5)::before{background-image:url(art/ui/nav_friends.png)}
+.modes a:nth-child(6)::before{background-image:url(art/ui/nav_me.png)}
+.scene{transition:filter .3s}
+.scene.soft{filter:blur(.35cqw) saturate(.75) brightness(1.08);transform:scale(1.04)}
+/* 手機橫放時 Safari 會自動放大文字，造成狀態列、導覽列超出（2026-11-12 使用者回報） */
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+.bar{overflow:hidden;white-space:nowrap}
+.bar>span{min-width:0;overflow:hidden;text-overflow:ellipsis;flex-shrink:1}
+.bar>.sep,.bar>.dot{flex-shrink:0}
+.modes{white-space:nowrap;flex-wrap:nowrap}
+/* 選取中的頭像框右上角腳印被名單上緣切掉（2026-11-12 使用者回報）：名單上下多留空間 */
+.rail{padding-top:2.4cqw;padding-bottom:2cqw}
+.av.on{transform:scale(1.04)}
+/* 腳印在圓框外的右上角：按鈕本身是圓形會把背景切成圓的，所以按鈕改成方形（框的圖本身就是圓的） */
+.av,.av.on{border-radius:0}
+.av:focus-visible{outline:.3cqw solid var(--wood);outline-offset:.2cqw;border-radius:50%}
+/* ===== 直式（iPhone）版面（v0.28.0，2026-11-13 使用者決定：iPhone 直式為主）=====
+   做法：舞台寬度＝手機寬度 ÷ 0.39，只顯示左邊 39%（39cqw＝手機寬）。原本橫向版右側面板就是 39cqw 寬，
+   所以面板裡用 cqw 寫的字級、間距在手機上大小差不多，不用每個字重寫；只要把各區塊重新排位置。
+   已改成直式的頁面在 <main> 加 class="pt"；還沒改的頁面維持橫向。 */
+body:has(.stage.pt){padding:0;overflow:hidden;align-items:stretch}
+.stage.pt{--vw:min(100vw,440px);--st:env(safe-area-inset-top,0px);--sb:env(safe-area-inset-bottom,0px);--tab:calc(6.4cqw + var(--sb));
+  width:calc(var(--vw) / .39);flex:none;height:100dvh;aspect-ratio:auto;border-radius:0;box-shadow:none;
+  clip-path:inset(0 61% 0 0);transform:translateX(30.5%)}
+@media (min-width:600px){body:has(.stage.pt){padding:16px 0;align-items:center}.stage.pt{height:min(calc(100dvh - 32px),900px);clip-path:inset(0 61% 0 0 round 28px)}}
+.stage.pt .scene{width:39cqw}
+.stage.pt .sign{display:none}
+/* 底部導覽列 */
+.stage.pt .modes{left:0;width:39cqw;top:auto;bottom:0;height:var(--tab);padding:.5cqw .4cqw var(--sb);background:var(--cream);border-top:.25cqw solid var(--cream-line);
+  display:grid;grid-template-columns:repeat(6,1fr);gap:.2cqw;z-index:15;border-radius:0}
+.stage.pt .modes a,.stage.pt .modes a.on{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.2cqw;background:none;padding:0;font-size:1.15cqw;border-radius:1.4cqw;color:var(--ink-2)}
+.stage.pt .modes a.on{background:#e4f2d6;color:var(--grass-dd);font-weight:900}
+.stage.pt .modes a::before{width:2.7cqw;height:2.7cqw;margin:0}
+/* 抽屜整個一起捲動（v0.32.1：手機畫面比較矮時，只捲中間資料區會被擠到幾乎 0 高度、滑不動）；分頁固定在抽屜上方 */
+.stage.pt .panel{overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+.stage.pt .panel .rows{flex:none;overflow:visible}
+.stage.pt .panel .tabs{position:sticky;top:-1.3cqw;z-index:3;flex:none}
+/* 小花：右上角 */
+.stage.pt .flowerhud{right:calc(61% + 1.2cqw)!important;top:calc(var(--st) + 1cqw)!important;font-size:1.4cqw!important;z-index:12!important}
+/* ===== 圖鑑頁直式（v0.29.0）：列表（分組格子）→ 點一隻進詳細頁；詳細頁可返回、左右換 ===== */
+.av .nm{display:none}
+.dexback,.dexnav{display:none}
+.stage.dex .bar{display:none}
+/* 列表 */
+.stage.dex.list .hero,.stage.dex.list .namecard,.stage.dex.list .panel,.stage.dex.list .go{display:none}
+.stage.dex .rail{left:0;top:0;width:39cqw;bottom:var(--tab);border-radius:0;border:0;background:rgba(255,248,231,.9);backdrop-filter:none;
+  display:grid;grid-template-columns:repeat(4,1fr);align-content:start;justify-items:center;gap:.4cqw .4cqw;padding:calc(var(--st) + 1.2cqw) 1.2cqw 3cqw}
+.stage.dex.detail .rail{display:none}
+.stage.dex .rail .dextitle{grid-column:1/-1;justify-self:start;font-weight:900;font-size:2cqw;color:var(--wood-d);background:var(--cream);border:.25cqw solid var(--wood);border-radius:1.2cqw;padding:.2cqw 1.2cqw}
+.stage.dex .rail .dextitle small{font-size:1.25cqw;color:var(--ink-2);margin-left:.6cqw}
+.stage.dex .rail .hf{grid-column:1/-1;justify-self:stretch;width:auto;font-size:max(16px,1.55cqw);padding:.7cqw 1.2cqw;margin-top:.4cqw}
+.stage.dex .rail .grp{grid-column:1/-1;justify-self:stretch;width:auto;margin-top:1cqw;padding:.45cqw 1.2cqw}
+.stage.dex .rail .grp b{font-size:1.5cqw}.stage.dex .rail .grp small{font-size:1.25cqw}.stage.dex .rail .grp i{width:2.1cqw;height:2.1cqw}
+.stage.dex .rail .none{grid-column:1/-1;font-size:1.3cqw;padding:2cqw 0}
+.stage.dex .av{width:8.6cqw;height:8.6cqw;margin-bottom:2cqw}
+.stage.dex .av.on{transform:none;background-image:url(art/ui/frame.png)}
+.stage.dex .av .nm{display:block;position:absolute;left:50%;top:100%;transform:translateX(-50%);margin-top:.1cqw;font-size:1.15cqw;font-weight:700;color:var(--ink-2);white-space:nowrap}
+.stage.dex .av .bd{width:2.6cqw;height:2.6cqw}
+.stage.dex .av .ch{font-size:1cqw;bottom:.2cqw}
+/* 詳細 */
+.stage.dex.detail .hero{left:5.5cqw;width:28cqw;top:calc(var(--st) + 3.5cqw);height:calc(min(24cqw, 36%) - 3cqw)}
+.stage.dex.detail .hero .art{width:auto;height:100%;max-height:20cqw;aspect-ratio:1}
+.stage.dex.detail .dexback{display:block;position:absolute;z-index:9;left:1.2cqw;top:calc(var(--st) + 1cqw);font:inherit;font-weight:900;font-size:1.4cqw;color:var(--wood-d);background:var(--cream);border:.25cqw solid var(--cream-line);border-radius:99px;padding:.5cqw 1.4cqw;cursor:pointer}
+.stage.dex.detail .dexnav{display:grid;place-items:center;position:absolute;z-index:9;top:calc(var(--st) + min(12cqw, 16%));width:4.4cqw;height:4.4cqw;border-radius:50%;border:.25cqw solid var(--cream-line);background:rgba(255,248,231,.92);font:inherit;font-weight:900;font-size:2.2cqw;color:var(--wood-d);cursor:pointer;padding:0}
+.stage.dex.detail .dexnav.p{left:1cqw}.stage.dex.detail .dexnav.n{left:33.6cqw}
+.stage.dex.detail .panel{left:0;right:auto;width:39cqw;top:calc(var(--st) + min(24cqw, 36%));bottom:var(--tab);border-radius:2.4cqw 2.4cqw 0 0;border-width:.3cqw 0 0;padding:1.4cqw 1.4cqw 7cqw;z-index:8}
+.stage.dex.detail .namecard{position:static;width:auto;border:0;box-shadow:none;background:none;padding:0 0 .8cqw}
+.stage.dex.detail .namecard h1{font-size:2.6cqw}.stage.dex.detail .namecard .sci,.stage.dex.detail .namecard .fam{font-size:1.25cqw}
+.stage.dex.detail .tag{font-size:1.15cqw}
+.stage.dex.detail .tabs button{font-size:1.5cqw;padding:.9cqw 0}
+.stage.dex.detail .note{font-size:1.2cqw}
+.stage.dex.detail .rows{gap:.7cqw}
+.stage.dex.detail .val{font-size:1.5cqw}.stage.dex.detail .val.sm{font-size:1.35cqw}.stage.dex.detail .lbl{font-size:1.2cqw}.stage.dex.detail .src{font-size:1.15cqw}
+.stage.dex.detail .badge{font-size:1.05cqw}.stage.dex.detail .foot{font-size:1.1cqw}
+.stage.dex.detail .go{left:1.4cqw;right:auto;width:36.2cqw;bottom:calc(var(--tab) + 1cqw);height:5cqw;font-size:1.8cqw;z-index:9}
+.stage.dex.detail .go svg{width:3.6cqw}
+.row.warn{background:#fff1ec;border-color:#f2b9a8}
+/* ===== explore / encounter ===== */
+.dexrail{position:absolute;left:1.6cqw;top:2cqw;bottom:2cqw;width:12.5cqw;border-radius:6cqw;background:rgba(255,248,231,.6);backdrop-filter:blur(2px);
+  border:.3cqw solid var(--line);display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:.9cqw;padding:1.2cqw 0;overflow-y:auto;scrollbar-width:none}
+.dexrail::-webkit-scrollbar{display:none}
+.dexrail h4{margin:0;font-size:1cqw;color:var(--wood-d)}
+.dx{width:10cqw;border:0;background:none;padding:0;display:flex;flex-direction:column;align-items:center;gap:.15cqw;cursor:pointer;font:inherit;text-decoration:none;color:var(--wood-d)}
+.dx .im{width:6cqw;height:6cqw;border-radius:50%;border:.4cqw solid var(--cream);background:var(--cream-2);overflow:hidden;display:grid;place-items:center;box-shadow:0 .3cqw 0 rgba(0,0,0,.15)}
+.dx .im img{width:84%;height:84%;object-fit:contain}
+.dx:hover .im{transform:scale(1.05)}
+.dx b{font-size:.85cqw;line-height:1.1;text-shadow:0 .1cqw .2cqw rgba(0,0,0,.25)}
+.dx small{font-size:.7cqw;font-weight:900;line-height:1;background:var(--cream);border-radius:99px;padding:.1cqw .5cqw}
+.sil img{filter:brightness(0) opacity(.45)}
+.q{display:grid;place-items:center;width:100%;height:100%;font-size:2.6cqw;font-weight:900;color:#b9ab8b}
+.q.nf{font-size:.8cqw;line-height:1.2;text-align:center;color:#8a7a5a;background:#f3ead4;border-radius:50%}
+.encscene .cr .q.nf{font-size:1.6cqw;border:.3cqw dashed #caa173}
+.s-none{color:#a39577}.s-seen{color:#b07a2e}.s-recorded{color:#3c5e9e}.s-courier{color:var(--grass-dd)}
+.map{position:absolute;left:16cqw;top:14cqw;width:41.5cqw;height:33.5cqw;border-radius:3cqw;
+  background:radial-gradient(ellipse at 40% 35%,#c9eaa0,#a3d877 70%);border:.35cqw solid #fff8e7;
+  box-shadow:0 .5cqw 0 rgba(80,120,40,.35),0 1.4cqw 2.4cqw rgba(40,70,20,.25);overflow:hidden}
+.node{position:absolute;transform:translate(-50%,-100%);display:flex;flex-direction:column;align-items:center;gap:.2cqw;background:none;border:0;cursor:pointer;font:inherit;padding:0}
+.node .pin{width:3.4cqw;height:3.4cqw;border-radius:50% 50% 50% 0;transform:rotate(-45deg);display:grid;place-items:center;background:#fff8e7;border:.3cqw solid #caa173;box-shadow:0 .3cqw 0 rgba(90,60,20,.25)}
+.node .pin span{transform:rotate(45deg);font-size:1.6cqw}
+.node .nm{font-weight:900;font-size:1.1cqw;background:#fff8e7;border:.2cqw solid var(--cream-line);border-radius:99px;padding:.1cqw .8cqw;color:var(--ink)}
+.node.here .pin{background:#4f9a5a;border-color:#2f6b3a}.node.here .nm{background:#dff2d6}
+.ring{position:absolute;border-radius:50%;border:.3cqw dashed rgba(255,255,255,.9);background:rgba(255,255,255,.18);transform:translate(-50%,-50%);pointer-events:none}
+.meonmap{position:absolute;width:5cqw;transform:translate(-50%,-100%);pointer-events:none;filter:drop-shadow(0 .3cqw .2cqw rgba(0,0,0,.25))}
+.meonmap svg{width:100%;display:block}
+.maplegend{position:absolute;right:1.2cqw;top:1cqw;font-size:.95cqw;font-weight:700;color:var(--grass-dd);background:rgba(255,248,231,.85);border-radius:99px;padding:.2cqw .9cqw}
+.encscene{position:absolute;left:16cqw;top:14cqw;width:41.5cqw;height:33.5cqw;display:flex;align-items:flex-end;justify-content:center;gap:1.4cqw;padding-bottom:1cqw}
+.encscene .pl{width:12cqw;filter:drop-shadow(0 .8cqw .6cqw rgba(0,0,0,.2))}.encscene .pl svg{width:100%;display:block}
+.encscene .cr{width:19cqw;height:19cqw;filter:drop-shadow(0 .8cqw .6cqw rgba(0,0,0,.25));transition:opacity .4s,transform .4s}
+.encscene .cr img{width:100%;height:100%;object-fit:contain}
+.encscene .cr.gone{opacity:.15;transform:translateX(4cqw)}
+/* 「得到」的時刻（試玩回饋：探索得到時沒有得到的感覺）：好感飄出愛心；新圖鑑／成為郵差跳出獎勵卡 */
+.encscene .cr{position:relative}
+.heartpop{position:absolute;left:50%;top:6%;transform:translateX(-50%);font-weight:900;font-size:2cqw;color:#e2493a;background:#fff;border-radius:99px;padding:.2cqw 1cqw;box-shadow:0 .3cqw 0 rgba(0,0,0,.12);animation:hp 1.6s ease-out both;white-space:nowrap}
+@keyframes hp{0%{opacity:0;transform:translate(-50%,2cqw) scale(.6)}25%{opacity:1;transform:translate(-50%,0) scale(1.15)}70%{opacity:1;transform:translate(-50%,-1.5cqw) scale(1)}100%{opacity:0;transform:translate(-50%,-3cqw)}}
+.rw{position:absolute;inset:0;z-index:20;display:grid;place-items:center;background:rgba(40,28,12,.45);animation:rwf .3s ease-out both}
+.rw-card{position:relative;width:30cqw;padding:2cqw 2cqw 1.6cqw;border-radius:2.4cqw;background:var(--cream);border:.4cqw solid var(--gold);box-shadow:0 1cqw 0 #c99a2e,0 2cqw 4cqw rgba(0,0,0,.35);text-align:center;animation:rwin .55s cubic-bezier(.2,1.6,.4,1) both;overflow:hidden}
+.rw-rays{position:absolute;left:50%;top:38%;width:60cqw;height:60cqw;margin:-30cqw 0 0 -30cqw;background:repeating-conic-gradient(rgba(244,197,66,.28) 0 10deg,transparent 10deg 20deg);animation:rwspin 14s linear infinite;pointer-events:none}
+.rw-eye{position:relative;display:inline-block;font-weight:900;font-size:1.3cqw;letter-spacing:.2cqw;color:#fff;background:linear-gradient(#8bc34a,#4f8a2b);border-radius:99px;padding:.3cqw 1.4cqw}
+.rw-card.courier .rw-eye{background:linear-gradient(#f08a5d,#d9473b)}
+.rw-art{position:relative;width:16cqw;height:16cqw;margin:.6cqw auto 0;filter:drop-shadow(0 .8cqw .6cqw rgba(0,0,0,.25));animation:rwbob 2.4s ease-in-out .6s infinite}
+.rw-art img{width:100%;height:100%;object-fit:contain}
+.rw-name{position:relative;font-weight:900;font-size:2.6cqw;color:var(--ink)}
+.rw-sub{position:relative;font-size:1.15cqw;font-weight:700;color:var(--ink-2);margin-top:.2cqw}
+.rw-gains{position:relative;display:flex;flex-wrap:wrap;justify-content:center;gap:.5cqw;margin:1cqw 0 1.2cqw}
+.rw-gains span{font-size:1.05cqw;font-weight:900;background:#fff;border:.18cqw solid var(--cream-line);border-radius:99px;padding:.25cqw .9cqw;animation:rwin .4s cubic-bezier(.2,1.6,.4,1) both}
+.rw-gains span:nth-child(2){animation-delay:.15s}.rw-gains span:nth-child(3){animation-delay:.3s}.rw-gains span:nth-child(4){animation-delay:.45s}
+.rw-ok{position:relative;font:inherit;font-weight:900;font-size:1.5cqw;color:#fff;border:0;border-radius:99px;padding:.6cqw 3cqw;cursor:pointer;background:linear-gradient(#8bc34a,#4f8a2b);box-shadow:0 .45cqw 0 var(--grass-dd)}
+.rw-ok:focus-visible{outline:.3cqw solid var(--gold);outline-offset:.3cqw}
+.rw-spark{position:absolute;font-size:1.8cqw;animation:rwsp 1.2s ease-out both;pointer-events:none}
+@keyframes rwf{from{opacity:0}}
+@keyframes rwin{0%{opacity:0;transform:scale(.4)}100%{opacity:1;transform:none}}
+@keyframes rwspin{to{transform:rotate(360deg)}}
+@keyframes rwbob{50%{transform:translateY(-.6cqw)}}
+@keyframes rwsp{0%{opacity:0;transform:scale(.2)}40%{opacity:1;transform:scale(1.2)}100%{opacity:0;transform:translateY(-3cqw) scale(.8)}}
+@media (prefers-reduced-motion:reduce){.heartpop,.rw,.rw-card,.rw-rays,.rw-art,.rw-gains span,.rw-spark{animation:none!important}}
+/* 飼主（使用者提供的兩張圖，半身，下緣淡出） */
+.encscene .cr{z-index:1}
+.encscene .owner{position:absolute;right:-5cqw;bottom:0;width:13cqw;z-index:0;filter:drop-shadow(0 .6cqw .5cqw rgba(0,0,0,.18));-webkit-mask-image:linear-gradient(#000 78%,transparent);mask-image:linear-gradient(#000 78%,transparent)}.encscene .owner img{width:100%;display:block}
+.keep{align-self:center;font-weight:900;font-size:1.1cqw;color:var(--grass-dd);background:rgba(255,248,231,.9);border-radius:99px;padding:.2cqw .9cqw;border:.2cqw dashed #9ccc65;white-space:nowrap}
+.place{position:absolute;left:17cqw;top:15cqw;font-weight:900;font-size:1.2cqw;background:rgba(255,248,231,.92);border-radius:99px;padding:.3cqw 1.1cqw;border:.2cqw solid var(--cream-line)}
+.stampcell{width:6cqw;flex:none}.stampcell .stampsvg{width:100%;height:6cqw;display:block}.arrive{display:flex;gap:1cqw;align-items:center}
+.stepline{display:flex;gap:.4cqw;flex-wrap:wrap}.stepline span{font-size:1cqw;font-weight:900;padding:.15cqw .7cqw;border-radius:99px;background:#efe4c8;color:var(--ink-2)}
+.stepline span.on{background:linear-gradient(#5b9bd5,#3a6fa8);color:#fff}.stepline span.done{background:#cfe3f4;color:#3a6fa8}
+.meonmap{width:3.6cqw !important}
+.subtabs{display:flex;gap:.6cqw;background:var(--cream-2);padding:.5cqw;border-radius:99px}
+.subtabs a{flex:1;text-align:center;font-weight:900;font-size:1.45cqw;color:var(--ink-2);text-decoration:none;padding:.75cqw 0;border-radius:99px}
+.subtabs a.on{background:linear-gradient(#8bc34a,#5f9e34);color:#fff;box-shadow:0 .35cqw 0 var(--grass-dd)}
+.rowsel{display:flex;gap:.4cqw;flex-wrap:wrap;margin-top:.3cqw}
+.chip{border:.2cqw solid var(--cream-line);background:#fff;border-radius:99px;font:inherit;font-weight:700;font-size:1.05cqw;padding:.15cqw .8cqw;cursor:pointer;color:var(--ink-2)}
+.chip.on{background:#e5f2d5;border-color:#9ccc65;color:var(--grass-dd)}
+.acts{display:flex;flex-direction:column;gap:.5cqw;margin-top:.3cqw}
+.act{border:.22cqw solid var(--cream-line);background:#fffdf6;border-radius:1.2cqw;font:inherit;font-weight:900;font-size:1.25cqw;padding:.6cqw 1cqw;cursor:pointer;text-align:left;color:var(--ink)}
+.act:hover{background:#fff3c2}.act small{display:block;font-size:.9cqw;color:var(--ink-2);font-weight:700}
+.meter{height:1cqw;border-radius:99px;background:#efe4c8;overflow:hidden;margin-top:.4cqw}
+.meter i{display:block;height:100%;background:linear-gradient(90deg,#f4a6a0,#e2493a);border-radius:99px;transition:width .4s}
+.warn{background:#fff1ee;border-color:#f2c4bb}.warn .val{color:#b1392d}
+.good{background:#eef8e4;border-color:#b9dc93}
+.row{grid-template-columns:3cqw minmax(0,1fr)}.row .val,.row .src,.row .lbl{overflow-wrap:anywhere;word-break:break-word}
+.chips2{display:flex;flex-wrap:wrap;gap:.5cqw .6cqw;margin-top:.3cqw}.chips2 span{white-space:nowrap;background:#f4ead0;border-radius:99px;padding:.1cqw .9cqw;font-weight:700}
+.row.rest{background:#eef6e4;border-color:#c9dfa8}.restbar{height:1.1cqw;border-radius:99px;background:#dfe9cf;margin-top:.6cqw;overflow:hidden}.restbar i{display:block;height:100%;background:#7cb342;border-radius:99px;transition:width .6s}
+.pity{display:flex;gap:.3cqw;margin-top:.3cqw}.pity i{width:1.4cqw;height:1.4cqw;border-radius:50%;background:#efe4c8}.pity i.on{background:#e9b949}
+.small-btn{border:0;background:none;font:inherit;font-size:.9cqw;color:var(--ink-2);text-decoration:underline;cursor:pointer}
+.go:disabled{background:linear-gradient(#cfc6b0,#b5ab93);box-shadow:0 .55cqw 0 #8f866f;cursor:not-allowed}
+/* ===== 直式（v0.28.0）：地圖填滿畫面、跟著玩家；下面是抽屜（資料＋按鈕）；底部導覽列 ===== */
+.stage.pt .dexrail,.stage.pt .bar,.stage.pt .maplegend{display:none}
+.stage.pt .map{left:0;top:0;width:39cqw;height:auto;bottom:var(--tab);border-radius:0;border:0;box-shadow:none}
+.stage.pt .meonmap{width:4.4cqw!important}
+/* 地圖可以拖動（v0.33.0）；🧭 回到自己、🗺️ 看全部 */
+.stage.pt .map{touch-action:none;cursor:grab}.stage.pt .map.dragging{cursor:grabbing}
+.mapbtns{display:none}
+.stage.pt .mapbtns{display:flex;flex-direction:column;gap:1cqw;position:absolute;z-index:7;right:calc(61% + 1.2cqw);top:calc(var(--st) + 5.4cqw)}
+.stage.pt .mapbtns button{width:4.8cqw;height:4.8cqw;border-radius:50%;border:.25cqw solid var(--cream-line);background:rgba(255,248,231,.96);font-size:2.2cqw;line-height:1;cursor:pointer;box-shadow:0 .3cqw 0 rgba(0,0,0,.15);padding:0;display:grid;place-items:center}
+.stage.pt .mapbtns button.on{background:#dff2d6;border-color:#5f9e34}
+.stage.pt .mapbtns button:disabled{opacity:.45}
+.stage:has(.map[hidden]) .mapbtns{display:none}
+.stage.pt .panel{left:0;right:auto;width:39cqw;top:auto;bottom:var(--tab);max-height:calc(56% - var(--tab));border-radius:2.4cqw 2.4cqw 0 0;border-width:.3cqw 0 0;
+  padding:1.1cqw 1.4cqw 6.8cqw;box-shadow:0 -.6cqw 1.6cqw rgba(0,0,0,.15);z-index:8}
+.stage.pt .panel::before{content:"";display:block;width:4cqw;height:.5cqw;border-radius:99px;background:var(--cream-line);margin:0 auto .6cqw}
+.stage.pt .note{margin:0 0 .6cqw}
+.stage.pt .rows{gap:.7cqw}
+.stage.pt .val{font-size:1.5cqw}.stage.pt .val.sm{font-size:1.35cqw}.stage.pt .lbl{font-size:1.2cqw}.stage.pt .src{font-size:1.15cqw}
+.stage.pt .chip{font-size:1.25cqw;padding:.45cqw 1cqw}
+.stage.pt .act{font-size:1.55cqw;padding:1cqw 1.2cqw;min-height:4.6cqw}.stage.pt .act small{font-size:1.2cqw}
+.stage.pt .stepline span{font-size:1.1cqw}
+.stage.pt .foot{font-size:1.05cqw}
+.stage.pt .go{left:1.4cqw;right:auto;width:36.2cqw;bottom:calc(var(--tab) + 1cqw);height:5cqw;font-size:1.8cqw;z-index:9}
+.stage.pt .go svg{width:3.6cqw}
+.stage.pt .encscene{left:0;width:39cqw;top:calc(var(--st) + 4cqw);height:30cqw;gap:.6cqw;padding-bottom:0}
+.stage.pt .encscene .pl{width:8.5cqw}.stage.pt .encscene .cr{width:17cqw;height:17cqw}
+.stage.pt .encscene .owner{right:-1cqw;width:10cqw}
+.stage.pt .keep{font-size:1.1cqw;padding:.2cqw .7cqw}
+.stage.pt .place{left:1.2cqw;top:calc(var(--st) + 1cqw);font-size:1.4cqw;z-index:9}
+.stage.pt:has(.encscene:not([hidden])) .panel{max-height:calc(70% - var(--tab))}
+.stage.pt:has(.encscene:not([hidden])) .encscene{height:23cqw;top:calc(var(--st) + 3.6cqw)}
+.stage.pt .rw{right:61%}
+.stage.pt .rw-card{width:34cqw}
+
+</style>
+</head>
+<body>
+<main class="stage pt" id="stage">
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs>
+      <linearGradient id="g-env" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fffaf0"/><stop offset="1" stop-color="#f6e2bd"/></linearGradient>
+      <radialGradient id="g-seal" cx=".38" cy=".35" r=".7"><stop offset="0" stop-color="#ff8a74"/><stop offset=".55" stop-color="#e2493a"/><stop offset="1" stop-color="#b9302a"/></radialGradient>
+      <linearGradient id="g-leaf" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#a6d96a"/><stop offset="1" stop-color="#5c9e34"/></linearGradient>
+      <symbol id="env" viewBox="0 0 72 56">
+        <rect x="3" y="6" width="66" height="46" rx="10" fill="url(#g-env)" stroke="#caa173" stroke-width="2.6"/>
+        <path d="M8 12 Q36 34 64 12" fill="none" stroke="#d3ad80" stroke-width="2.6" stroke-linecap="round"/>
+        <path d="M9 46 Q20 36 27 31 M63 46 Q52 36 45 31" fill="none" stroke="#e7cfa5" stroke-width="2.2" stroke-linecap="round"/>
+        <path d="M27.2 32.5 a8.8 8.6 0 1 1 17.6 0 c0 1.2 1.8 1.6 1.4 3 c-.4 1.3-2.2.9-2.8 2.1 c-1.6 3.4-5.2 5.4-8.4 5.4 c-4.6 0-9.2-4-8.8-8.6 c-1.6-.4-2.4-1.6-1.6-2.6 c.6-.8 1.8-.6 2.6.7z" fill="url(#g-seal)"/>
+        <path d="M36 39.2 c-3.8-2.6-5.6-4.6-5.6-6.7 c0-1.7 1.3-3 2.9-3 c1.1 0 2.1.6 2.7 1.6 c.6-1 1.6-1.6 2.7-1.6 c1.6 0 2.9 1.3 2.9 3 c0 2.1-1.8 4.1-5.6 6.7z" fill="#ffd7cc" opacity=".9"/>
+        <ellipse cx="31.5" cy="27.5" rx="2.2" ry="1.3" fill="#fff" opacity=".55" transform="rotate(-30 31.5 27.5)"/>
+      </symbol>
+      <symbol id="leaf" viewBox="0 0 60 30">
+        <path d="M2 15 C14 0 42 -2 58 15 C42 32 14 30 2 15z" fill="url(#g-leaf)" stroke="#4d8a2a" stroke-width="1.6"/>
+        <path d="M4 15 C22 13 40 13 56 15" fill="none" stroke="#4d8a2a" stroke-width="1.4" stroke-linecap="round" opacity=".7"/>
+      </symbol>
+      <symbol id="flower" viewBox="-12 -12 24 24">
+        <g fill="#fff"><circle cx="0" cy="-6" r="5"/><circle cx="5.7" cy="-1.9" r="5"/><circle cx="3.5" cy="4.9" r="5"/><circle cx="-3.5" cy="4.9" r="5"/><circle cx="-5.7" cy="-1.9" r="5"/></g>
+        <circle r="3.6" fill="#ffcf3d"/>
+      </symbol>
+      <symbol id="tree" viewBox="0 0 120 150">
+        <rect x="52" y="90" width="16" height="60" rx="6" fill="#8b5e34"/>
+        <circle cx="60" cy="60" r="44" fill="#5f9e3a"/><circle cx="35" cy="78" r="30" fill="#6aab42"/><circle cx="86" cy="76" r="30" fill="#5a9636"/>
+        <circle cx="48" cy="44" r="22" fill="#8cc95a" opacity=".85"/><circle cx="76" cy="38" r="12" fill="#a3d870" opacity=".7"/>
+      </symbol>
+    </defs>
+  </svg>
+  <img class="scene" id="bgscene" src="art/ui/bg_home.jpg" alt="" aria-hidden="true">
+
+
+
+  <div class="sign"><img src="art/ui/sign.png" alt=""><b>EARTH POST</b></div>
+
+  <nav class="modes"><a href="card_mockup.html">圖鑑</a><a class="on" href="#">探索</a><a href="postcard_mockup.html">明信片</a><a href="station_mockup.html">郵站</a><a href="postcard_mockup.html?view=friends">好友</a><a href="profile_mockup.html">我的</a></nav>
+  <nav class="dexrail" id="dexrail" aria-label="圖鑑進度"></nav>
+  <section class="map" id="map" aria-label="探索點地圖"></section>
+  <div class="mapbtns"><button type="button" id="mapme" aria-label="回到我的位置">🧭</button><button type="button" id="mapall" aria-label="看全部探索點">🗺️</button></div>
+  <section class="encscene" id="scene" hidden></section>
+  <div class="place" id="place" hidden></div>
+  <section class="panel">
+    <div class="note" id="note"></div>
+    <div class="rows" id="rows"></div>
+    <div class="foot">機率與成功率為遊戲估算｜<button class="small-btn" id="reset">原型：清空圖鑑進度</button>｜<button class="small-btn" id="demo">恢復示意進度</button>｜<button class="small-btn" id="refill">回滿精神</button></div>
+  </section>
+  <div class="bar" id="bar"></div>
+  <button class="go" id="go"><svg viewBox="0 0 72 56" aria-hidden="true"><use href="#env"/></svg><span id="goText">探索</span></button>
+</main>
+
+<script src="player.js"></script>
+<script>
+/* 規則依設計稿 5.1～5.3、7.1～7.4（遊戲估算）。 */
+const NAME={dog:"台灣犬",cat:"野化家貓",butterfly:"淡紋青斑蝶",macaque:"台灣獼猴",heron:"黑冠麻鷺",dolphin:"台灣白海豚",bluemagpie:"台灣藍鵲",barbet:"五色鳥",thrush:"台灣紫嘯鶇",frog:"莫氏樹蛙",eagle:"大冠鷲",bpartridge:"台灣竹雞",hare:"台灣野兔",civet:"白鼻心",mikado:"帝雉",swinhoe:"藍腹鷴",tpartridge:"台灣山鷓鴣",warbler:"冠羽柳鶯",viper:"赤尾青竹絲",badger:"台灣鼬獾",babbler:"小彎嘴",yuhina:"冠羽畫眉",keelback:"斯文豪氏遊蛇",shrew:"台灣長尾麝鼩",flyingsq:"台灣紅白大飛鼠",squirrel:"台灣條紋松鼠",egret:"小白鷺",reefheron:"岩鷺",nheron:"夜鷺",kingfisher:"翠鳥",robin:"粟背林鴝",liocichla:"藪鳥",sparrow:"麻雀",munia:"斑文鳥",grassfrog:"澤蛙",firefly:"黃緣螢",peacock:"巴黎翠鳳蝶",ghostcrab:"角眼沙蟹",rissos:"花紋海豚",anemonefish:"克氏海葵魚"};
+const ORDER=["dog","cat","butterfly","macaque","heron","bluemagpie","barbet","thrush","frog","eagle","bpartridge","hare","civet","babbler","yuhina","shrew","flyingsq","squirrel","egret","reefheron","nheron","kingfisher","robin","liocichla","sparrow","munia","grassfrog","firefly","peacock","ghostcrab","rissos","anemonefish","dolphin","mikado","swinhoe","tpartridge","warbler","viper","keelback","badger"];
+const P={M:{name:"山區",ic:"⛰️",h:"mountain",x:20,y:30,r:300},F:{name:"淺山森林",ic:"🌳",h:"forest",x:46,y:34,r:300},R:{name:"河岸",ic:"🏞️",h:"river",x:30,y:66,r:200},
+ A:{name:"農田／聚落",ic:"🌾",h:"farm",x:74,y:52,r:200},C:{name:"市區公園",ic:"🏙️",h:"park",x:62,y:88,r:150},S:{name:"海邊",ic:"🌊",h:"coast",x:12,y:90,r:300}};
+/* v0.10.0 加入第一批新生物（權重為遊戲規則・暫定）：藍鵲、五色鳥、紫嘯鶇、莫氏樹蛙 */
+/* v0.11.0 第二批：大冠鷲、台灣竹雞、台灣野兔、白鼻心；觀察限定（權重低）：帝雉、藍腹鷴、台灣山鷓鴣、冠羽柳鶯、赤尾青竹絲、台灣鼬獾 */
+const POOL={F:{macaque:40,butterfly:30,heron:15,bluemagpie:30,barbet:15,frog:15,eagle:10,bpartridge:10,civet:10,swinhoe:3,tpartridge:4,warbler:4,viper:5,badger:5,babbler:12,yuhina:10,keelback:4,shrew:6,flyingsq:3,squirrel:10,peacock:15,firefly:8,none:55},R:{heron:35,butterfly:25,cat:15,thrush:25,hare:10,warbler:3,viper:4,keelback:6,egret:20,nheron:15,kingfisher:15,firefly:12,none:48},M:{macaque:50,butterfly:20,thrush:20,bluemagpie:10,eagle:15,mikado:6,swinhoe:5,tpartridge:6,badger:3,yuhina:15,shrew:4,flyingsq:6,squirrel:10,robin:15,liocichla:15,none:45},
+ A:{dog:40,cat:30,butterfly:20,frog:15,bpartridge:15,hare:15,civet:10,viper:3,badger:3,babbler:8,keelback:3,sparrow:25,munia:20,grassfrog:18,egret:12,none:50},C:{heron:50,cat:30,butterfly:15,dog:10,barbet:20,bluemagpie:10,warbler:4,egret:10,sparrow:20,none:45},S:{dog:25,cat:20,dolphin:8,reefheron:15,ghostcrab:18,rissos:7,anemonefish:14,none:45}};
+const TM={dog:{dawn:1,day:1,dusk:.8,night:.3},cat:{dawn:1.3,day:.5,dusk:1.3,night:1},butterfly:{dawn:.6,day:1.5,dusk:.5,night:0},
+ macaque:{dawn:1.2,day:1,dusk:1.2,night:0},heron:{dawn:1.2,day:.8,dusk:1.2,night:1},dolphin:{dawn:1,day:1,dusk:1,night:0},
+ bluemagpie:{dawn:1.2,day:1,dusk:1,night:0},barbet:{dawn:1,day:1.2,dusk:.8,night:0},thrush:{dawn:1.3,day:.8,dusk:1.3,night:0},frog:{dawn:.5,day:.2,dusk:1,night:1.6},
+ eagle:{dawn:.6,day:1.4,dusk:.8,night:0},bpartridge:{dawn:1.3,day:.9,dusk:1.2,night:0},hare:{dawn:1.3,day:.3,dusk:1.3,night:1.2},civet:{dawn:.4,day:0,dusk:1,night:1.6},
+ mikado:{dawn:1.3,day:.6,dusk:1.3,night:0},swinhoe:{dawn:1.3,day:.7,dusk:1.2,night:0},tpartridge:{dawn:1.3,day:.8,dusk:1.2,night:0},warbler:{dawn:1.2,day:1,dusk:.8,night:0},viper:{dawn:.6,day:.5,dusk:1,night:1.5},badger:{dawn:.3,day:0,dusk:1,night:1.5},
+ babbler:{dawn:1.4,day:1,dusk:1,night:0},yuhina:{dawn:1.2,day:1.2,dusk:.6,night:0},keelback:{dawn:.6,day:1.3,dusk:.6,night:0},shrew:{dawn:.4,day:.2,dusk:1.2,night:1.4},flyingsq:{dawn:0,day:0,dusk:.4,night:1.8},squirrel:{dawn:1.2,day:1.2,dusk:.6,night:0},
+ egret:{dawn:1.2,day:1.2,dusk:1,night:0},reefheron:{dawn:1.2,day:1,dusk:1,night:0},nheron:{dawn:1,day:0.4,dusk:1.4,night:1.5},kingfisher:{dawn:1.3,day:1.1,dusk:0.8,night:0},robin:{dawn:1.3,day:1,dusk:0.9,night:0},liocichla:{dawn:1.3,day:1,dusk:0.9,night:0},sparrow:{dawn:1.2,day:1.2,dusk:1,night:0},munia:{dawn:1.1,day:1.2,dusk:0.9,night:0},grassfrog:{dawn:0.6,day:0.4,dusk:1.2,night:1.5},firefly:{dawn:0,day:0,dusk:0.8,night:2},peacock:{dawn:0.5,day:1.5,dusk:0.5,night:0},ghostcrab:{dawn:1.2,day:0.6,dusk:1.2,night:1.3},rissos:{dawn:1,day:1.2,dusk:1,night:0},anemonefish:{dawn:0.8,day:1.5,dusk:0.8,night:0}};
+const WM={dog:{sunny:1,cloudy:1,rain:.6},cat:{sunny:1,cloudy:1,rain:.5},butterfly:{sunny:1.3,cloudy:.8,rain:.1},macaque:{sunny:1,cloudy:1,rain:.5},heron:{sunny:.9,cloudy:1,rain:1.5},dolphin:{sunny:1,cloudy:.8,rain:.3},bluemagpie:{sunny:1,cloudy:1,rain:.6},barbet:{sunny:1.1,cloudy:1,rain:.5},thrush:{sunny:.9,cloudy:1,rain:1.2},frog:{sunny:.6,cloudy:1,rain:1.6},eagle:{sunny:1.3,cloudy:1,rain:.3},bpartridge:{sunny:1,cloudy:1,rain:.7},hare:{sunny:1,cloudy:1,rain:.6},civet:{sunny:1,cloudy:1,rain:.7},mikado:{sunny:.8,cloudy:1.2,rain:1},swinhoe:{sunny:1,cloudy:1,rain:.6},tpartridge:{sunny:1,cloudy:1,rain:.7},warbler:{sunny:1,cloudy:1,rain:.5},viper:{sunny:1,cloudy:1,rain:1.2},badger:{sunny:1,cloudy:1,rain:.8},babbler:{sunny:1,cloudy:1,rain:.6},yuhina:{sunny:1.1,cloudy:1,rain:.5},keelback:{sunny:.9,cloudy:1,rain:1.3},shrew:{sunny:.9,cloudy:1,rain:1.1},flyingsq:{sunny:1,cloudy:1,rain:.4},squirrel:{sunny:1.1,cloudy:1,rain:.5},egret:{sunny:1,cloudy:1,rain:0.8},reefheron:{sunny:1,cloudy:1,rain:0.7},nheron:{sunny:1,cloudy:1,rain:1},kingfisher:{sunny:1.1,cloudy:1,rain:0.5},robin:{sunny:1,cloudy:1.1,rain:0.6},liocichla:{sunny:1,cloudy:1.1,rain:0.6},sparrow:{sunny:1.1,cloudy:1,rain:0.5},munia:{sunny:1.1,cloudy:1,rain:0.5},grassfrog:{sunny:0.6,cloudy:1,rain:1.6},firefly:{sunny:1,cloudy:1.1,rain:0.2},peacock:{sunny:1.3,cloudy:0.8,rain:0.1},ghostcrab:{sunny:1,cloudy:1,rain:0.5},rissos:{sunny:1,cloudy:0.9,rain:0.4},anemonefish:{sunny:1.2,cloudy:0.9,rain:0.4}};
+const SUCC={dogOwner:{watch:.4,wait:.3,greet:.8},dogLone:{watch:.6,wait:.5},cat:{watch:.5,wait:.7,greet:.5},butterfly:{watch:.5,wait:.75,greet:.1},
+ macaque:{watch:.7,wait:.5,greet:.1},heron:{watch:.6,wait:.7,greet:.35},dolphin:{watch:.5,wait:.4},
+ bluemagpie:{watch:.6,wait:.5,greet:.3},barbet:{watch:.5,wait:.7,greet:.15},thrush:{watch:.7,wait:.5,greet:.1},frog:{watch:.6,wait:.7,greet:.05},
+ eagle:{watch:.7,wait:.4,greet:.05},bpartridge:{watch:.5,wait:.7,greet:.1},hare:{watch:.6,wait:.6,greet:.05},civet:{watch:.6,wait:.65,greet:.05},
+ mikado:{watch:.55,wait:.45},swinhoe:{watch:.5,wait:.45},tpartridge:{watch:.5,wait:.55},warbler:{watch:.55,wait:.5},viper:{watch:.7},badger:{watch:.65},
+ babbler:{watch:.5,wait:.7,greet:.1},yuhina:{watch:.7,wait:.5,greet:.1},keelback:{watch:.7},shrew:{watch:.45,wait:.65,greet:.05},flyingsq:{watch:.6,wait:.4,greet:.05},squirrel:{watch:.6,wait:.5,greet:.4},
+ egret:{watch:0.6,wait:0.7,greet:0.1},reefheron:{watch:0.7,wait:0.5,greet:0.05},nheron:{watch:0.6,wait:0.75,greet:0.1},kingfisher:{watch:0.7,wait:0.45,greet:0.05},robin:{watch:.5,wait:.55,greet:.65},liocichla:{watch:0.5,wait:0.7,greet:0.1},sparrow:{watch:0.45,wait:0.55,greet:0.6},munia:{watch:0.6,wait:0.5,greet:0.3},grassfrog:{watch:0.6,wait:0.7,greet:0.05},firefly:{watch:0.5,wait:0.75,greet:0.05},peacock:{watch:0.5,wait:0.7,greet:0.1},ghostcrab:{watch:0.7,wait:0.45,greet:0.05},rissos:{watch:0.6,wait:0.4,greet:0.1},anemonefish:{watch:0.7,wait:0.35,greet:0.05}};
+const PREF={dogOwner:"greet",dogLone:null,cat:"wait",butterfly:"wait",macaque:"watch",heron:"wait",dolphin:"watch",bluemagpie:"watch",barbet:"wait",thrush:"watch",frog:"wait",eagle:"watch",bpartridge:"wait",hare:"watch",civet:"wait",mikado:"watch",swinhoe:"watch",tpartridge:"wait",warbler:"watch",viper:"watch",badger:"watch",babbler:"wait",yuhina:"watch",keelback:"watch",shrew:"wait",flyingsq:"watch",squirrel:"watch",egret:"wait",reefheron:"watch",nheron:"wait",kingfisher:"watch",robin:"greet",liocichla:"wait",sparrow:"greet",munia:"watch",grassfrog:"wait",firefly:"wait",peacock:"wait",ghostcrab:"watch",rissos:"watch",anemonefish:"watch"};
+const ACT={watch:["🔭","保持距離觀察","在遠處安靜地看"],wait:["🤫","安靜等待","不出聲，等牠自己靠近或繼續活動"],greet:["👋","輕聲打招呼","小聲打招呼"],
+ listen:["👂","聆聽叫聲","閉上眼睛，聽牠在哪裡"],photo:["📷","拍照記錄","關掉閃光燈，慢慢舉起相機"],sketch:["✏️","素描","坐下來慢慢畫，動作越輕越好"],
+ trace:["🐾","尋找痕跡","找腳印、羽毛或啃食的痕跡"],move:["🧭","換個位置","繞到上風處，換個角度看"],follow:["🚶","保持距離跟著走","順著牠移動的方向，遠遠跟一小段"]};
+/* 互動選項（v0.46.0）：9 種，每次遭遇只出現 3 種（偏好的方式一定在內）。新選項都不碰、不餵、不追近。
+   安全限制：毒蛇、鼬獾、水龜類（viper/badger/keelback）和瀕危的白海豚（dolphin）只保留原本的選項。 */
+const ACT_ORDER=["watch","wait","greet","listen","photo","sketch","trace","move","follow"];
+const BIRDS=["heron","bluemagpie","barbet","thrush","eagle","bpartridge","mikado","swinhoe","tpartridge","warbler","egret","reefheron","nheron","kingfisher","robin","liocichla","sparrow","munia","babbler","yuhina"];
+const ACT_SP={listen:[...BIRDS,"frog","grassfrog","macaque","flyingsq","rissos"],
+ sketch:["butterfly","heron","egret","nheron","reefheron","frog","grassfrog","firefly","peacock","ghostcrab","rissos","anemonefish","barbet","kingfisher","cat","sparrow","munia","robin"],
+ trace:["hare","civet","shrew","squirrel","flyingsq","macaque","cat","bpartridge","tpartridge","mikado","swinhoe","ghostcrab"],
+ move:["macaque","hare","eagle","bluemagpie","thrush","yuhina","squirrel","civet","flyingsq","warbler","liocichla","babbler"],
+ follow:["macaque","hare","cat","civet","bpartridge","tpartridge","mikado","swinhoe","heron","egret","nheron","reefheron","ghostcrab","peacock"]};
+const ACT_LOCK=["viper","badger","keelback","dolphin"];
+const FAILTXT={listen:"只聽到牠的叫聲，沒看清是誰。",photo:"照片拍糊了，只留下一個模糊的身影。",sketch:"才畫到一半，牠就走了。",trace:"找到了牠留下的痕跡，但牠已經離開。",move:"換位置時被牠發現了。",follow:"跟了一小段，牠鑽進草叢不見了。"};
+const OKTXT={listen:"你循著叫聲找到了牠。",photo:"你按下快門，拍到了牠。",sketch:"你把牠的樣子畫了下來。",trace:"你循著痕跡找到了牠。",move:"換個角度後，你看得更清楚了。",follow:"你遠遠跟著，看見牠自在的樣子。"};
+function actsOf(k){const sp=st.met,base=Object.keys(SUCC[k]);if(ACT_LOCK.includes(sp)||k==="dogLone")return base;
+  const ex=["photo"];Object.keys(ACT_SP).forEach(a=>{if(ACT_SP[a].includes(sp))ex.push(a);});
+  if(k==="dogOwner")return base.concat(["photo"]);return base.concat(ex);}
+function actP(k,a){if(SUCC[k][a]!=null)return SUCC[k][a];const w=SUCC[k].watch!=null?SUCC[k].watch:.5,u=SUCC[k].wait!=null?SUCC[k].wait:w;
+  const m={photo:w*.7+u*.3-.05,listen:.55+(u-.5)*.5,sketch:u*.9,trace:(w+u)/2,move:w*.9+.05,follow:(w+u)/2-.05}[a];return Math.max(.25,Math.min(.8,m));}
+function pickActs(k){const all=ACT_ORDER.filter(a=>actsOf(k).includes(a));if(all.length<=3)return all;
+  const must=PREF[k]&&all.includes(PREF[k])?[PREF[k]]:[],rest=all.filter(a=>!must.includes(a));
+  for(let i=rest.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[rest[i],rest[j]]=[rest[j],rest[i]];}
+  const pick=must.concat(rest).slice(0,3);return ACT_ORDER.filter(a=>pick.includes(a));}
+const SLOT={dawn:"清晨",day:"白天",dusk:"黃昏",night:"夜間"},WX={sunny:"晴",cloudy:"陰",rain:"雨"};
+const STLBL={none:"未發現",seen:"目擊",recorded:"已記錄",courier:"郵差"};
+const h=new Date().getHours();
+/* 走路探索：世界座標（公尺，示意）。玩家走進虛線範圍（半徑 r）才算抵達，不需要精確座標。 */
+const WORLD={w:3100,h:2500};
+/* v0.12.0 對齊插畫地圖 art/explore_map.jpg（GPT 乾淨版）的地點位置 */
+const WP={M:[670,560],F:[1430,780],R:[930,1630],A:[2350,1250],C:[1980,2040],S:[420,2080]};
+/* 探索點郵戳：親自走到探索點、第一次在範圍內探索時蓋章，並附一條觀察線索。 */
+const CLUE={M:"山區的清晨，樹梢間好像有成群活動的身影。",F:"淺山森林晴天的白天，花叢附近常有淡藍色的翅膀飄過。",
+ R:"河岸的黃昏或雨後，草地上有隻慢慢踱步的鳥。",A:"農田／聚落的白天，常看到一隻黑色的狗跟著主人散步。",
+ C:"市區公園的清晨與黃昏，草叢邊偶爾有貓的身影。",S:"海邊天氣好的白天，遠方海面上偶爾有淡粉色的背鰭一閃而過。"};
+function loadStamps(){try{return JSON.parse(localStorage.getItem("ep-send")||"{}").stamps||[]}catch(e){return[]}}
+function addStamp(k){try{const s=JSON.parse(localStorage.getItem("ep-send")||"{}");s.stamps=[...new Set([...(s.stamps||[]),k])];localStorage.setItem("ep-send",JSON.stringify(s));}catch(e){}recordStamp(k);}
+const stampRow=k=>`<div class="row good"><div class="ic">📮</div><div class="arrive"><div class="stampcell">${stampSVG("tw",P[k].name,true,stampDate(k)||todayStr())}</div><div><div class="lbl">新郵戳：${P[k].name}</div><div class="val sm">${CLUE[k]}</div><div class="src">觀察線索已記在圖鑑｜🌸 小花 +${EARN.stamp}</div></div></div></div>`;
+const dist=(a,b)=>Math.hypot(a[0]-b[0],a[1]-b[1]);
+function nearest(pos){let best=null;Object.entries(WP).forEach(([k,c])=>{const d=dist(pos,c);if(!best||d-P[k].r<best.d-P[best.k].r)best={k,d};});return best;}
+function inRange(pos){const n=nearest(pos);return n&&n.d<=P[n.k].r?n.k:null;}
+const st={pos:[1700,1750],target:null,trail:[],at:"C",slot:h>=5&&h<8?"dawn":h>=8&&h<16?"day":h>=16&&h<19?"dusk":"night",wx:"sunny",phase:"map",met:null,owner:null,result:null,empty:{},log:[]};
+let SET={};try{SET=JSON.parse(localStorage.getItem("ep-settings")||"{}")}catch(e){}
+const sim=SET.mode!=="gps";
+const PL=loadPlayer();
+let SP=loadSpirit();
+setInterval(()=>{const old=SP.v;SP=loadSpirit();if(!old||SP.v!==old)try{render()}catch(e){}},20000);
+let SEEN={};try{SEEN=JSON.parse(localStorage.getItem("ep-seen-slot")||"{}")}catch(e){}
+const saveSeen=()=>{try{localStorage.setItem("ep-seen-slot",JSON.stringify(SEEN))}catch(e){}};
+const ART={};ORDER.forEach(id=>{const im=new Image();im.onload=()=>{ART[id]=true;render()};im.src=`art/${id}.png`;});
+const art=id=>ART[id]?`<img src="art/${id}.png" alt="${NAME[id]}">`:`<div class="q nf">${NAME[id]}<br><small>角色圖待放</small></div>`;
+const esc=t=>String(t).replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
+const $=id=>document.getElementById(id);
+const row=(ic,lbl,inner,cls="")=>`<div class="row ${cls}"><div class="ic">${ic}</div><div><div class="lbl">${lbl}</div>${inner}</div></div>`;
+const chips=(g,o,cur)=>`<div class="rowsel">${Object.entries(o).map(([k,v])=>`<button class="chip${k===cur?" on":""}" data-g="${g}" data-v="${k}">${v}</button>`).join("")}</div>`;
+const key=()=>st.met==="dog"?(st.owner?"dogOwner":"dogLone"):st.met;
+
+function weights(){
+  const pool=POOL[st.at],out={};
+  Object.entries(pool).forEach(([k,v])=>out[k]=k==="none"?v:v*TM[k][st.slot]*WM[k][st.wx]);
+  {const ab=adoptExploreBonus();if(ab)out.none*=ab.none;}   // 認養任何地點：所有探索點「沒遇到」稍微降低（遊戲規則，v0.25.0）
+  if((st.empty[st.at]||0)>=3)out.none=0;              // 保底：連續 3 次沒遇到，第 4 次必定遇到
+  return out;
+}
+function roll(){
+  const w=weights();let r=Math.random()*Object.values(w).reduce((a,b)=>a+b,0);
+  for(const [k,v] of Object.entries(w)){if((r-=v)<=0)return k;}return "none";
+}
+function renderRail(){
+  $("dexrail").innerHTML=`<h4>圖鑑 ${ORDER.filter(k=>DEX[k].state!=="none").length}／${ORDER.length}</h4>`+ORDER.map(k=>{const d=DEX[k];
+    const show=d.state==="none"?`<div class="q">？</div>`:art(k);
+    return `<a class="dx" href="card_mockup.html" title="${d.state==="none"?"未發現":NAME[k]}"><div class="im${d.state==="seen"?" sil":""}">${show}</div>
+      <b>${d.state==="none"?"？？？":NAME[k]}</b><small class="s-${d.state}">${STLBL[d.state]}${OBSERVE_ONLY.includes(k)?(d.state==="recorded"?`・${obsTag(k)}`:""):(d.state==="recorded"||d.state==="courier"?`・${d.aff}／${THRESH[k]}`:"")}</small></a>`}).join("");
+}
+/* 直式（v0.28.0）：地圖只顯示玩家附近一塊、跟著玩家移動（像一般 GPS 遊戲）；橫向版維持整張地圖 */
+const PT=document.querySelector(".stage").classList.contains("pt");
+/* 地圖視角（v0.33.0）：平常跟著玩家（follow）；拖動地圖就停止跟隨，按 🧭 回來；🗺️ 切換看全部 */
+const MV={follow:true,c:null,all:false};
+function mapVB(px,py){
+  if(!PT)return [0,0,WORLD.w,WORLD.h];
+  const el=$("map"),a=(el.clientHeight||700)/(el.clientWidth||400);
+  if(MV.all){const w=WORLD.w*1.06,h=w*a;return [-WORLD.w*.03,-WORLD.h*.06,w,h];}   /* 整張地圖放在上半部（下半部被抽屜蓋住） */
+  const w=1300,h=w*a;   /* 下半部被抽屜蓋住，視角中心放在可見區（上方約 1/3）；地圖外面用草地色補 */
+  const [cx,cy]=MV.follow||!MV.c?[px,py]:MV.c;
+  const x=Math.max(-w*.3,Math.min(WORLD.w-w*.7,cx-w/2)),y=cy-h*.27;
+  return [x,y,w,h];
+}
+function mapBtns(){const me=$("mapme"),all=$("mapall");if(!me)return;me.classList.toggle("on",MV.follow&&!MV.all);all.classList.toggle("on",MV.all);all.setAttribute("aria-label",MV.all?"回到附近":"看全部探索點");}
+function renderMap(){
+  const here=inRange(st.pos),[px,py]=st.pos,[vx,vy,vw,vh]=mapVB(px,py);MV.vb=[vx,vy,vw,vh];mapBtns();
+  const pts=Object.entries(WP).map(([k,[x,y]])=>`
+    <circle cx="${x}" cy="${y}" r="${P[k].r}" fill="${k===here?"rgba(79,143,208,.22)":"rgba(255,255,255,.18)"}" stroke="${k===here?"#3a6fa8":"#fff"}" stroke-width="10" stroke-dasharray="34 22"/>
+    <g transform="translate(${x} ${y})"><circle r="46" fill="#fff8e7" stroke="#caa173" stroke-width="8"/><image href="art/ui/h_${P[k].h}.png" x="-36" y="-36" width="72" height="72"/>
+    <text y="${P[k].r>200?-P[k].r-18:-90}" text-anchor="middle" font-size="58" font-weight="900" fill="#3d2a17" stroke="#fff8e7" stroke-width="14" paint-order="stroke">${P[k].name}${k===here?"・範圍內":""}${loadStamps().includes(k)?" ✓":""}</text></g>`).join("");
+  const trail=st.trail.slice(-24).map((q,i)=>`<circle cx="${q[0]}" cy="${q[1]}" r="11" fill="#fff" opacity="${(i+1)/26}"/>`).join("");
+  $("map").innerHTML=`<svg id="world" viewBox="${vx} ${vy} ${vw} ${vh}" preserveAspectRatio="xMidYMid slice" style="width:100%;height:100%;display:block;cursor:pointer">
+    <rect x="-2000" y="-2000" width="${WORLD.w+4000}" height="${WORLD.h+4000}" fill="#b5df8a"/>
+    <image href="art/explore_map.jpg" x="0" y="0" width="${WORLD.w}" height="${WORLD.h}" preserveAspectRatio="none"/>
+    ${pts}<g id="trailg">${trail}</g>
+    <g id="meg" transform="translate(${px} ${py})"><circle r="70" fill="rgba(58,111,168,.18)"><animate attributeName="r" values="40;90;40" dur="2s" repeatCount="indefinite"/></circle><circle r="30" fill="#3a6fa8" stroke="#fff" stroke-width="10"/></g>
+  </svg>
+  <div class="meonmap" id="meonmap" style="left:${(px-vx)/vw*100}%;top:${(py-vy)/vh*100-3}%">${playerSVG(PL.uniform)}</div>
+  <div class="maplegend">點地圖走過去・方向鍵也可以走${(ab=>ab?`｜🪴 認養加成中（${ab.place}，剩 ${Math.ceil(ab.left/864e5)} 天）：比較容易遇到生物`:"")(adoptExploreBonus())}</div>`;
+}
+/* 走路、拖動時只更新視角和角色位置，不重建整張地圖（v0.47.0，使用者回報走路卡卡的） */
+function liveMap(){
+  const svg=$("world"),mo=$("meonmap"),me=svg&&svg.querySelector("#meg"),tr=svg&&svg.querySelector("#trailg");
+  if(!svg||!mo||!me||!tr){renderMap();return;}
+  const [px,py]=st.pos,[vx,vy,vw,vh]=mapVB(px,py);MV.vb=[vx,vy,vw,vh];
+  svg.setAttribute("viewBox",`${vx} ${vy} ${vw} ${vh}`);
+  me.setAttribute("transform",`translate(${px} ${py})`);
+  mo.style.left=((px-vx)/vw*100)+"%";mo.style.top=((py-vy)/vh*100-3)+"%";
+  tr.innerHTML=st.trail.slice(-24).map((q,i)=>`<circle cx="${q[0]}" cy="${q[1]}" r="11" fill="#fff" opacity="${(i+1)/26}"/>`).join("");
+}
+function render(){
+  renderRail();
+  if(st.phase==="map"){const hr=inRange(st.pos);if(hr)st.at=hr;}
+  const p=P[st.at],inScene=st.phase!=="map";
+  $("map").hidden=inScene;$("scene").hidden=!inScene;$("place").hidden=!inScene;
+  /* 整頁只有一張背景：遇到生物時換成這個探索點的棲地；看地圖時背景淡化模糊，不跟地圖搶 */
+  const bgs=$("bgscene");if(bgs){bgs.src=inScene?`art/ui/hab_${({M:"mountain",F:"forest",R:"river",A:"farm",C:"park",S:"coast"})[st.at]||"forest"}.jpg`:"art/ui/bg_home.jpg";bgs.classList.toggle("soft",!inScene);}
+  if(!inScene)renderMap();
+  $("place").textContent=`${p.ic} ${p.name}・${SLOT[st.slot]}・${WX[st.wx]}`;
+  let h="",go="探索",dis=false;
+  const here=st.phase==="map"?inRange(st.pos):st.at;
+  const steps=(n)=>`<div class="stepline">${["靠近探索點","進入探索範圍","遇見生物"].map((t,i)=>`<span class="${i<n?"done":i===n?"on":""}">${i+1} ${t}</span>`).join("")}</div>`;
+  if(st.phase==="map"&&!here){
+    const nb=nearest(st.pos);
+    $("note").innerHTML=steps(0);
+    h+=row("🧭","最近的探索點",`<div class="val">${P[nb.k].ic} ${P[nb.k].name}・約 ${Math.max(0,Math.round(nb.d-P[nb.k].r))} m</div><div class="src">走進虛線圈（半徑 ${P[nb.k].r} m）就算抵達，以範圍判定，不需要精確座標</div>`);
+    h+=row("🚶","怎麼走",`<div class="val sm">${sim?"模擬模式：點地圖上想去的位置，或用方向鍵走":"GPS：實際走過去"}</div><div class="rowsel">${Object.keys(WP).map(k=>`<button class="chip" data-p="${k}">直接走到${P[k].name}</button>`).join("")}</div>`);
+    go="靠近探索點";dis=true;
+  }else if(st.phase==="map"){
+    st.at=here;
+    $("note").innerHTML=steps(1);
+    const n=st.empty[st.at]||0;
+    h+=row("📍","已進入探索範圍",`<div class="val">${p.ic} ${p.name}</div><div class="src">範圍半徑 ${p.r} m｜在範圍內任何位置都可以探索</div>`,"good");
+    h+=row("🌤️","時段・天氣（原型可切換）",chips("slot",SLOT,st.slot)+chips("wx",WX,st.wx));
+    h+=row("🧠","精神",`<div class="pity">${Array.from({length:spiritMax()},(_,i)=>`<i class="${i<SP.v?"on":""}" style="${i<SP.v?"background:#7cb342":""}"></i>`).join("")}</div><div class="src">${SP.v}／${spiritMax()}（Lv${PLAYER_LEVEL}）｜每次探索 -1，${SP.v<spiritMax()?`約 ${minutesToNextSpirit(SP)} 分鐘後 +1`:"已回滿"}</div>`,SP.v?"":"warn");
+    const kinds=Object.keys(POOL[st.at]).filter(k=>k!=="none"&&TM[k][st.slot]>0);
+    const seen=SEEN[`${st.at}-${st.slot}`]||[];
+    if(kinds.length&&kinds.every(k=>seen.includes(k)))h+=row("💡","回訪提示",`<div class="val sm">${p.name}的${SLOT[st.slot]}你都認識了。換個時段或天氣再來，也許會有新發現。</div>`,"good");
+    h+=row("🎯","保底",`<div class="pity">${[0,1,2].map(i=>`<i class="${i<n?"on":""}"></i>`).join("")}</div><div class="src">${n>=3?"下一次一定會遇到生物！":`連續 3 次沒遇到，下一次必定遇到（目前 ${n}／3）`}</div>`);
+    const w=weights(),tot=Object.values(w).reduce((a,b)=>a+b,0);
+    h+=row("👀","這裡可能出現",`<div class="val sm"><div class="chips2">${Object.keys(POOL[st.at]).filter(k=>k!=="none"&&w[k]>0).map(k=>`<span>${DEX[k].state==="none"?"？？？":NAME[k]}</span>`).join("")||"這個時段幾乎遇不到生物"}</div></div><div class="src">沒遇到的機率約 ${Math.round(w.none/tot*100)}%</div>`);
+  }else if(st.phase==="empty"){
+    $("note").textContent="探索　這次什麼都沒遇到";
+    $("scene").innerHTML=`<div class="pl">${playerSVG(PL.uniform)}</div><div class="keep">草叢裡安安靜靜……</div>`;
+    if(st.newStamp)h+=stampRow(st.newStamp);
+    h+=row("🍃","沒有遇到生物",`<div class="val sm">保底進度 ${st.empty[st.at]}／3。再探索一次，或換個時段、地點。</div>`);
+    go="再探索一次";
+  }else if(st.phase==="encounter"){
+    const k=key(),d=DEX[st.met],first=d.state==="none";
+    $("note").innerHTML=steps(2);
+    $("scene").innerHTML=`<div class="pl">${playerSVG(PL.uniform)}</div><div class="keep">⟵ 保持距離 ⟶</div><div class="cr${first?" sil":""}">${art(st.met)}</div>${st.met==="dog"&&st.owner?`<div class="owner"><img src="art/owner_${st.ownerImg||"a"}.png" alt="台灣犬的飼主"></div>`:""}`;
+    if(st.newStamp)h+=stampRow(st.newStamp);
+    h+=row("✨",first?"✨ 新發現！沒見過的生物":"遇到了",`<div class="val">${first?"？？？":NAME[st.met]}${st.met==="dog"?(st.owner?"（有飼主陪同）":"（單獨出現）"):""}</div>${first?"":(OBSERVE_ONLY.includes(st.met)?`<div class="src">圖鑑：${STLBL[d.state]}（只觀察，不當郵差）</div>`:`<div class="meter"><i style="width:${Math.min(100,d.aff/THRESH[st.met]*100)}%"></i></div><div class="src">圖鑑：${STLBL[d.state]}・好感 ${d.aff}／${THRESH[st.met]}${d.state==="courier"?"＋":""}</div>`)}<div class="src">${st.met==="dog"&&!st.owner?"不熟悉的狗請保持距離，不要伸手或餵食":(["viper","badger","keelback"].includes(st.met)?"用觀察的方式認識牠，請看下方的安全提醒":OBS_SAFETY[st.met]||"不靠近、不觸碰、不餵食，用觀察的方式認識牠")}</div>`);
+    if(["viper","badger","keelback"].includes(st.met))h+=row("⚠️","安全提醒",`<div class="val sm">${OBS_SAFETY[st.met]}</div><div class="src">只能保持距離觀察</div>`,"warn");
+    if(!st.offer)st.offer=pickActs(k);const acts=st.offer;
+    h+=row("🤝","互動方式",`<div class="acts">${acts.map(a=>`<button class="act" data-act="${a}">${ACT[a][0]} ${st.met==="dog"&&a==="greet"?"向飼主打招呼":ACT[a][1]}<small>${st.met==="dog"&&a==="greet"?"先問飼主能不能互動":ACT[a][2]}</small></button>`).join("")}</div>
+      ${d.state!=="none"&&d.notes.length?`<div class="src">圖鑑線索：牠好像比較喜歡「${ACT[PREF[k]||"watch"][1]}」</div>`:""}`);
+    go="離開";dis=false;
+  }else if(st.phase==="outcome"){
+    const r=st.result,d=DEX[st.met];
+    $("note").textContent=r.ok?"記錄成功":"牠離開了";
+    $("scene").innerHTML=`<div class="pl">${playerSVG(PL.uniform)}</div><div class="keep">${r.ok?"📖 記錄完成":"…牠走遠了"}</div><div class="cr${r.ok?"":" gone"}${d.state==="seen"?" sil":""}">${art(st.met)}${r.ok&&!r.popped?`<div class="heartpop">${OBSERVE_ONLY.includes(st.met)?"📖 觀察 +1":`❤ 好感 +${r.gain}`}</div>`:""}</div>`;
+    r.popped=true;
+    if(r.ok&&(r.became||r.firstRecord)&&!r.rewarded){r.rewarded=true;showReward(r,d);}
+    if(r.ok){
+      if(OBSERVE_ONLY.includes(st.met))h+=row("📖",`${NAME[st.met]}・${STLBL[d.state]}・${obsTag(st.met)}`,`<div class="val sm">觀察紀錄 ${d.aff} 次</div><div class="src">${st.met==="dolphin"?"瀕危物種":"觀察限定的生物"}只觀察記錄，不會成為郵差</div>`,"good");
+      if(OBSERVE_ONLY.includes(st.met)&&r.firstRecord)h+=row("🖼️","解鎖特別明信片",`<div class="val sm">可以用${NAME[st.met]}當明信片樣式寄給朋友${st.met==="dolphin"?"；並達成成就「岸邊的媽祖魚」":""}</div>`,"good");
+      else h+=row("📖",`${NAME[st.met]}・${STLBL[d.state]}`,`<div class="val sm">好感 +${r.gain}${r.pref?"（用對牠喜歡的方式）":""}</div>${OKTXT[r.act]?`<div class="src">${OKTXT[r.act]}</div>`:""}<div class="meter"><i style="width:${Math.min(100,d.aff/THRESH[st.met]*100)}%"></i></div><div class="src">好感 ${d.aff}／${THRESH[st.met]}${d.state==="courier"?"＋":""}</div>`,"good");
+      if(r.became)h+=row("📮","成為郵差！",`<div class="val sm">${NAME[st.met]}願意幫你送信了。可以在「明信片」頁派牠寄信。</div>`,"good");
+      if(r.note)h+=row("📝","新的觀察筆記",`<div class="val sm">${esc(r.note)}</div>`);
+      if(r.firstRecord)h+=row("📗","圖鑑解鎖",`<div class="val sm">可以在圖鑑看到牠的介紹與生態資料了</div>`);
+      if(r.card)h+=row("📝","觀察紀錄卡 +1",`<div class="val sm">記下時間、地點、天氣。到「郵站 → 櫃台」交給自然觀察站，每張換 ${EARN.card} 朵小花</div><div class="src">你有 ${loadObsCards().length} 張</div>`);
+      if(r.fl)h+=row("🌸","小花 +"+r.fl,`<div class="val sm">第一次記錄新生物的獎勵</div>`,"good");
+    }else{
+      h+=row("👣","牠離開了",`<div class="val sm">${FAILTXT[r.act]?FAILTXT[r.act]+" ":""}${d.state==="seen"?"至少看見了牠的身影，圖鑑記為「目擊」，並得到一條線索。":"這次沒能記錄，下次換個方式試試。"}</div>`,"warn");
+      if(r.clue)h+=row("🔍","線索",`<div class="val sm">${esc(r.clue)}</div>`);
+      if(r.fl)h+=row("🌸","小花 +"+r.fl,`<div class="val sm">得到新線索的獎勵</div>`,"good");
+    }
+    go="繼續探索";
+  }
+  const tired=(st.phase==="map"||st.phase==="empty")&&!SP.v;
+  if(tired){const m=minutesToNextSpirit(SP),pc=Math.round((1-m/SPIRIT_MIN)*100);
+    h=`<div class="row rest"><div class="ic">😴</div><div style="flex:1"><div class="lbl">休息中</div><div class="val sm">約 ${m} 分鐘後精神 +1，就能再出發</div><div class="restbar"><i style="width:${pc}%"></i></div></div></div>`+h;}
+  $("go").style.display=(tired||go==="靠近探索點")?"none":"";
+  $("rows").innerHTML=h;$("goText").textContent=go;$("go").disabled=dis;
+  $("bar").innerHTML=`<span>📍 ${p.name}</span><span class="sep"></span><span>今日探索 ${st.log.length} 次・遇到 ${st.log.filter(x=>x!=="none").length} 次</span>`;
+}
+/* 獎勵卡：成為郵差（最大）＞第一次記錄（新圖鑑）。按「收下」關閉。 */
+function showReward(r,d){
+  const k=st.met,obs=OBSERVE_ONLY.includes(k),dexN=Object.values(DEX).filter(x=>x.state==="recorded"||x.state==="courier").length;
+  const tier=r.became?"courier":"record";
+  const eye=r.became?"成為郵差！":obs?"新的觀察紀錄！":"新圖鑑！";
+  const sub=r.became?"牠願意幫你送信了":obs?`${k==="dolphin"?"瀕危物種":"觀察限定"}，只觀察記錄・解鎖特別明信片`:"圖鑑解鎖了牠的介紹與生態";
+  const gains=[];
+  if(r.firstRecord)gains.push(`📗 圖鑑 ${dexN}／${Object.keys(DEX).length}`);
+  if(r.fl)gains.push(`🌸 小花 +${r.fl}`);
+  gains.push(obs?"📖 觀察 +1":`❤ 好感 +${r.gain}${r.pref?"（牠喜歡）":""}`);
+  if(r.became)gains.push("📮 新的郵差");
+  if(obs&&r.firstRecord)gains.push("🖼️ 特別明信片樣式");
+  const box=document.createElement("div");box.className="rw";box.setAttribute("role","dialog");box.setAttribute("aria-label",eye);
+  box.innerHTML=`<div class="rw-card ${tier}"><div class="rw-rays"></div><div class="rw-eye">${eye}</div><div class="rw-art">${art(k)}</div>
+    <div class="rw-name">${NAME[k]}</div><div class="rw-sub">${sub}</div><div class="rw-gains">${gains.map(g=>`<span>${g}</span>`).join("")}</div>
+    <button class="rw-ok" type="button">收下</button></div>`;
+  ["✨","⭐","✨","🌟","✨"].forEach((e,i)=>{const sp=document.createElement("span");sp.className="rw-spark";sp.textContent=e;sp.style.left=(18+i*16)+"%";sp.style.top=(10+(i%2)*14)+"%";sp.style.animationDelay=(.2+i*.12)+"s";box.firstElementChild.appendChild(sp);});
+  document.querySelector(".stage").appendChild(box);
+  const ok=box.querySelector(".rw-ok");ok.focus();
+  const close=()=>box.remove();
+  ok.addEventListener("click",close);box.addEventListener("click",e=>{if(e.target===box)close();});
+  box.addEventListener("keydown",e=>{if(e.key==="Escape")close();});
+}
+function interact(a){
+  const k=key(),d=DEX[st.met],ok=Math.random()<actP(k,a);st.offer=null;
+  const r={act:a,ok,gain:0,pref:false,became:false,note:null,clue:null,firstRecord:false};
+  if(ok){
+    r.pref=PREF[k]===a;r.gain=1+(r.pref?1:0);           // 單獨出現的台灣犬沒有偏好加成
+    r.firstRecord=d.state==="none"||d.state==="seen";
+    d.aff+=r.gain;
+    if(d.state!=="courier")d.state=(!OBSERVE_ONLY.includes(st.met)&&d.aff>=THRESH[st.met])?"courier":"recorded";
+    r.became=d.state==="courier"&&d.aff-r.gain<THRESH[st.met];
+    addObsCard({k:st.met,name:NAME[st.met],where:P[st.at].name,slot:SLOT[st.slot],wx:WX[st.wx],t:Date.now()});r.card=true;   // 觀察紀錄卡：到郵站投稿換小花
+    if(r.firstRecord){addFlowers(EARN.first);r.fl=EARN.first;}   // 第一次記錄新生物 +15
+    const n=`在${SLOT[st.slot]}、${WX[st.wx]}天的${P[st.at].name}遇見牠`;
+    if(!d.notes.includes(n)){d.notes.push(n);if(!r.firstRecord)r.note=n;}
+  }else{
+    if(d.state==="none"){d.state="seen";r.clue=`${FAILTXT[a]||""}牠在${SLOT[st.slot]}的${P[st.at].name}出現過。`;addFlowers(EARN.clue);r.fl=EARN.clue;}   // 新線索 +5
+  }
+  saveDex(DEX);st.result=r;st.phase="outcome";render();
+}
+document.addEventListener("click",e=>{
+  const t=e.target.closest("[data-p],[data-g],[data-act],#go,#reset,#demo,#refill");if(!t)return;
+  if(t.dataset.p&&st.phase==="map"){MV.follow=true;MV.all=false;walkTo(WP[t.dataset.p].slice());return;}
+  else if(t.dataset.g&&st.phase==="map"){st[t.dataset.g]=t.dataset.v;}
+  else if(t.dataset.act){interact(t.dataset.act);return;}
+  else if(t.id==="reset"){{Object.assign(DEX,resetDex(true));st.phase="map";}}
+  else if(t.id==="refill"){SP={v:spiritMax(),t:Date.now()};saveSpirit(SP);}
+  else if(t.id==="demo"){Object.assign(DEX,resetDex(false));st.phase="map";}
+  else if(t.id==="go"){
+    if(st.phase==="map"||st.phase==="empty"){
+      SP=loadSpirit();if(!SP.v){render();return;}
+      if(SP.v>=spiritMax())SP.t=Date.now();SP.v--;saveSpirit(SP);
+      st.newStamp=null;if(!loadStamps().includes(st.at)){addStamp(st.at);addFlowers(EARN.stamp);st.newStamp=st.at;}   // 新探索點郵戳 +20
+      const k=roll();st.log.push(k);
+      if(k==="none"){st.empty[st.at]=(st.empty[st.at]||0)+1;st.phase="empty";}
+      else{const key2=`${st.at}-${st.slot}`;SEEN[key2]=[...new Set([...(SEEN[key2]||[]),k])];saveSeen();st.empty[st.at]=0;st.offer=null;st.met=k;st.owner=k==="dog"?Math.random()<.7:null;st.ownerImg=Math.random()<.5?"a":"b";st.phase="encounter";}
+    }else{st.phase="map";st.met=null;st.offer=null;}
+  }
+  render();
+});
+let walking=0;
+function walkTo(tgt){
+  tgt=[Math.max(0,Math.min(WORLD.w,tgt[0])),Math.max(0,Math.min(WORLD.h,tgt[1]))];
+  cancelAnimationFrame(walking);
+  let last=performance.now(),lastHere=inRange(st.pos),lastTrail=st.pos.slice();
+  const SPEED=900;   /* 地圖單位／秒；用時間算步伐，每個畫面都動一點，不再一格一格跳（v0.47.0） */
+  const tick=now=>{
+    const dt=Math.min(.1,(now-last)/1000);last=now;
+    const d=dist(st.pos,tgt),step=SPEED*dt;
+    let arrived=false;
+    if(d<=step){st.pos=tgt;arrived=true;}
+    else st.pos=[st.pos[0]+(tgt[0]-st.pos[0])/d*step,st.pos[1]+(tgt[1]-st.pos[1])/d*step];
+    if(dist(st.pos,lastTrail)>=45||arrived){st.trail.push(st.pos.slice());lastTrail=st.pos.slice();}
+    const h=inRange(st.pos);
+    if(arrived||h!==lastHere){lastHere=h;render();}else liveMap();
+    if(!arrived)walking=requestAnimationFrame(tick);
+  };
+  walking=requestAnimationFrame(tick);
+}
+/* 拖動地圖：手指移動超過 8px 才算拖動；拖動後的那一下不算「點地圖走過去」 */
+(()=>{const el=$("map");let d=null;
+  el.addEventListener("pointerdown",e=>{if(!PT||st.phase!=="map")return;d={x:e.clientX,y:e.clientY,moved:false,c:null};});
+  el.addEventListener("pointermove",e=>{if(!d)return;const dx=e.clientX-d.x,dy=e.clientY-d.y;
+    if(!d.moved&&Math.hypot(dx,dy)<8)return;
+    if(!d.moved){d.moved=true;el.classList.add("dragging");try{el.setPointerCapture(e.pointerId)}catch(_){}
+      if(MV.all){const [vx,vy,vw,vh]=MV.vb;MV.all=false;MV.c=[vx+vw/2,vy+vh*.27];}   /* 從看全部開始拖：換回附近視角 */
+      d.c=(MV.follow||!MV.c)?st.pos.slice():MV.c.slice();d.x=e.clientX;d.y=e.clientY;MV.follow=false;}
+    const k=MV.vb[2]/el.clientWidth;MV.c=[Math.max(0,Math.min(WORLD.w,d.c[0]-(e.clientX-d.x)*k)),Math.max(0,Math.min(WORLD.h,d.c[1]-(e.clientY-d.y)*k))];liveMap();});
+  const end=()=>{if(d&&d.moved){MV.dragAt=Date.now();el.classList.remove("dragging");}d=null;};
+  el.addEventListener("pointerup",end);el.addEventListener("pointercancel",end);
+  $("mapme").addEventListener("click",()=>{MV.follow=true;MV.all=false;MV.c=null;renderMap();});
+  $("mapall").addEventListener("click",()=>{MV.all=!MV.all;if(!MV.all){MV.follow=true;MV.c=null;}renderMap();});
+})();
+document.addEventListener("click",e=>{
+  if(st.phase!=="map")return;const svg=e.target.closest("#world");if(!svg)return;
+  if(MV.dragAt&&Date.now()-MV.dragAt<350)return;
+  const pt=svg.createSVGPoint();pt.x=e.clientX;pt.y=e.clientY;const q=pt.matrixTransform(svg.getScreenCTM().inverse());
+  walkTo([q.x,q.y]);
+});
+document.addEventListener("keydown",e=>{
+  if(st.phase!=="map")return;const m={ArrowUp:[0,-80],ArrowDown:[0,80],ArrowLeft:[-80,0],ArrowRight:[80,0]}[e.key];if(!m)return;
+  e.preventDefault();cancelAnimationFrame(walking);st.pos=[Math.max(0,Math.min(WORLD.w,st.pos[0]+m[0])),Math.max(0,Math.min(WORLD.h,st.pos[1]+m[1]))];st.trail.push(st.pos.slice());render();
+});
+render();
+</script>
+</body>
+</html>

@@ -1,0 +1,592 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EARTH POST 郵站</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&family=Noto+Sans+TC:wght@500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --grass:#7cb342; --grass-d:#4f8a2b; --grass-dd:#386b1f;
+  --cream:#fff8e7; --cream-2:#fbefd2; --cream-line:#efdfb8;
+  --wood:#8a5a32; --wood-d:#5e3a1d; --wood-l:#b07a46;
+  --seal:#d9473b; --ink:#3d2a17; --ink-2:#7a6248;
+  --sky1:#bfe6ff; --sky2:#e9f7ff;
+  --gold:#f4c542;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:#2f4a22;font-family:"Noto Sans TC",system-ui,sans-serif;color:var(--ink)}
+body{display:flex;align-items:center;justify-content:center;padding:16px}
+.stage{
+  position:relative;width:min(100%, calc((100vh - 32px) * 16 / 9));aspect-ratio:16/9;
+  border-radius:28px;overflow:hidden;container-type:inline-size;
+  background:
+    radial-gradient(ellipse 60% 35% at 15% 100%, #8fcf5a 0 60%, transparent 61%),
+    radial-gradient(ellipse 70% 30% at 70% 102%, #9ad466 0 60%, transparent 61%),
+    radial-gradient(ellipse 45% 30% at 40% 78%, #a9d98a 0 55%, transparent 56%),
+    radial-gradient(ellipse 50% 28% at 85% 72%, #b4dd95 0 55%, transparent 56%),
+    linear-gradient(#bfe6ff 0%, #e4f5ff 45%, #cde9b4 62%, #9fd06f 100%);
+  box-shadow:0 20px 60px rgba(0,0,0,.35);
+}
+/* painted scene */
+.scene{position:absolute;inset:0;width:100%;height:100%}
+/* sign */
+.sign{position:absolute;left:17.5cqw;top:1.2cqw;width:31cqw;height:10.2cqw}
+.sign .rope{position:absolute;top:-1.4cqw;width:.45cqw;height:3.2cqw;border-radius:.3cqw;
+  background:repeating-linear-gradient(160deg,#9b7447 0 .35cqw,#7a5530 .35cqw .7cqw)}
+.sign .rope.l{left:17%}.sign .rope.r{right:17%}
+.plank{position:absolute;left:0;right:0;top:1.4cqw;height:7.6cqw;display:grid;place-items:center;
+  border-radius:2.6cqw 2.2cqw 2.8cqw 2.3cqw/2.4cqw 2.6cqw 2.2cqw 2.6cqw;border:.32cqw solid #6b4220;
+  background:
+    radial-gradient(ellipse 1.6cqw .5cqw at 22% 68%,rgba(90,50,20,.28),transparent 70%),
+    radial-gradient(ellipse 1.2cqw .4cqw at 80% 30%,rgba(90,50,20,.22),transparent 70%),
+    repeating-linear-gradient(177deg,transparent 0 1.1cqw,rgba(110,62,25,.16) 1.1cqw 1.25cqw,transparent 1.25cqw 1.9cqw,rgba(255,225,180,.12) 1.9cqw 2cqw),
+    linear-gradient(#c58d55,#a36a37 55%,#8d5a2c);
+  box-shadow:inset 0 .4cqw 0 rgba(255,232,195,.45),inset 0 -.5cqw 0 rgba(80,40,12,.3),0 .55cqw 0 #5a361a,0 1.4cqw 2cqw rgba(60,30,0,.28)}
+.plank b{font-family:Fredoka,sans-serif;font-weight:700;font-size:4.5cqw;letter-spacing:.2cqw;color:#fff7e0;line-height:1;
+  text-shadow:.16cqw 0 0 #6b4220,-.16cqw 0 0 #6b4220,0 .16cqw 0 #6b4220,0 -.16cqw 0 #6b4220,
+    .12cqw .12cqw 0 #6b4220,-.12cqw .12cqw 0 #6b4220,.12cqw -.12cqw 0 #6b4220,-.12cqw -.12cqw 0 #6b4220,0 .45cqw 0 #6b4220}
+.sign .env{position:absolute;left:50%;top:-1.1cqw;width:6cqw;transform:translateX(-50%) rotate(-4deg);filter:drop-shadow(0 .3cqw .2cqw rgba(80,40,10,.3))}
+.sign .leaf{position:absolute;width:5cqw;filter:drop-shadow(0 .2cqw .15cqw rgba(40,70,20,.3))}
+.sign .leaf.l{left:-4.2cqw;top:6.4cqw;width:4.4cqw;transform:rotate(-25deg)}
+.sign .leaf.l2{left:-1.6cqw;top:8.4cqw;width:3cqw;transform:rotate(30deg)}
+.sign .leaf.r{right:-2cqw;top:.4cqw;transform:rotate(150deg) scaleY(-1)}
+.sign .leaf.r2{right:.4cqw;top:6.4cqw;width:3.4cqw;transform:rotate(200deg)}
+.sub{position:absolute;left:21cqw;top:10.4cqw;font-weight:700;font-size:1.25cqw;color:var(--grass-dd);background:rgba(255,255,255,.7);padding:.3cqw 1cqw;border-radius:99px}
+/* avatar rail */
+.rail{position:absolute;left:1.6cqw;top:2cqw;bottom:2cqw;width:12.5cqw;border-radius:6cqw;
+  background:linear-gradient(#8fc163,#6fa848);border:.3cqw solid #5d9638;
+  display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:1cqw;padding:1.4cqw 0;overflow-y:auto;scrollbar-width:none}
+.rail::-webkit-scrollbar{display:none}
+.av{flex:none;width:7.8cqw;height:7.8cqw;border-radius:50%;border:.5cqw solid var(--cream);background:var(--cream-2);
+  display:grid;place-items:center;cursor:pointer;overflow:hidden;position:relative;transition:transform .15s;
+  box-shadow:0 .4cqw 0 rgba(0,0,0,.15);padding:0}
+.av:hover{transform:scale(1.04)}
+.av.on{border-color:var(--gold);box-shadow:0 0 0 .5cqw #fff3c2,0 0 2cqw #ffe27a}
+.av img{width:84%;height:84%;object-fit:contain}
+.av .ph{font-weight:900;font-size:1.3cqw;color:var(--ink-2);text-align:center;line-height:1.2}
+/* 圖鑑分組（v0.26.0）：生物類型分組＋收集進度；棲地篩選；郵差／只觀察／家養標記 */
+.rail .hf{flex:none;width:10.6cqw;font:inherit;font-weight:900;font-size:1.05cqw;color:var(--wood-d);background:var(--cream);border:.2cqw solid var(--cream-line);border-radius:99px;padding:.35cqw .6cqw;cursor:pointer}
+.rail .grp{flex:none;width:10.6cqw;display:flex;justify-content:space-between;align-items:baseline;gap:.4cqw;padding:.25cqw .7cqw;margin-top:.4cqw;border-radius:99px;background:var(--wood-d,#6b4220);color:#fff8e7}
+.rail .grp b{font-size:1.1cqw}.rail .grp small{font-size:.9cqw;font-weight:900;opacity:.9}
+.rail .none{font-size:.95cqw;color:var(--ink-2);text-align:center;padding:0 .6cqw}
+.av .bd{position:absolute;right:-.1cqw;bottom:.1cqw;width:2.9cqw;height:2.9cqw;border-radius:50%;background:#fff8e7 center/78% no-repeat;border:.2cqw solid var(--cream-line);box-shadow:0 .15cqw .25cqw rgba(0,0,0,.25)}
+.av .bd.c{width:3.4cqw;height:3.4cqw;background-size:90%;background-image:url(art/ui/ic_courier_cap.png);background-color:#dff2d6;border-color:#5f9e34}
+.av .bd.c.fly{background-image:url(art/ui/ic_courier_cap_fly.png)}   /* 會飛的郵差：帽子加羽毛 */
+.av .bd.o{background-image:url(art/ui/ic_observe.png)}
+.rail .grp i{flex:none;width:1.6cqw;height:1.6cqw;background:center/contain no-repeat;align-self:center}
+.rail .grp b{flex:1}
+.av .ch{position:absolute;left:50%;bottom:-.1cqw;transform:translateX(-50%);font-size:.8cqw;font-weight:900;background:#fff1c9;color:#8a5a12;border-radius:99px;padding:.05cqw .5cqw;white-space:nowrap}
+/* hero */
+.hero{position:absolute;left:30cqw;top:11cqw;width:28cqw;height:27cqw;display:grid;place-items:end center}
+.hero .art{width:25cqw;height:25cqw;border-radius:50%;position:relative;display:grid;place-items:center;
+  background:radial-gradient(circle at 50% 40%,rgba(255,255,255,.85),rgba(255,255,255,.35) 60%,transparent 70%)}
+.hero .art img{max-width:100%;max-height:100%;object-fit:contain;filter:drop-shadow(0 1.2cqw 1cqw rgba(0,0,0,.25))}
+.hero .art .ph{width:19cqw;height:19cqw;border-radius:50%;border:.4cqw dashed var(--wood-l);display:grid;place-items:center;
+  text-align:center;color:var(--wood);font-weight:900;font-size:1.6cqw;background:rgba(255,248,231,.7)}
+.ground{position:absolute;bottom:.5cqw;width:20cqw;height:3cqw;border-radius:50%;background:rgba(80,60,20,.18);filter:blur(.4cqw)}
+.namecard{position:absolute;left:16cqw;top:35.5cqw;background:var(--cream);border:.3cqw solid var(--cream-line);border-radius:2cqw;
+  padding:1cqw 1.8cqw;box-shadow:0 .5cqw 0 var(--cream-line);width:40cqw}
+.namecard h1{margin:0;font-size:3cqw;font-weight:900;line-height:1.1}
+.namecard .sci{font-style:italic;font-size:1.25cqw;color:var(--ink-2);margin-top:.3cqw}
+.namecard .fam{font-size:1.15cqw;color:var(--ink-2)}
+.tags{display:flex;gap:.6cqw;flex-wrap:wrap;margin-top:.7cqw}
+.tag{font-size:1.05cqw;font-weight:700;padding:.25cqw .9cqw;border-radius:99px;background:#e5f2d5;color:var(--grass-dd)}
+.tag.v{background:#fde6c4;color:#9a5a12}
+.tag.t{background:#e8e1f7;color:#5b4796}
+/* panel */
+.panel{position:absolute;right:1.8cqw;top:2cqw;bottom:7.2cqw;width:39cqw;border-radius:2.6cqw;
+  background:var(--cream);border:.35cqw solid var(--cream-line);box-shadow:0 .7cqw 0 #e3cf9f,0 1.5cqw 3cqw rgba(0,0,0,.18);
+  display:flex;flex-direction:column;padding:1.4cqw}
+.tabs{display:flex;gap:.6cqw;background:var(--cream-2);padding:.5cqw;border-radius:99px}
+.tabs button{flex:1;border:0;background:transparent;font:inherit;font-weight:900;font-size:1.45cqw;color:var(--ink-2);
+  padding:.75cqw 0;border-radius:99px;cursor:pointer}
+.tabs button.on{background:linear-gradient(#8bc34a,#5f9e34);color:#fff;box-shadow:0 .35cqw 0 var(--grass-dd)}
+.note{margin:1cqw 0 .6cqw;font-size:1.05cqw;color:#8a5a12;background:#fff1d0;border-radius:1cqw;padding:.55cqw 1cqw}
+.rows{flex:1;overflow:auto;display:flex;flex-direction:column;gap:.55cqw;padding-right:.3cqw}
+.row{display:grid;grid-template-columns:3cqw 1fr;gap:1cqw;align-items:center;background:#fffdf6;border:.2cqw solid var(--cream-line);
+  border-radius:1.4cqw;padding:.6cqw 1cqw;box-shadow:0 .3cqw 0 var(--cream-line)}
+.ic{width:3cqw;height:3cqw;border-radius:1cqw;display:grid;place-items:center;font-size:1.7cqw;background:var(--cream-2)}
+.lbl{display:flex;align-items:center;gap:.6cqw;font-size:1.1cqw;font-weight:700;color:var(--ink-2)}
+.val{font-size:1.35cqw;font-weight:900;line-height:1.35;margin-top:.15cqw}
+.val.sm{font-size:1.2cqw;font-weight:700}
+.src{font-size:.95cqw;color:var(--ink-2);margin-top:.2cqw}
+.badge{font-size:.9cqw;font-weight:900;padding:.1cqw .7cqw;border-radius:99px}
+.b-s{background:#e1efd0;color:var(--grass-dd)}     /* 物種資料 */
+.b-g{background:#e4ecfb;color:#3c5e9e}             /* 遊戲估算 */
+.st{font-size:.9cqw;font-weight:700;color:var(--ink-2)}
+.pend{color:#b0874f}
+.foot{text-align:center;font-size:.95cqw;color:var(--ink-2);margin-top:.6cqw}
+/* bottom bar */
+.bar{position:absolute;left:16cqw;right:43cqw;bottom:2cqw;height:4.4cqw;border-radius:99px;background:var(--cream);
+  border:.3cqw solid var(--cream-line);box-shadow:0 .4cqw 0 #e3cf9f;display:flex;align-items:center;gap:1.2cqw;padding:0 1.8cqw;font-weight:900;font-size:1.3cqw}
+.bar .dot{width:1cqw;height:1cqw;border-radius:50%;background:var(--grass)}
+.bar .sep{width:.2cqw;height:2.2cqw;background:var(--cream-line)}
+.go svg{width:4.4cqw;filter:drop-shadow(0 .25cqw .1cqw rgba(30,60,10,.35))}
+.go{display:flex;align-items:center;justify-content:center;gap:1.4cqw;
+  position:absolute;right:1.8cqw;bottom:1.6cqw;width:39cqw;height:4.8cqw;border:0;border-radius:99px;cursor:pointer;
+  background:linear-gradient(#8bc34a,#4f8a2b);color:#fff;font:inherit;font-weight:900;font-size:2cqw;letter-spacing:.3cqw;
+  box-shadow:0 .55cqw 0 var(--grass-dd),0 1cqw 2cqw rgba(0,0,0,.2)}
+.go:active{transform:translateY(.3cqw);box-shadow:0 .25cqw 0 var(--grass-dd)}
+[hidden]{display:none!important}
+.modes{position:absolute;z-index:6;left:24cqw;top:10.6cqw;display:flex;gap:.4cqw;background:rgba(255,248,231,.85);padding:.35cqw;border-radius:99px;
+  border:.2cqw solid var(--cream-line)}
+.modes a{font-weight:900;font-size:1.2cqw;color:var(--ink-2);text-decoration:none;padding:.3cqw 1.4cqw;border-radius:99px}
+.modes a.on{background:linear-gradient(#8bc34a,#5f9e34);color:#fff}
+@media (max-width:640px){ body{padding:8px} }
+
+/* ===== v0.14 2D 介面：GPT 畫的零件 ===== */
+:root{--line:#5b3a1e}
+.scene{object-fit:cover}
+.sign{left:23cqw;top:-.8cqw;width:19cqw;height:auto}
+.sign img{display:block;width:100%;filter:drop-shadow(0 .5cqw .4cqw rgba(60,30,0,.25))}
+.sign b{position:absolute;left:0;right:0;top:56%;transform:translateY(-50%);text-align:center;font-family:Fredoka,sans-serif;font-weight:700;font-size:2.8cqw;letter-spacing:.2cqw;color:#fff7e0;line-height:1;
+  text-shadow:.16cqw 0 0 var(--line),-.16cqw 0 0 var(--line),0 .16cqw 0 var(--line),0 -.16cqw 0 var(--line),.12cqw .12cqw 0 var(--line),-.12cqw .12cqw 0 var(--line),.12cqw -.12cqw 0 var(--line),-.12cqw -.12cqw 0 var(--line),0 .4cqw 0 var(--line)}
+.rail{background:rgba(255,248,231,.55);border:.3cqw solid var(--line);backdrop-filter:blur(2px)}
+.av{width:8.4cqw;height:8.4cqw;border:0;border-radius:50%;background:url(art/ui/frame.png) center/contain no-repeat;box-shadow:none;overflow:visible}
+.av.on{border:0;background-image:url(art/ui/frame_on.png);box-shadow:none;transform:scale(1.06)}
+.av img{width:66%;height:66%}
+.av .ph{color:#b9ab8b}
+.hero .art{background:radial-gradient(circle at 50% 55%,rgba(255,255,255,.55),rgba(255,255,255,.15) 55%,transparent 68%)}
+.namecard,.panel,.bar{border-color:var(--line);border-width:.3cqw}
+.namecard{box-shadow:0 .5cqw 0 #c9a46a}
+.panel{box-shadow:0 .7cqw 0 #c9a46a,0 1.5cqw 3cqw rgba(0,0,0,.18)}
+.bar{box-shadow:0 .4cqw 0 #c9a46a}
+.tabs{border:.2cqw solid var(--cream-line)}
+.tabs button.on{border:.2cqw solid var(--line)}
+.row{border-color:#e6cf9f}
+.ic{background:transparent;width:3.2cqw;height:3.2cqw}
+.ic img{width:100%;height:100%;object-fit:contain}
+.modes{background:transparent;border:0;gap:.3cqw;padding:0;left:16.5cqw;top:11cqw}
+.hero{top:15.5cqw;height:21cqw}.hero .art{width:21cqw;height:21cqw}
+.modes a{background:url(art/ui/pill.png) center/100% 100% no-repeat;color:var(--wood-d);padding:.4cqw 1cqw;font-size:1.1cqw}
+.modes a.on{background:url(art/ui/pill_on.png) center/100% 100% no-repeat;color:var(--wood-d);padding-right:1.6cqw}
+.go{border:.3cqw solid #2f5a17}
+.modes a{display:inline-flex;align-items:center;gap:.35cqw}
+.modes a::before{content:"";width:1.6cqw;height:1.6cqw;background:center/contain no-repeat;margin-left:-.5cqw}
+.modes a:nth-child(1)::before{background-image:url(art/ui/nav_dex.png)}
+.modes a:nth-child(2)::before{background-image:url(art/ui/nav_explore.png)}
+.modes a:nth-child(3)::before{background-image:url(art/ui/nav_postcard.png)}
+.modes a:nth-child(4)::before{background-image:url(art/ui/nav_station.png)}
+.modes a:nth-child(5)::before{background-image:url(art/ui/nav_friends.png)}
+.modes a:nth-child(6)::before{background-image:url(art/ui/nav_me.png)}
+.scene{transition:filter .3s}
+.scene.soft{filter:blur(.35cqw) saturate(.75) brightness(1.08);transform:scale(1.04)}
+/* 手機橫放時 Safari 會自動放大文字，造成狀態列、導覽列超出（2026-11-12 使用者回報） */
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+.bar{overflow:hidden;white-space:nowrap}
+.bar>span{min-width:0;overflow:hidden;text-overflow:ellipsis;flex-shrink:1}
+.bar>.sep,.bar>.dot{flex-shrink:0}
+.modes{white-space:nowrap;flex-wrap:nowrap}
+/* 選取中的頭像框右上角腳印被名單上緣切掉（2026-11-12 使用者回報）：名單上下多留空間 */
+.rail{padding-top:2.4cqw;padding-bottom:2cqw}
+.av.on{transform:scale(1.04)}
+/* 腳印在圓框外的右上角：按鈕本身是圓形會把背景切成圓的，所以按鈕改成方形（框的圖本身就是圓的） */
+.av,.av.on{border-radius:0}
+.av:focus-visible{outline:.3cqw solid var(--wood);outline-offset:.2cqw;border-radius:50%}
+/* ===== 直式（iPhone）版面（v0.28.0，2026-11-13 使用者決定：iPhone 直式為主）=====
+   做法：舞台寬度＝手機寬度 ÷ 0.39，只顯示左邊 39%（39cqw＝手機寬）。原本橫向版右側面板就是 39cqw 寬，
+   所以面板裡用 cqw 寫的字級、間距在手機上大小差不多，不用每個字重寫；只要把各區塊重新排位置。
+   已改成直式的頁面在 <main> 加 class="pt"；還沒改的頁面維持橫向。 */
+body:has(.stage.pt){padding:0;overflow:hidden;align-items:stretch}
+.stage.pt{--vw:min(100vw,440px);--st:env(safe-area-inset-top,0px);--sb:env(safe-area-inset-bottom,0px);--tab:calc(6.4cqw + var(--sb));
+  width:calc(var(--vw) / .39);flex:none;height:100dvh;aspect-ratio:auto;border-radius:0;box-shadow:none;
+  clip-path:inset(0 61% 0 0);transform:translateX(30.5%)}
+@media (min-width:600px){body:has(.stage.pt){padding:16px 0;align-items:center}.stage.pt{height:min(calc(100dvh - 32px),900px);clip-path:inset(0 61% 0 0 round 28px)}}
+.stage.pt .scene{width:39cqw}
+.stage.pt .sign{display:none}
+/* 底部導覽列 */
+.stage.pt .modes{left:0;width:39cqw;top:auto;bottom:0;height:var(--tab);padding:.5cqw .4cqw var(--sb);background:var(--cream);border-top:.25cqw solid var(--cream-line);
+  display:grid;grid-template-columns:repeat(6,1fr);gap:.2cqw;z-index:15;border-radius:0}
+.stage.pt .modes a,.stage.pt .modes a.on{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.2cqw;background:none;padding:0;font-size:1.15cqw;border-radius:1.4cqw;color:var(--ink-2)}
+.stage.pt .modes a.on{background:#e4f2d6;color:var(--grass-dd);font-weight:900}
+.stage.pt .modes a::before{width:2.7cqw;height:2.7cqw;margin:0}
+/* 抽屜整個一起捲動（v0.32.1：手機畫面比較矮時，只捲中間資料區會被擠到幾乎 0 高度、滑不動）；分頁固定在抽屜上方 */
+.stage.pt .panel{overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+.stage.pt .panel .rows{flex:none;overflow:visible}
+.stage.pt .panel .tabs{position:sticky;top:-1.3cqw;z-index:3;flex:none}
+/* 小花：右上角 */
+.stage.pt .flowerhud{right:calc(61% + 1.2cqw)!important;top:calc(var(--st) + 1cqw)!important;font-size:1.4cqw!important;z-index:12!important}
+/* ===== 圖鑑頁直式（v0.29.0）：列表（分組格子）→ 點一隻進詳細頁；詳細頁可返回、左右換 ===== */
+.av .nm{display:none}
+.dexback,.dexnav{display:none}
+.stage.dex .bar{display:none}
+/* 列表 */
+.stage.dex.list .hero,.stage.dex.list .namecard,.stage.dex.list .panel,.stage.dex.list .go{display:none}
+.stage.dex .rail{left:0;top:0;width:39cqw;bottom:var(--tab);border-radius:0;border:0;background:rgba(255,248,231,.9);backdrop-filter:none;
+  display:grid;grid-template-columns:repeat(4,1fr);align-content:start;justify-items:center;gap:.4cqw .4cqw;padding:calc(var(--st) + 1.2cqw) 1.2cqw 3cqw}
+.stage.dex.detail .rail{display:none}
+.stage.dex .rail .dextitle{grid-column:1/-1;justify-self:start;font-weight:900;font-size:2cqw;color:var(--wood-d);background:var(--cream);border:.25cqw solid var(--wood);border-radius:1.2cqw;padding:.2cqw 1.2cqw}
+.stage.dex .rail .dextitle small{font-size:1.25cqw;color:var(--ink-2);margin-left:.6cqw}
+.stage.dex .rail .hf{grid-column:1/-1;justify-self:stretch;width:auto;font-size:max(16px,1.55cqw);padding:.7cqw 1.2cqw;margin-top:.4cqw}
+.stage.dex .rail .grp{grid-column:1/-1;justify-self:stretch;width:auto;margin-top:1cqw;padding:.45cqw 1.2cqw}
+.stage.dex .rail .grp b{font-size:1.5cqw}.stage.dex .rail .grp small{font-size:1.25cqw}.stage.dex .rail .grp i{width:2.1cqw;height:2.1cqw}
+.stage.dex .rail .none{grid-column:1/-1;font-size:1.3cqw;padding:2cqw 0}
+.stage.dex .av{width:8.6cqw;height:8.6cqw;margin-bottom:2cqw}
+.stage.dex .av.on{transform:none;background-image:url(art/ui/frame.png)}
+.stage.dex .av .nm{display:block;position:absolute;left:50%;top:100%;transform:translateX(-50%);margin-top:.1cqw;font-size:1.15cqw;font-weight:700;color:var(--ink-2);white-space:nowrap}
+.stage.dex .av .bd{width:2.6cqw;height:2.6cqw}
+.stage.dex .av .ch{font-size:1cqw;bottom:.2cqw}
+/* 詳細 */
+.stage.dex.detail .hero{left:5.5cqw;width:28cqw;top:calc(var(--st) + 3.5cqw);height:calc(min(24cqw, 36%) - 3cqw)}
+.stage.dex.detail .hero .art{width:auto;height:100%;max-height:20cqw;aspect-ratio:1}
+.stage.dex.detail .dexback{display:block;position:absolute;z-index:9;left:1.2cqw;top:calc(var(--st) + 1cqw);font:inherit;font-weight:900;font-size:1.4cqw;color:var(--wood-d);background:var(--cream);border:.25cqw solid var(--cream-line);border-radius:99px;padding:.5cqw 1.4cqw;cursor:pointer}
+.stage.dex.detail .dexnav{display:grid;place-items:center;position:absolute;z-index:9;top:calc(var(--st) + min(12cqw, 16%));width:4.4cqw;height:4.4cqw;border-radius:50%;border:.25cqw solid var(--cream-line);background:rgba(255,248,231,.92);font:inherit;font-weight:900;font-size:2.2cqw;color:var(--wood-d);cursor:pointer;padding:0}
+.stage.dex.detail .dexnav.p{left:1cqw}.stage.dex.detail .dexnav.n{left:33.6cqw}
+.stage.dex.detail .panel{left:0;right:auto;width:39cqw;top:calc(var(--st) + min(24cqw, 36%));bottom:var(--tab);border-radius:2.4cqw 2.4cqw 0 0;border-width:.3cqw 0 0;padding:1.4cqw 1.4cqw 7cqw;z-index:8}
+.stage.dex.detail .namecard{position:static;width:auto;border:0;box-shadow:none;background:none;padding:0 0 .8cqw}
+.stage.dex.detail .namecard h1{font-size:2.6cqw}.stage.dex.detail .namecard .sci,.stage.dex.detail .namecard .fam{font-size:1.25cqw}
+.stage.dex.detail .tag{font-size:1.15cqw}
+.stage.dex.detail .tabs button{font-size:1.5cqw;padding:.9cqw 0}
+.stage.dex.detail .note{font-size:1.2cqw}
+.stage.dex.detail .rows{gap:.7cqw}
+.stage.dex.detail .val{font-size:1.5cqw}.stage.dex.detail .val.sm{font-size:1.35cqw}.stage.dex.detail .lbl{font-size:1.2cqw}.stage.dex.detail .src{font-size:1.15cqw}
+.stage.dex.detail .badge{font-size:1.05cqw}.stage.dex.detail .foot{font-size:1.1cqw}
+.stage.dex.detail .go{left:1.4cqw;right:auto;width:36.2cqw;bottom:calc(var(--tab) + 1cqw);height:5cqw;font-size:1.8cqw;z-index:9}
+.stage.dex.detail .go svg{width:3.6cqw}
+/* ===== station ===== */
+.st-scene{position:absolute;left:2.4cqw;top:14.2cqw;width:54.6cqw;height:35.2cqw;border-radius:2.4cqw;overflow:hidden;
+  border:.4cqw solid var(--cream);box-shadow:0 .6cqw 0 #e3cf9f,0 1.4cqw 2.4cqw rgba(0,0,0,.18);background:var(--cream-2)}
+.st-scene>img{width:100%;height:100%;object-fit:cover;object-position:50% 50%;display:block}
+.st-name{position:absolute;left:1.2cqw;top:1.2cqw;background:rgba(255,248,231,.94);border-radius:99px;padding:.3cqw 1.2cqw;font-weight:900;font-size:1.3cqw;color:var(--ink)}
+.staff{position:absolute;bottom:0;display:flex;flex-direction:column;align-items:center;filter:drop-shadow(0 .5cqw .5cqw rgba(0,0,0,.25))}
+.staff img{display:block}
+.staff span{margin-top:-.4cqw;background:rgba(255,248,231,.95);border-radius:99px;padding:.1cqw .8cqw;font-weight:900;font-size:.95cqw;color:var(--ink)}
+.staff.boss{left:2.4cqw}.staff.boss img{height:21cqw}
+.staff.cat{right:3cqw}.staff.cat img{height:13cqw}
+.say{position:absolute;left:1.2cqw;right:1.2cqw;top:4.2cqw;background:#fffdf6;border:.2cqw solid var(--cream-line);border-radius:1.4cqw;padding:.6cqw 1cqw;
+  font-size:1.05cqw;font-weight:700;color:var(--ink);box-shadow:0 .3cqw .6cqw rgba(0,0,0,.12);transition:opacity .6s}
+.meow{position:absolute;bottom:100%;left:50%;transform:translateX(-50%);margin-bottom:.4cqw;background:#fffdf6;border:.2cqw solid var(--cream-line);border-radius:99px;padding:.2cqw .9cqw;font-size:1.05cqw;font-weight:900;color:var(--ink);white-space:nowrap;opacity:0;transition:opacity .4s;pointer-events:none}
+.meow.on{opacity:1}
+.staff.cat{cursor:pointer}
+.stage.pt .meow{font-size:1.25cqw}
+.say.fade{opacity:0;pointer-events:none}
+.staff.boss{cursor:pointer}
+@media (prefers-reduced-motion: reduce){.say{transition:none}}
+.say:before{content:"站長";display:inline-block;margin-right:.6cqw;background:var(--grass-d);color:#fff;border-radius:99px;padding:0 .7cqw;font-size:.9cqw}
+.care{position:absolute;inset:0;background:rgba(255,248,231,.93);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.8cqw;text-align:center}
+.care .pair{display:flex;align-items:flex-end;gap:1.6cqw}
+.care .cr{width:15cqw;height:15cqw;display:grid;place-items:center;animation:hop 1s ease-in-out infinite}
+.care .cr img{max-width:100%;max-height:100%}
+.care .tool{font-size:5cqw;animation:use 1.2s ease-in-out infinite}
+.care .cat{width:8cqw;align-self:flex-end;animation:hop 1.2s ease-in-out infinite .3s}.care .cat img{width:100%;display:block}
+.care h3{margin:0;font-size:1.7cqw;color:var(--ink)}
+.care .gain{display:flex;gap:.8cqw;font-weight:900;font-size:1.2cqw}
+.care .gain span{background:#fff;border:.2cqw solid var(--cream-line);border-radius:99px;padding:.2cqw .9cqw}
+.care .ok{border:0;font:inherit;font-weight:900;font-size:1.2cqw;color:#fff;background:linear-gradient(#8bc34a,#5f9e34);border-radius:99px;padding:.5cqw 2.4cqw;cursor:pointer;box-shadow:0 .3cqw 0 var(--grass-dd)}
+@keyframes hop{0%,100%{transform:translateY(0)}50%{transform:translateY(-.8cqw)}}
+@keyframes use{0%,100%{transform:rotate(-12deg)}50%{transform:rotate(12deg) translateY(-.4cqw)}}
+@media (prefers-reduced-motion: reduce){.care .cr,.care .tool,.care .cat{animation:none}}
+/* 認養棲地：點開看那個探索點的風景（v0.24.11） */
+.hview{position:absolute;inset:0;z-index:5;overflow:hidden;border-radius:inherit}
+.hview img.bg{width:100%;height:100%;object-fit:cover;display:block}
+.hview.on img.bg{filter:saturate(1.15) brightness(1.04)}
+.hview .hn{position:absolute;left:1.4cqw;top:1.2cqw;background:rgba(255,248,231,.95);border:.25cqw solid #8a5a32;border-radius:1cqw;padding:.35cqw 1.2cqw;font-weight:900;font-size:1.6cqw;color:#5b3a1e;box-shadow:0 .3cqw 0 rgba(0,0,0,.18)}
+.hview .hx{position:absolute;right:1.2cqw;top:1.2cqw;border:.2cqw solid var(--cream-line);background:#fffdf6;border-radius:99px;font:inherit;font-weight:900;font-size:1.1cqw;padding:.3cqw 1.1cqw;cursor:pointer;color:var(--ink)}
+.hview .hc{position:absolute;left:1.4cqw;right:1.4cqw;bottom:1.2cqw;background:rgba(255,248,231,.93);border-radius:1cqw;padding:.6cqw 1cqw;font-size:1.05cqw;color:var(--ink-2);line-height:1.5}
+.hview .hc b{color:#3f7421}
+.hview .sprout{position:absolute;font-size:2.8cqw;animation:hop 1.6s ease-in-out infinite;filter:drop-shadow(0 0 .35cqw rgba(255,255,255,.95)) drop-shadow(0 .2cqw .2cqw rgba(90,60,20,.35))}
+.hview .visitor{position:absolute;left:18%;bottom:24%;width:17%;flex-direction:column-reverse;border:0;background:none;padding:0;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:.3cqw;font:inherit}
+.hview .visitor img{width:100%;height:auto;display:block;filter:drop-shadow(0 .4cqw .3cqw rgba(60,40,10,.35));animation:hop 2.4s ease-in-out infinite}
+.hview .visitor span{background:rgba(255,248,231,.96);border:.2cqw solid #8a5a32;border-radius:99px;padding:.2cqw .9cqw;font-weight:900;font-size:1.05cqw;color:#5b3a1e;white-space:nowrap}
+.hview .visitor.done{cursor:default}.hview .visitor.done span{border-color:var(--cream-line);color:var(--ink-2);font-weight:700}
+.hview .vhint{position:absolute;left:50%;transform:translateX(-50%);bottom:1.2cqw;background:rgba(255,248,231,.96);border:.2cqw solid #8a5a32;border-radius:99px;padding:.2cqw .9cqw;font-weight:900;font-size:1.05cqw;color:#5b3a1e;white-space:nowrap;pointer-events:none}
+.hview .vhint.done{border-color:var(--cream-line);color:var(--ink-2);font-weight:700}
+.hview .visitor:focus-visible img{outline:.25cqw solid #8a5a32;outline-offset:.15cqw}
+@media (prefers-reduced-motion: reduce){.hview .visitor img{animation:none}}
+.adthumb{width:9cqw;height:5.2cqw;border-radius:.8cqw;border:.25cqw solid var(--cream-line);padding:0;cursor:pointer;overflow:hidden;background:#fff;flex-shrink:0}
+.adthumb img{width:100%;height:100%;object-fit:cover;display:block}
+.adthumb.on{border-color:#5f9e34;box-shadow:0 0 0 .2cqw #8bc34a}
+@media (prefers-reduced-motion: reduce){.hview .sprout{animation:none}}
+.fl{display:inline-flex;align-items:center;gap:.2cqw;font-weight:900}
+.fl img{width:1.5em;height:1.5em;vertical-align:middle}
+.req{display:grid;grid-template-columns:5.2cqw 1fr auto;gap:.9cqw;align-items:center}
+.req .face{width:5.2cqw;height:5.2cqw;border-radius:50%;background:var(--cream-2);border:.25cqw solid var(--cream-line);overflow:hidden;display:grid;place-items:center}
+.req .face img{width:100%;height:100%;object-fit:contain}
+.req .t{font-weight:900;font-size:1.15cqw}.req .s{font-size:.95cqw;color:var(--ink-2)}
+.btn{border-radius:99px;font:inherit;font-weight:900;font-size:1.1cqw;padding:.45cqw 1.3cqw;cursor:pointer;background:#fffdf6;border:.22cqw solid var(--cream-line);color:var(--ink)}
+.btn.pri{background:linear-gradient(#8bc34a,#5f9e34);border-color:#5f9e34;color:#fff}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.go[hidden]{display:none}
+.btn:active:not(:disabled){transform:translateY(.25cqw) scale(.96);filter:brightness(.92)}
+/* 買東西、兌換成功的回饋：畫面下方跳出提示（原本只改上方對話，手機上沒看到，v0.33.3） */
+.toast{position:absolute;left:1.4cqw;width:36.2cqw;bottom:calc(var(--tab) + 6cqw);z-index:30;background:#3d2a17;color:#fff8e7;border-radius:1.4cqw;padding:1.1cqw 1.6cqw;font-size:1.45cqw;font-weight:900;line-height:1.5;text-align:center;box-shadow:0 .5cqw 1.6cqw rgba(0,0,0,.3);opacity:0;transform:translateY(1cqw);transition:opacity .2s,transform .2s;pointer-events:none}
+.toast.on{opacity:1;transform:none}
+.btn.sm{font-size:1cqw;padding:.35cqw 1cqw;white-space:nowrap}
+.foot{margin-top:.6cqw;text-align:center;font-size:.9cqw;color:var(--ink-2)}
+.go:disabled{filter:grayscale(.7);opacity:.7;cursor:not-allowed}
+.req.done{opacity:.6}
+.shop{display:grid;grid-template-columns:3cqw 1fr auto auto;gap:.8cqw;align-items:center}
+.shop .ic2{font-size:2cqw;text-align:center}
+.buyrow{grid-column:1/-1;display:flex;align-items:center;justify-content:flex-end;gap:1cqw}
+.qty{display:flex;align-items:center;gap:.5cqw}
+.qty button{width:3.6cqw;height:3.6cqw;border-radius:50%;border:.22cqw solid var(--cream-line);background:#fffdf6;font:inherit;font-weight:900;font-size:1.9cqw;line-height:1;color:var(--ink);cursor:pointer;padding:0}
+.qty button:active:not(:disabled){transform:scale(.92)}.qty button:disabled{opacity:.4;cursor:not-allowed}
+.qty b{min-width:3cqw;text-align:center;font-size:1.6cqw}
+.meter2{height:.9cqw;border-radius:99px;background:#efe4c8;overflow:hidden;margin:.3cqw 0}
+.meter2 i{display:block;height:100%;background:linear-gradient(90deg,#f6a5b8,#e5718f)}
+.perk{font-size:.95cqw;color:var(--ink-2)}.perk b{color:var(--grass-dd)}
+/* ===== 直式（v0.30.0）：上面郵站場景（認養地風景、照顧動畫也在這裡），下面分頁抽屜 ===== */
+.stage.pt .bar{display:none}
+.stage.pt .st-scene{left:0;top:0;width:39cqw;height:calc(var(--st) + min(31cqw, 40%));border:0;border-radius:0;box-shadow:none}
+.stage.pt .st-name{top:calc(var(--st) + 1.2cqw);font-size:1.5cqw}
+.stage.pt .say{top:calc(var(--st) + 4.6cqw);font-size:1.2cqw;padding:.6cqw 1.1cqw;line-height:1.35}
+.stage.pt .say:before{font-size:1.1cqw}
+.stage.pt .staff{bottom:2.4cqw}.stage.pt .staff.boss img{height:min(11.5cqw,23vh)}.stage.pt .staff.cat img{height:min(8cqw,16vh)}.stage.pt .staff span{font-size:1.15cqw}
+.stage.pt .care{gap:1cqw;padding-top:var(--st)}
+.stage.pt .care .cr{width:11cqw;height:11cqw}.stage.pt .care .cat{width:6.5cqw}.stage.pt .care .tool{font-size:4cqw}
+.stage.pt .care h3{font-size:1.9cqw}.stage.pt .care .gain{font-size:1.35cqw}.stage.pt .care .ok{font-size:1.5cqw;padding:.8cqw 3cqw}
+.stage.pt .hview .hn{top:calc(var(--st) + 1.2cqw);font-size:1.7cqw}
+.stage.pt .hview .hx{top:calc(var(--st) + 5.6cqw);font-size:1.3cqw;padding:.5cqw 1.3cqw}
+.stage.pt .hview .hc{font-size:1.15cqw;bottom:3.6cqw;left:1cqw;right:1cqw}
+.stage.pt .hview .visitor{width:22%;left:39%;bottom:31%}
+.stage.pt .hview .vhint{font-size:1.25cqw;bottom:1.2cqw}
+.stage.pt .hview .sprout{font-size:2.6cqw}
+.stage.pt .panel{left:0;right:auto;width:39cqw;top:calc(var(--st) + min(30cqw, 39%));bottom:var(--tab);border-radius:2.4cqw 2.4cqw 0 0;border-width:.3cqw 0 0;padding:1.3cqw 1.4cqw 7cqw;z-index:8}
+.stage.pt .tabs button{font-size:1.35cqw;padding:.9cqw 0}
+.stage.pt .note{font-size:1.2cqw}
+.stage.pt .rows{gap:.7cqw}
+.stage.pt .val{font-size:1.5cqw}.stage.pt .val.sm{font-size:1.35cqw}.stage.pt .lbl{font-size:1.2cqw}.stage.pt .src{font-size:1.15cqw}.infob{border:0;background:none;color:var(--ink-2);cursor:pointer;font:inherit;padding:0 .4cqw}
+.stage.pt .req{grid-template-columns:5.6cqw 1fr;row-gap:.5cqw}.stage.pt .req>:nth-child(n+3){grid-column:2;justify-self:start}.stage.pt .req .face{width:5.6cqw;height:5.6cqw}
+.stage.pt .req .t{font-size:1.45cqw}.stage.pt .req .s{font-size:1.2cqw}
+.stage.pt .btn{font-size:1.35cqw;padding:.7cqw 1.4cqw}.stage.pt .btn.sm{font-size:1.25cqw;padding:.6cqw 1.2cqw}
+.stage.pt .perk{font-size:1.2cqw}
+.stage.pt .shop{grid-template-columns:4.4cqw 1fr}.stage.pt .shop .ic2{font-size:2.2cqw}
+.stage.pt .adthumb{width:10cqw;height:5.8cqw}
+.stage.pt .foot{font-size:1.1cqw}
+.stage.pt .go{left:1.4cqw;right:auto;width:22cqw;bottom:calc(var(--tab) + .8cqw);height:3.8cqw;font-size:1.4cqw;gap:.5cqw;z-index:9}
+.stage.pt .go svg{width:2.6cqw}
+
+</style>
+</head>
+<body>
+<main class="stage pt" id="stage">
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs>
+      <linearGradient id="g-env" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fffaf0"/><stop offset="1" stop-color="#f6e2bd"/></linearGradient>
+      <radialGradient id="g-seal" cx=".38" cy=".35" r=".7"><stop offset="0" stop-color="#ff8a74"/><stop offset=".55" stop-color="#e2493a"/><stop offset="1" stop-color="#b9302a"/></radialGradient>
+      <linearGradient id="g-leaf" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#a6d96a"/><stop offset="1" stop-color="#5c9e34"/></linearGradient>
+      <symbol id="env" viewBox="0 0 72 56">
+        <rect x="3" y="6" width="66" height="46" rx="10" fill="url(#g-env)" stroke="#caa173" stroke-width="2.6"/>
+        <path d="M8 12 Q36 34 64 12" fill="none" stroke="#d3ad80" stroke-width="2.6" stroke-linecap="round"/>
+        <path d="M9 46 Q20 36 27 31 M63 46 Q52 36 45 31" fill="none" stroke="#e7cfa5" stroke-width="2.2" stroke-linecap="round"/>
+        <path d="M27.2 32.5 a8.8 8.6 0 1 1 17.6 0 c0 1.2 1.8 1.6 1.4 3 c-.4 1.3-2.2.9-2.8 2.1 c-1.6 3.4-5.2 5.4-8.4 5.4 c-4.6 0-9.2-4-8.8-8.6 c-1.6-.4-2.4-1.6-1.6-2.6 c.6-.8 1.8-.6 2.6.7z" fill="url(#g-seal)"/>
+        <path d="M36 39.2 c-3.8-2.6-5.6-4.6-5.6-6.7 c0-1.7 1.3-3 2.9-3 c1.1 0 2.1.6 2.7 1.6 c.6-1 1.6-1.6 2.7-1.6 c1.6 0 2.9 1.3 2.9 3 c0 2.1-1.8 4.1-5.6 6.7z" fill="#ffd7cc" opacity=".9"/>
+        <ellipse cx="31.5" cy="27.5" rx="2.2" ry="1.3" fill="#fff" opacity=".55" transform="rotate(-30 31.5 27.5)"/>
+      </symbol>
+      <symbol id="leaf" viewBox="0 0 60 30">
+        <path d="M2 15 C14 0 42 -2 58 15 C42 32 14 30 2 15z" fill="url(#g-leaf)" stroke="#4d8a2a" stroke-width="1.6"/>
+        <path d="M4 15 C22 13 40 13 56 15" fill="none" stroke="#4d8a2a" stroke-width="1.4" stroke-linecap="round" opacity=".7"/>
+      </symbol>
+      <symbol id="flower" viewBox="-12 -12 24 24">
+        <g fill="#fff"><circle cx="0" cy="-6" r="5"/><circle cx="5.7" cy="-1.9" r="5"/><circle cx="3.5" cy="4.9" r="5"/><circle cx="-3.5" cy="4.9" r="5"/><circle cx="-5.7" cy="-1.9" r="5"/></g>
+        <circle r="3.6" fill="#ffcf3d"/>
+      </symbol>
+      <symbol id="tree" viewBox="0 0 120 150">
+        <rect x="52" y="90" width="16" height="60" rx="6" fill="#8b5e34"/>
+        <circle cx="60" cy="60" r="44" fill="#5f9e3a"/><circle cx="35" cy="78" r="30" fill="#6aab42"/><circle cx="86" cy="76" r="30" fill="#5a9636"/>
+        <circle cx="48" cy="44" r="22" fill="#8cc95a" opacity=".85"/><circle cx="76" cy="38" r="12" fill="#a3d870" opacity=".7"/>
+      </symbol>
+    </defs>
+  </svg>
+  <img class="scene soft" id="bgscene" src="art/ui/bg_home.jpg" alt="" aria-hidden="true">
+
+
+
+  <div class="sign"><img src="art/ui/sign.png" alt=""><b>EARTH POST</b></div>
+
+  <nav class="modes"><a href="card_mockup.html">圖鑑</a><a href="explore_mockup.html">探索</a><a href="postcard_mockup.html">明信片</a><a class="on" href="#">郵站</a><a href="postcard_mockup.html?view=friends">好友</a><a href="profile_mockup.html">我的</a></nav>
+  <section class="st-scene" id="scene">
+    <img src="art/post_station_wide.jpg" alt="郵站：木造小屋、櫃台、信件格與布告欄">
+    <div class="st-name" id="stname"></div>
+    <div class="say" id="say"></div>
+    <div class="staff boss"><img src="art/station_master.png" alt="站長"><span>站長</span></div>
+    <div class="staff cat"><div class="meow" id="meow" aria-hidden="true"></div><img src="art/station_cat.png" alt="小貓助手"><span>小貓助手</span></div>
+    <div class="care" id="care" hidden></div>
+    <div class="hview" id="hview" hidden></div>
+  </section>
+  <section class="panel">
+    <div class="tabs" id="tabs"><button class="on" data-tab="req">委託</button><button data-tab="shop">櫃台</button><button data-tab="res">駐站生物</button><button data-tab="adopt">認養棲地</button></div>
+    <div class="note" id="note"></div>
+    <div class="rows" id="rows"></div>
+    <div class="foot">小花、道具價格、委託報酬為遊戲設計（暫定）</div>
+  </section>
+  <div class="bar" id="bar"></div>
+  <button class="go" id="go"><svg viewBox="0 0 72 56" aria-hidden="true"><use href="#env"/></svg><span id="goText">下一件委託</span></button>
+</main>
+
+<script src="player.js"></script>
+<script>
+/* 郵站（測試版 v0.10.0）：只做最基本的小花——委託給小花、櫃台用小花買照顧道具。
+   郵資、郵差補給、觀察紀錄投稿、認養棲地之後再加。規則依設計稿 7.5～7.6（暫定）。 */
+const NAME={dog:"台灣犬",cat:"野化家貓",butterfly:"淡紋青斑蝶",macaque:"台灣獼猴",heron:"黑冠麻鷺"};
+let ME_CITY="台北市",ME="小小觀察員";try{const s=JSON.parse(localStorage.getItem("ep-settings")||"{}");if(s.city&&CITIES[s.city])ME_CITY=s.city;if(s.name&&s.name.trim()&&!["島嶼郵差","島嶼觀察員"].includes(s.name))ME=s.name.trim();}catch(e){}
+const HUB=nearestHub(ME_CITY).hub, RES=STATIONS[HUB];
+/* 照顧道具（駐站生物一律不餵食）：用道具的委託報酬 10～12 朵、駐站好感 +2；不用道具 8 朵、+1 */
+const ITEMS={bowl:{n:"乾淨水盆",ic:"🥣",p:3,r:10},tool:{n:"整理工具",ic:"🧹",p:4,r:11},cushion:{n:"休息軟墊",ic:"🛏️",p:5,r:12},comb:{n:"梳子",ic:"🪮",p:5,r:12}};
+const NONE_R=8;
+/* 各駐站生物常出現的需求（暫定）；台灣獼猴不餵食、不梳毛 */
+const NEEDS={dog:["walk","bowl","cushion"],cat:["comb","cushion","bowl"],heron:["comb","bowl","tool"],butterfly:["tool","bowl"],macaque:["tool","cushion"]};
+const PERKS=[[5,"筆友回信最後一段快 20%；送信時 10% 機率附小禮物"],[10,"解鎖駐站明信片樣式；小禮物機率 20%"],[15,"筆友回信最後一段快 35%"]];
+
+const FKEY="ep-flowers",IKEY="ep-items",SKEY="ep-station";
+const loadJ=(k,d)=>{try{const v=JSON.parse(localStorage.getItem(k)||"null");return v==null?d:v}catch(e){return d}};
+const saveJ=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
+let FL=loadFlowers();                        // 起始 20 朵小花（原型，player.js 共用）
+let INV=loadJ(IKEY,{});
+let SS=loadJ(SKEY,{});SS.aff=SS.aff||{};
+let dayOffset=SS.dayOffset||0;
+const dayKey=()=>{const d=new Date(Date.now()+dayOffset*864e5);return d.toISOString().slice(0,10)};
+/* 每天 3 件委託：依日期與郵站固定產生 */
+function rng(seed){let h=2166136261;for(const c of seed)h=Math.imul(h^c.charCodeAt(0),16777619);return()=>{h=Math.imul(h^(h>>>15),2246822507);h=Math.imul(h^(h>>>13),3266489909);return((h^=h>>>16)>>>0)/4294967296}}
+function todayReqs(){
+  const r=rng(dayKey()+HUB),out=[];
+  for(let i=0;i<3;i++){const k=RES[Math.floor(r()*RES.length)],nd=NEEDS[k][Math.floor(r()*NEEDS[k].length)];
+    if(out.some(o=>o.k===k&&o.need===nd)){i--;if(out.length>8)break;continue;}out.push({k,need:nd});}
+  return out;
+}
+if(SS.day!==dayKey()||SS.hub!==HUB){SS.day=dayKey();SS.hub=HUB;SS.done=[];}
+const REQ=()=>todayReqs();
+const save=()=>{saveJ(FKEY,FL);updateFlowerHud(FL);saveJ(IKEY,INV);SS.dayOffset=dayOffset;saveJ(SKEY,SS)};
+const ART={};RES.forEach(id=>{const im=new Image();im.onload=()=>{ART[id]=true;render()};im.src=`art/${id}.png`;});
+const art=id=>ART[id]?`<img src="art/${id}.png" alt="${NAME[id]}">`:`<span style="font-weight:900;font-size:.9cqw">${NAME[id]}</span>`;
+const fl=n=>`<span class="fl"><img src="art/flower.png" alt="">${n}</span>`;
+const text=(o)=>{const n=NAME[o.k];return {walk:`陪${n}散步`,bowl:`${n}的水盆空了`,tool:`整理${n}的休息區`,cushion:`幫${n}換新軟墊`,comb:o.k==="heron"?`幫${n}整理羽毛`:`幫${n}梳毛`}[o.need]};
+let tab="req",msg="";
+const QTY={};let toastT=0;function toast(t){let e=document.getElementById("toast");if(!e){e=document.createElement("div");e.id="toast";e.className="toast";e.setAttribute("role","status");document.querySelector(".stage").appendChild(e);}
+  e.textContent=t;e.classList.remove("on");void e.offsetWidth;e.classList.add("on");clearTimeout(toastT);toastT=setTimeout(()=>e.classList.remove("on"),2200);}
+
+let sayT=0,sayLast="",meowT=0;
+const MEOWS=["喵～","喵喵！","喵嗚～","喵？","咪～"];
+function meow(){const e=document.getElementById("meow");if(!e)return;e.textContent=MEOWS[Math.floor(Math.random()*MEOWS.length)];e.classList.add("on");clearTimeout(meowT);meowT=setTimeout(()=>e.classList.remove("on"),2200);}
+(function loop(){setTimeout(()=>{if(!document.hidden)meow();loop();},12000+Math.random()*10000);})();
+function showSay(t){
+  const e=document.getElementById("say");
+  if(t!==sayLast){sayLast=t;e.textContent=t;e.classList.remove("fade");clearTimeout(sayT);sayT=setTimeout(()=>e.classList.add("fade"),5000);}
+}
+document.addEventListener("click",e=>{if(e.target.closest(".staff.boss")){sayLast="";render();}else if(e.target.closest(".staff.cat"))meow();});
+function render(){
+  const reqs=REQ(),left=reqs.filter((_,i)=>!SS.done.includes(i)).length;
+  document.getElementById("stname").textContent=`🏤 ${HUB}郵站`;
+  showSay(msg||(left?`歡迎，${ME}！今天${HUB}郵站有 ${left} 件照顧委託，完成可以拿到小花。`:`今天的委託都完成了，謝謝你，${ME}！明天再來看看吧。`));
+  document.querySelectorAll("#tabs button").forEach(b=>b.classList.toggle("on",b.dataset.tab===tab));
+  let h="";
+  if(tab==="req"){
+    document.getElementById("note").textContent=`委託　照顧${HUB}郵站的駐站生物（${RES.map(k=>NAME[k]).join("、")}）`;
+    h+=reqs.map((o,i)=>{const done=SS.done.includes(i),it=ITEMS[o.need],have=it?(INV[o.need]||0):0;
+      const btn=done?`<span class="perk"><b>已完成 ✓</b></span>`:it&&!have?`<button class="btn sm" data-goshop="${o.need}">到櫃台買${it.n}</button>`:`<button class="btn sm pri" data-care="${i}">去照顧</button>`;
+      return `<div class="row" style="grid-template-columns:1fr"><div class="req${done?" done":""}"><div class="face">${art(o.k)}</div><div>
+        <div class="t">${text(o)}</div>
+        <div class="s">${it?`需要：${it.ic} ${it.n}（你有 ${have} 個）`:"不用道具"}｜報酬 ${fl(it?it.r:NONE_R)}・駐站好感 +${it?2:1}</div></div>${btn}</div></div>`}).join("");
+    h+=`<div class="row"><div class="ic">ℹ️</div><div class="val sm">每天 3 件，依日期更新。用道具的照顧小花多一點、駐站好感 +2；不用道具也可以照顧（+1）。去過的其他郵站之後開放。</div></div>`;
+    h+=`<div class="btns" style="display:flex;justify-content:flex-end"><button class="btn sm" data-nextday="1">原型：換成明天的委託</button></div>`;
+  }else if(tab==="shop"){
+    document.getElementById("note").textContent="櫃台　小貓助手幫你拿道具（用小花買）";
+    h+=`<div class="row"><div class="ic">🌸</div><div><div class="lbl">你的小花</div><div class="val">${fl(FL)}</div><div class="src">賺小花：郵站委託、兌換觀察紀錄卡、第一次記錄新生物、新郵戳、新線索、收到回信、成就</div></div></div>`;
+    {const OC=loadObsCards();h+=`<div class="row"><div class="ic">📝</div><div><div class="lbl">自然觀察站：兌換觀察紀錄卡</div><div class="val sm">你有 ${OC.length} 張，每張換 ${fl(EARN.card)}</div>${OC.length?`<div class="src">${OC.slice(-3).reverse().map(c=>`${c.name}｜${c.slot}・${c.wx}天・${c.where}`).join("<br>")}${OC.length>3?"<br>…":""}</div>`:`<div class="src">出門探索、成功記錄生物，就會得到觀察紀錄卡</div>`}<div class="btns" style="display:flex;margin-top:.4cqw"><button class="btn sm pri" data-submit="1" ${OC.length?"":"disabled"}>全部兌換小花（+${OC.length*EARN.card} 朵）</button></div></div></div>`;}
+    const shopRow=(k,it,ic,desc)=>{const mx=Math.max(1,Math.min(9,Math.floor(FL/it.p))),q=Math.min(QTY[k]||1,mx);QTY[k]=q;
+      return `<div class="row" style="grid-template-columns:1fr"><div class="shop"><div class="ic2">${ic}</div><div><div class="lbl">${it.n}</div><div class="src">${desc}</div></div>
+      <div class="buyrow"><div>${fl(it.p*q)}</div><div class="qty"><button data-qty="${k}:-1" aria-label="減少數量" ${q<=1?"disabled":""}>−</button><b>${q}</b><button data-qty="${k}:1" aria-label="增加數量" ${q>=mx||FL<it.p?"disabled":""}>＋</button></div><button class="btn sm pri" data-buy="${k}" ${FL<it.p?"disabled":""}>買 ${q} 個</button></div></div></div>`;};
+    h+=Object.entries(ITEMS).map(([k,it])=>shopRow(k,it,it.ic,`你有 ${INV[k]||0} 個｜用在「${{bowl:"補充飲水",tool:"整理休息區",cushion:"換新軟墊",comb:"梳毛／整理羽毛"}[k]}」的委託`)).join("");
+    h+=shopRow("restkit",RESTKIT,`<img src="${RESTKIT.img}" alt="" style="width:4.2cqw;height:auto">`,`你有 ${INV.restkit||0} 個｜給自己的郵差用（明信片頁）：體力 +${RESTKIT.sta}%；每位郵差每天第一次用，好感 +1`);
+    h+=`<div class="row"><div class="ic">🕒</div><div class="val sm">之後櫃台還會有：郵資、郵差補給（輕便郵袋、防雨斗篷、小夜燈）、認養棲地。</div></div>`;
+  }else if(tab==="adopt"){
+    document.getElementById("note").textContent="認養棲地　花小花認養台灣知名地點的環境改善（遊戲裡的改善）";
+    const AD=loadAdopt(),today=new Date().toISOString().slice(0,10),ab=adoptExploreBonus();
+    {const nh=adoptNeedHelp();if(nh.length)h+=`<div class="row good"><div class="ic">📣</div><div><div class="lbl">郵站公告：需要幫忙的棲地</div><div class="val sm">${nh.map(k=>ADOPT[k].n).join("、")}　認養多得 ${ADOPT_HELP_BONUS} 朵小花</div></div></div>`;}
+    h+=`<div class="row${ab?" good":""}" style="grid-template-columns:1fr"><div><div class="val sm">認養只發生在<b>遊戲裡</b>，現實中沒有人因此去做這些事。點小圖看風景。${ab?`<br><b>現在加成中：${ab.place}，剩 ${Math.ceil(ab.left/864e5)} 天</b>`:""}</div><details class="src"><summary>認養的好處和規則</summary>① 風景變好、棲地等級提升，留下認養紀錄；第一次認養 0～1 級的地點得到「棲地守護郵戳」<br>② 效果期間，<b>所有探索點</b>都比較容易遇到生物（「沒遇到」機率 ×${ADOPT_EXPLORE_NONE}）<br>③ 認養中，那個地方的在地生物偶爾會出現在風景裡，點牠就能觀察（每天一次）<br>效果天數：1 級 3 天、2 級 5 天、3 級 7 天；等級越低越便宜</details></div></div>`;
+    h+=Object.entries(ADOPT).map(([k,A])=>{const lv=adoptLevel(k),n=adoptPlayers(k),pr=ADOPT_LV[lv].price,ef=adoptEffect(k),mine=AD[k],doneToday=mine&&mine.day===today;
+      return `<div class="row" style="grid-template-columns:auto 1fr;gap:1cqw;align-items:start"><button class="adthumb${viewK===k?" on":""}" data-view="${k}" aria-label="看${A.n}的風景">${placeImg(k,"",!!ef)}</button><div><div class="lbl">${A.n}${mine&&mine.guard?`<span class="badge" style="background:#fbe3c8;color:#8a4b12">🏅 守護郵戳</span>`:""}${ef?` <span class="perk"><b>${A.mark} 認養中：${ef.item}（剩 ${Math.ceil(ef.left/864e5)} 天）</b></span>`:""}</div>
+        <div class="src">棲地等級 ${lv}｜7 天內 ${n} 人認養${mine&&mine.n?`｜你認養過 ${mine.n} 次`:""}${lv<=1&&!(mine&&mine.guard)?"｜首次可得守護郵戳":""}</div>
+        <div class="btns" style="display:flex;gap:.5cqw;flex-wrap:wrap;margin-top:.3cqw">${A.items.map(it=>`<button class="btn sm${mine&&mine.item===it?" pri":""}" data-adopt="${k}" data-item="${it}" ${doneToday||FL<pr?"disabled":""} style="white-space:normal;max-width:100%;text-align:left">${it.split("（")[0]}（${fl(pr)}）</button>`).join("")}${doneToday?`<span class="src">今天已認養，明天可以再來</span>`:""}</div>
+        <details class="src"><summary>項目說明與來源</summary>${A.items.map(it=>{const I=ADOPT_INFO[k+"|"+it],o=ADOPT_INFO_OPEN[k+"|"+it];return I?`<div class="src">${it}：${I.t} <button class="infob" data-info="${k}|${it}" aria-label="來源">ⓘ</button>${o?`<br>來源：${I.src}｜${I.st}`:""}</div>`:""}).join("")}</div></div>`}).join("");
+  }else{
+    document.getElementById("note").textContent="駐站生物　照顧越多，駐站好感越高（和自己觀察的好感分開算）";
+    h+=RES.map(k=>{const a=SS.aff[k]||0,next=PERKS.find(p=>a<p[0]);return `<div class="row" style="grid-template-columns:1fr"><div class="req" style="grid-template-columns:5.2cqw 1fr">
+      <div class="face">${art(k)}</div><div><div class="t">${NAME[k]}・駐站好感 ${a}</div>
+      <div class="meter2"><i style="width:${Math.min(100,a/15*100)}%"></i></div>
+      ${PERKS.map(([n,t])=>`<div class="perk">${a>=n?"<b>✓</b>":"・"} 好感 ${n}：${t}</div>`).join("")}
+      <div class="src">${next?`再 ${next[0]-a} 點到下一個效果`:"效果全部解鎖"}${k===stationCourier(HUB)?"｜目前由牠送你的筆友回信（好感最高的駐站生物）":""}</div>
+      <div class="btns" style="display:flex;justify-content:flex-end"><button class="btn sm" data-affup="${k}">原型：駐站好感 +5</button></div></div></div></div>`}).join("");
+    h+=`<div class="row"><div class="ic">ℹ️</div><div class="val sm">效果在「明信片」頁生效：寄筆友或配對明信片時，回信最後一段由這個郵站好感最高的駐站生物送。好感 10 的駐站生物會變成明信片樣式（駐站明信片）。</div></div>`;
+  }
+  document.getElementById("rows").innerHTML=h;
+  renderView();
+  const nxt=reqs.findIndex((_,i)=>!SS.done.includes(i));
+  document.getElementById("go").disabled=nxt<0;document.getElementById("go").hidden=true;   /* 「下一件委託」按鈕已移除（v0.43.1），直接點委託卡片 */
+  document.getElementById("goText").textContent=nxt<0?"明天再來":"下一件委託";
+  document.getElementById("bar").innerHTML=`<span>🏤 ${HUB}郵站</span><span class="sep"></span><span>${fl(FL)}</span><span class="sep"></span><span>今日委託 ${SS.done.length}／${reqs.length}</span>`;
+}
+const HAB={S:"coast",R:"river",C:"park",F:"forest",M:"mountain",A:"farm"};
+/* 地點風景圖 art/ui/place_*.jpg（GPT 畫中）；還沒有的話先用同環境的棲地圖 */
+/* after＝認養中：先找「認養後」的圖 place_*_after.jpg → 一般的 place_*.jpg → 棲地圖 */
+const placeImg=(k,cls,after)=>{const P=`art/ui/place_${ADOPT[k].img}`,H=`art/ui/hab_${HAB[k]}.jpg`;
+  return `<img class="${cls}" src="${after?P+"_after.jpg":P+".jpg"}" alt="${ADOPT[k].n}的風景" data-chain="${after?P+".jpg|":""}${H}" onerror="const c=(this.dataset.chain||'').split('|').filter(Boolean);if(!c.length){this.onerror=null;return;}this.src=c.shift();this.dataset.chain=c.join('|');this.dataset.fallback=1">`;};
+let viewK=null;
+/* 認養地的在地生物（v0.27.0）：認養中，每天約 7 成的機會有一隻在地生物出現在風景裡（代表生物機會較高）；
+   點牠觀察一次＝好感 +1（第一次會記錄進圖鑑），每個認養地每天一次。出現機率與好感是遊戲規則・暫定。 */
+const SITE_NM={egret:"小白鷺",reefheron:"岩鷺",nheron:"夜鷺",kingfisher:"翠鳥",robin:"粟背林鴝",liocichla:"藪鳥",sparrow:"麻雀",munia:"斑文鳥",grassfrog:"澤蛙",firefly:"黃緣螢",peacock:"巴黎翠鳳蝶",ghostcrab:"角眼沙蟹",butterfly:"淡紋青斑蝶",bluemagpie:"台灣藍鵲",yuhina:"冠羽畫眉"};
+const SV_KEY="ep-sitevisit";
+const svDay=()=>dayKey();
+function siteVisitor(k){
+  const day=svDay();let h=7;for(const c of day+k)h=(h*31+c.charCodeAt(0))>>>0;
+  if(h%10>=7)return null;
+  const L=SITE_SPECIES[k],id=(h>>>5)%2===0?L[0]:L[1+((h>>>9)%(L.length-1))];
+  return {id,done:!!loadJ(SV_KEY,{})[day+k]};
+}
+function renderView(){
+  const v=document.getElementById("hview");
+  if(!viewK||tab!=="adopt"){v.hidden=true;v.innerHTML="";return;}
+  const A=ADOPT[viewK],ef=adoptEffect(viewK),lv=adoptLevel(viewK),vis=ef?siteVisitor(viewK):null;
+  v.className="hview"+(ef?" on":"");
+  v.innerHTML=`${placeImg(viewK,"bg",!!ef)}
+    <div class="hn">${A.n}</div><button class="hx" data-view="">回郵站</button>
+    ${ef?["12%","38%","64%","84%"].map((x,i)=>`<span class="sprout" style="left:${x};bottom:${18+(i%2)*9}%;animation-delay:${i*.3}s">${A.mark==="✨"?`<img src="art/ui/x_sparkle.png" alt="" style="width:3cqw;display:block">`:A.mark}</span>`).join(""):""}
+    ${vis?`<button class="visitor${vis.done?" done":""}" ${vis.done?"disabled":`data-observe="${vis.id}"`} aria-label="${vis.done?`今天已經觀察過${SITE_NM[vis.id]}`:`觀察${SITE_NM[vis.id]}`}"><img src="art/${vis.id}.png" alt=""></button><div class="vhint${vis.done?" done":""}">${vis.done?`今天觀察過${SITE_NM[vis.id]}了`:`${DEX[vis.id]&&DEX[vis.id].state!=="none"&&DEX[vis.id].state!=="seen"?SITE_NM[vis.id]:"有生物"}來了！點牠觀察`}</div>`:""}`;
+  v.hidden=false;
+}
+function doCare(i){
+  const o=REQ()[i],it=ITEMS[o.need];if(SS.done.includes(i))return;
+  if(it&&!(INV[o.need]>0)){tab="shop";msg=`先到櫃台買一個${it.n}吧，小貓助手會拿給你。`;render();return;}
+  if(it)INV[o.need]--;
+  const gain=it?it.r:NONE_R,ag=it?2:1;FL+=gain;SS.aff[o.k]=(SS.aff[o.k]||0)+ag;SS.done.push(i);save();
+  const c=document.getElementById("care");
+  c.innerHTML=`<div class="pair"><div class="cr">${art(o.k)}</div><div class="tool">${it?it.ic:"🐾"}</div><div class="cat"><img src="art/station_cat.png" alt="小貓助手"></div></div>
+    <h3>${text(o)}，完成！</h3><div class="gain"><span>${fl("+"+gain)}</span><span>❤ 駐站好感 +${ag}</span></div>
+    <button class="ok" id="careOk">好</button>`;
+  c.hidden=false;msg=`謝謝你，${ME}！${NAME[o.k]}看起來很開心。`;
+  document.getElementById("careOk").addEventListener("click",()=>{c.hidden=true;render()});
+  document.getElementById("careOk").focus();
+  render();
+}
+document.addEventListener("click",e=>{
+  const t=e.target.closest("[data-tab],[data-care],[data-buy],[data-qty],[data-goshop],[data-nextday],[data-affup],[data-submit],[data-adopt],[data-info],[data-view],[data-observe],#go");if(!t)return;
+  if(t.dataset.view!==undefined){viewK=t.dataset.view||null;render();return;}
+  if(t.dataset.observe){const id=t.dataset.observe,k=viewK,m=loadJ(SV_KEY,{}),key=svDay()+k;if(m[key]){render();return;}
+    m[key]=1;saveJ(SV_KEY,m);const d=DEX[id]||(DEX[id]={state:"none",aff:0,notes:[]}),first=d.state==="none"||d.state==="seen";
+    d.aff+=1;if(d.state!=="courier")d.state=!OBSERVE_ONLY.includes(id)&&d.aff>=THRESH[id]?"courier":"recorded";
+    const became=d.state==="courier"&&d.aff-1<THRESH[id];
+    const n=`在${ADOPT[k].n}（認養地）遇見牠`;if(!d.notes.includes(n))d.notes.push(n);saveDex(DEX);
+    addObsCard({k:id,name:SITE_NM[id],where:ADOPT[k].n,slot:"",wx:"",t:Date.now()});INV=loadJ(IKEY,{});   /* 觀察紀錄卡存在 ep-items，重新讀，免得 save() 蓋掉 */
+    if(first)FL+=EARN.first;save();
+    msg=`你在${ADOPT[k].n}觀察到${SITE_NM[id]}！${first?`第一次記錄，圖鑑多了一種生物（🌸 +${EARN.first}）。`:`好感 +1，現在 ${d.aff}。`}${became?`${SITE_NM[id]}願意當你的郵差了！`:""}拿到 1 張觀察紀錄卡。`;
+    render();return;}
+  if(t.dataset.info){ADOPT_INFO_OPEN[t.dataset.info]=!ADOPT_INFO_OPEN[t.dataset.info];render();return;}
+  if(t.dataset.adopt){const k=t.dataset.adopt,pr=ADOPT_LV[adoptLevel(k)].price;if(FL>=pr){FL-=pr;const AD=loadAdopt(),prev=AD[k]||{},lv0=adoptLevel(k),guardNew=!prev.guard&&lv0<=1,help=lv0<=1;if(help)FL+=ADOPT_HELP_BONUS;AD[k]={item:t.dataset.item,t:Date.now(),day:new Date().toISOString().slice(0,10),n:(prev.n||0)+1,low:(prev.low||0)+(help?1:0),guard:prev.guard||guardNew};saveAdopt(AD);achAfterAdopt();save();msg=`謝謝你認養${ADOPT[k].n}的「${t.dataset.item}」！${guardNew?"得到棲地守護郵戳 🏅。":""}${help?`公告的棲地，多得 ${ADOPT_HELP_BONUS} 朵小花。`:""}接下來幾天，所有探索點都比較容易遇到生物。`;}render();return;}
+  if(t.dataset.submit){const OC=loadObsCards();if(OC.length){const g=OC.length*EARN.card;FL=loadFlowers()+g;INV=loadJ(IKEY,{});INV.obscards=[];save();msg=`收到 ${OC.length} 張觀察紀錄卡，謝謝！這是 ${g} 朵小花。`;toast(`✔ 兌換了 ${g} 朵小花`);}render();return;}
+  if(t.dataset.affup){const k=t.dataset.affup;SS.aff[k]=(SS.aff[k]||0)+5;save();msg=`（原型）${NAME[k]}的駐站好感 +5，現在 ${SS.aff[k]}。`;render();return;}
+  if(t.dataset.tab){tab=t.dataset.tab;msg="";}
+  else if(t.dataset.care){doCare(+t.dataset.care);return;}
+  else if(t.dataset.qty){const [k,d]=t.dataset.qty.split(":");QTY[k]=Math.max(1,(QTY[k]||1)+ +d);}
+  else if(t.dataset.buy){const k=t.dataset.buy,it=k==="restkit"?RESTKIT:ITEMS[k],n=Math.min(QTY[k]||1,Math.floor(FL/it.p));if(n>=1){FL-=it.p*n;INV[k]=(INV[k]||0)+n;save();QTY[k]=1;msg=`${it.n}買好了，小貓助手幫你放進包包。`;toast(`✔ 買了 ${n} 個${it.n}（現有 ${INV[k]} 個）`);}}
+  else if(t.dataset.goshop){tab="shop";msg="";}
+  else if(t.dataset.nextday){dayOffset++;SS.day=dayKey();SS.done=[];save();msg="（原型）已換成明天的委託。";tab="req";}
+  else if(t.id==="go"){const n=REQ().findIndex((_,i)=>!SS.done.includes(i));if(n>=0){tab="req";doCare(n);return;}}
+  render();
+});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"){const c=document.getElementById("care");if(!c.hidden){c.hidden=true;render();}}});
+render();
+</script>
+</body>
+</html>

@@ -1,0 +1,856 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EARTH POST 明信片</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&family=Noto+Sans+TC:wght@500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --grass:#7cb342; --grass-d:#4f8a2b; --grass-dd:#386b1f;
+  --cream:#fff8e7; --cream-2:#fbefd2; --cream-line:#efdfb8;
+  --wood:#8a5a32; --wood-d:#5e3a1d; --wood-l:#b07a46;
+  --seal:#d9473b; --ink:#3d2a17; --ink-2:#7a6248;
+  --sky1:#bfe6ff; --sky2:#e9f7ff;
+  --gold:#f4c542;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:#2f4a22;font-family:"Noto Sans TC",system-ui,sans-serif;color:var(--ink)}
+body{display:flex;align-items:center;justify-content:center;padding:16px}
+.stage{
+  position:relative;width:min(100%, calc((100vh - 32px) * 16 / 9));aspect-ratio:16/9;
+  border-radius:28px;overflow:hidden;container-type:inline-size;
+  background:
+    radial-gradient(ellipse 60% 35% at 15% 100%, #8fcf5a 0 60%, transparent 61%),
+    radial-gradient(ellipse 70% 30% at 70% 102%, #9ad466 0 60%, transparent 61%),
+    radial-gradient(ellipse 45% 30% at 40% 78%, #a9d98a 0 55%, transparent 56%),
+    radial-gradient(ellipse 50% 28% at 85% 72%, #b4dd95 0 55%, transparent 56%),
+    linear-gradient(#bfe6ff 0%, #e4f5ff 45%, #cde9b4 62%, #9fd06f 100%);
+  box-shadow:0 20px 60px rgba(0,0,0,.35);
+}
+/* painted scene */
+.scene{position:absolute;inset:0;width:100%;height:100%}
+/* sign */
+.sign{position:absolute;left:17.5cqw;top:1.2cqw;width:31cqw;height:10.2cqw}
+.sign .rope{position:absolute;top:-1.4cqw;width:.45cqw;height:3.2cqw;border-radius:.3cqw;
+  background:repeating-linear-gradient(160deg,#9b7447 0 .35cqw,#7a5530 .35cqw .7cqw)}
+.sign .rope.l{left:17%}.sign .rope.r{right:17%}
+.plank{position:absolute;left:0;right:0;top:1.4cqw;height:7.6cqw;display:grid;place-items:center;
+  border-radius:2.6cqw 2.2cqw 2.8cqw 2.3cqw/2.4cqw 2.6cqw 2.2cqw 2.6cqw;border:.32cqw solid #6b4220;
+  background:
+    radial-gradient(ellipse 1.6cqw .5cqw at 22% 68%,rgba(90,50,20,.28),transparent 70%),
+    radial-gradient(ellipse 1.2cqw .4cqw at 80% 30%,rgba(90,50,20,.22),transparent 70%),
+    repeating-linear-gradient(177deg,transparent 0 1.1cqw,rgba(110,62,25,.16) 1.1cqw 1.25cqw,transparent 1.25cqw 1.9cqw,rgba(255,225,180,.12) 1.9cqw 2cqw),
+    linear-gradient(#c58d55,#a36a37 55%,#8d5a2c);
+  box-shadow:inset 0 .4cqw 0 rgba(255,232,195,.45),inset 0 -.5cqw 0 rgba(80,40,12,.3),0 .55cqw 0 #5a361a,0 1.4cqw 2cqw rgba(60,30,0,.28)}
+.plank b{font-family:Fredoka,sans-serif;font-weight:700;font-size:4.5cqw;letter-spacing:.2cqw;color:#fff7e0;line-height:1;
+  text-shadow:.16cqw 0 0 #6b4220,-.16cqw 0 0 #6b4220,0 .16cqw 0 #6b4220,0 -.16cqw 0 #6b4220,
+    .12cqw .12cqw 0 #6b4220,-.12cqw .12cqw 0 #6b4220,.12cqw -.12cqw 0 #6b4220,-.12cqw -.12cqw 0 #6b4220,0 .45cqw 0 #6b4220}
+.sign .env{position:absolute;left:50%;top:-1.1cqw;width:6cqw;transform:translateX(-50%) rotate(-4deg);filter:drop-shadow(0 .3cqw .2cqw rgba(80,40,10,.3))}
+.sign .leaf{position:absolute;width:5cqw;filter:drop-shadow(0 .2cqw .15cqw rgba(40,70,20,.3))}
+.sign .leaf.l{left:-4.2cqw;top:6.4cqw;width:4.4cqw;transform:rotate(-25deg)}
+.sign .leaf.l2{left:-1.6cqw;top:8.4cqw;width:3cqw;transform:rotate(30deg)}
+.sign .leaf.r{right:-2cqw;top:.4cqw;transform:rotate(150deg) scaleY(-1)}
+.sign .leaf.r2{right:.4cqw;top:6.4cqw;width:3.4cqw;transform:rotate(200deg)}
+.sub{position:absolute;left:21cqw;top:10.4cqw;font-weight:700;font-size:1.25cqw;color:var(--grass-dd);background:rgba(255,255,255,.7);padding:.3cqw 1cqw;border-radius:99px}
+/* avatar rail */
+.rail{position:absolute;left:1.6cqw;top:2cqw;bottom:2cqw;width:12.5cqw;border-radius:6cqw;
+  background:linear-gradient(#8fc163,#6fa848);border:.3cqw solid #5d9638;
+  display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:1cqw;padding:1.4cqw 0;overflow-y:auto;scrollbar-width:none}
+.rail::-webkit-scrollbar{display:none}
+.av{flex:none;width:7.8cqw;height:7.8cqw;border-radius:50%;border:.5cqw solid var(--cream);background:var(--cream-2);
+  display:grid;place-items:center;cursor:pointer;overflow:hidden;position:relative;transition:transform .15s;
+  box-shadow:0 .4cqw 0 rgba(0,0,0,.15);padding:0}
+.av:hover{transform:scale(1.04)}
+.av.on{border-color:var(--gold);box-shadow:0 0 0 .5cqw #fff3c2,0 0 2cqw #ffe27a}
+.av img{width:84%;height:84%;object-fit:contain}
+.av .ph{font-weight:900;font-size:1.3cqw;color:var(--ink-2);text-align:center;line-height:1.2}
+/* 圖鑑分組（v0.26.0）：生物類型分組＋收集進度；棲地篩選；郵差／只觀察／家養標記 */
+.rail .hf{flex:none;width:10.6cqw;font:inherit;font-weight:900;font-size:1.05cqw;color:var(--wood-d);background:var(--cream);border:.2cqw solid var(--cream-line);border-radius:99px;padding:.35cqw .6cqw;cursor:pointer}
+.rail .grp{flex:none;width:10.6cqw;display:flex;justify-content:space-between;align-items:baseline;gap:.4cqw;padding:.25cqw .7cqw;margin-top:.4cqw;border-radius:99px;background:var(--wood-d,#6b4220);color:#fff8e7}
+.rail .grp b{font-size:1.1cqw}.rail .grp small{font-size:.9cqw;font-weight:900;opacity:.9}
+.rail .none{font-size:.95cqw;color:var(--ink-2);text-align:center;padding:0 .6cqw}
+.av .bd{position:absolute;right:-.1cqw;bottom:.1cqw;width:2.9cqw;height:2.9cqw;border-radius:50%;background:#fff8e7 center/78% no-repeat;border:.2cqw solid var(--cream-line);box-shadow:0 .15cqw .25cqw rgba(0,0,0,.25)}
+.av .bd.c{width:3.4cqw;height:3.4cqw;background-size:90%;background-image:url(art/ui/ic_courier_cap.png);background-color:#dff2d6;border-color:#5f9e34}
+.av .bd.c.fly{background-image:url(art/ui/ic_courier_cap_fly.png)}   /* 會飛的郵差：帽子加羽毛 */
+.av .bd.o{background-image:url(art/ui/ic_observe.png)}
+.rail .grp i{flex:none;width:1.6cqw;height:1.6cqw;background:center/contain no-repeat;align-self:center}
+.rail .grp b{flex:1}
+.av .ch{position:absolute;left:50%;bottom:-.1cqw;transform:translateX(-50%);font-size:.8cqw;font-weight:900;background:#fff1c9;color:#8a5a12;border-radius:99px;padding:.05cqw .5cqw;white-space:nowrap}
+/* hero */
+.hero{position:absolute;left:30cqw;top:11cqw;width:28cqw;height:27cqw;display:grid;place-items:end center}
+.hero .art{width:25cqw;height:25cqw;border-radius:50%;position:relative;display:grid;place-items:center;
+  background:radial-gradient(circle at 50% 40%,rgba(255,255,255,.85),rgba(255,255,255,.35) 60%,transparent 70%)}
+.hero .art img{max-width:100%;max-height:100%;object-fit:contain;filter:drop-shadow(0 1.2cqw 1cqw rgba(0,0,0,.25))}
+.hero .art .ph{width:19cqw;height:19cqw;border-radius:50%;border:.4cqw dashed var(--wood-l);display:grid;place-items:center;
+  text-align:center;color:var(--wood);font-weight:900;font-size:1.6cqw;background:rgba(255,248,231,.7)}
+.ground{position:absolute;bottom:.5cqw;width:20cqw;height:3cqw;border-radius:50%;background:rgba(80,60,20,.18);filter:blur(.4cqw)}
+.namecard{position:absolute;left:16cqw;top:35.5cqw;background:var(--cream);border:.3cqw solid var(--cream-line);border-radius:2cqw;
+  padding:1cqw 1.8cqw;box-shadow:0 .5cqw 0 var(--cream-line);width:40cqw}
+.namecard h1{margin:0;font-size:3cqw;font-weight:900;line-height:1.1}
+.namecard .sci{font-style:italic;font-size:1.25cqw;color:var(--ink-2);margin-top:.3cqw}
+.namecard .fam{font-size:1.15cqw;color:var(--ink-2)}
+.tags{display:flex;gap:.6cqw;flex-wrap:wrap;margin-top:.7cqw}
+.tag{font-size:1.05cqw;font-weight:700;padding:.25cqw .9cqw;border-radius:99px;background:#e5f2d5;color:var(--grass-dd)}
+.tag.v{background:#fde6c4;color:#9a5a12}
+.tag.t{background:#e8e1f7;color:#5b4796}
+/* panel */
+.panel{position:absolute;right:1.8cqw;top:2cqw;bottom:7.2cqw;width:39cqw;border-radius:2.6cqw;
+  background:var(--cream);border:.35cqw solid var(--cream-line);box-shadow:0 .7cqw 0 #e3cf9f,0 1.5cqw 3cqw rgba(0,0,0,.18);
+  display:flex;flex-direction:column;padding:1.4cqw}
+.tabs{display:flex;gap:.6cqw;background:var(--cream-2);padding:.5cqw;border-radius:99px}
+.tabs button{flex:1;border:0;background:transparent;font:inherit;font-weight:900;font-size:1.45cqw;color:var(--ink-2);
+  padding:.75cqw 0;border-radius:99px;cursor:pointer}
+.tabs button.on{background:linear-gradient(#8bc34a,#5f9e34);color:#fff;box-shadow:0 .35cqw 0 var(--grass-dd)}
+.note{margin:1cqw 0 .6cqw;font-size:1.05cqw;color:#8a5a12;background:#fff1d0;border-radius:1cqw;padding:.55cqw 1cqw}
+.rows{flex:1;overflow:auto;display:flex;flex-direction:column;gap:.55cqw;padding-right:.3cqw}
+.row{display:grid;grid-template-columns:3cqw 1fr;gap:1cqw;align-items:center;background:#fffdf6;border:.2cqw solid var(--cream-line);
+  border-radius:1.4cqw;padding:.6cqw 1cqw;box-shadow:0 .3cqw 0 var(--cream-line)}
+.ic{width:3cqw;height:3cqw;border-radius:1cqw;display:grid;place-items:center;font-size:1.7cqw;background:var(--cream-2)}
+.lbl{display:flex;align-items:center;gap:.6cqw;font-size:1.1cqw;font-weight:700;color:var(--ink-2)}
+.val{font-size:1.35cqw;font-weight:900;line-height:1.35;margin-top:.15cqw}
+.val.sm{font-size:1.2cqw;font-weight:700}
+.src{font-size:.95cqw;color:var(--ink-2);margin-top:.2cqw}
+.badge{font-size:.9cqw;font-weight:900;padding:.1cqw .7cqw;border-radius:99px}
+.b-s{background:#e1efd0;color:var(--grass-dd)}     /* 物種資料 */
+.b-g{background:#e4ecfb;color:#3c5e9e}             /* 遊戲估算 */
+.st{font-size:.9cqw;font-weight:700;color:var(--ink-2)}
+.pend{color:#b0874f}
+.foot{text-align:center;font-size:.95cqw;color:var(--ink-2);margin-top:.6cqw}
+/* bottom bar */
+.bar{position:absolute;left:16cqw;right:43cqw;bottom:2cqw;height:4.4cqw;border-radius:99px;background:var(--cream);
+  border:.3cqw solid var(--cream-line);box-shadow:0 .4cqw 0 #e3cf9f;display:flex;align-items:center;gap:1.2cqw;padding:0 1.8cqw;font-weight:900;font-size:1.3cqw}
+.bar .dot{width:1cqw;height:1cqw;border-radius:50%;background:var(--grass)}
+.bar .sep{width:.2cqw;height:2.2cqw;background:var(--cream-line)}
+.go svg{width:4.4cqw;filter:drop-shadow(0 .25cqw .1cqw rgba(30,60,10,.35))}
+.go{display:flex;align-items:center;justify-content:center;gap:1.4cqw;
+  position:absolute;right:1.8cqw;bottom:1.6cqw;width:39cqw;height:4.8cqw;border:0;border-radius:99px;cursor:pointer;
+  background:linear-gradient(#8bc34a,#4f8a2b);color:#fff;font:inherit;font-weight:900;font-size:2cqw;letter-spacing:.3cqw;
+  box-shadow:0 .55cqw 0 var(--grass-dd),0 1cqw 2cqw rgba(0,0,0,.2)}
+.go:active{transform:translateY(.3cqw);box-shadow:0 .25cqw 0 var(--grass-dd)}
+[hidden]{display:none!important}
+.modes{position:absolute;z-index:6;left:24cqw;top:10.6cqw;display:flex;gap:.4cqw;background:rgba(255,248,231,.85);padding:.35cqw;border-radius:99px;
+  border:.2cqw solid var(--cream-line)}
+.modes a{font-weight:900;font-size:1.2cqw;color:var(--ink-2);text-decoration:none;padding:.3cqw 1.4cqw;border-radius:99px}
+.modes a.on{background:linear-gradient(#8bc34a,#5f9e34);color:#fff}
+@media (max-width:640px){ body{padding:8px} }
+
+/* ===== v0.14 2D 介面：GPT 畫的零件 ===== */
+:root{--line:#5b3a1e}
+.scene{object-fit:cover}
+.sign{left:23cqw;top:-.8cqw;width:19cqw;height:auto}
+.sign img{display:block;width:100%;filter:drop-shadow(0 .5cqw .4cqw rgba(60,30,0,.25))}
+.sign b{position:absolute;left:0;right:0;top:56%;transform:translateY(-50%);text-align:center;font-family:Fredoka,sans-serif;font-weight:700;font-size:2.8cqw;letter-spacing:.2cqw;color:#fff7e0;line-height:1;
+  text-shadow:.16cqw 0 0 var(--line),-.16cqw 0 0 var(--line),0 .16cqw 0 var(--line),0 -.16cqw 0 var(--line),.12cqw .12cqw 0 var(--line),-.12cqw .12cqw 0 var(--line),.12cqw -.12cqw 0 var(--line),-.12cqw -.12cqw 0 var(--line),0 .4cqw 0 var(--line)}
+.rail{background:rgba(255,248,231,.55);border:.3cqw solid var(--line);backdrop-filter:blur(2px)}
+.av{width:8.4cqw;height:8.4cqw;border:0;border-radius:50%;background:url(art/ui/frame.png) center/contain no-repeat;box-shadow:none;overflow:visible}
+.av.on{border:0;background-image:url(art/ui/frame_on.png);box-shadow:none;transform:scale(1.06)}
+.av img{width:66%;height:66%}
+.av .ph{color:#b9ab8b}
+.hero .art{background:radial-gradient(circle at 50% 55%,rgba(255,255,255,.55),rgba(255,255,255,.15) 55%,transparent 68%)}
+.namecard,.panel,.bar{border-color:var(--line);border-width:.3cqw}
+.namecard{box-shadow:0 .5cqw 0 #c9a46a}
+.panel{box-shadow:0 .7cqw 0 #c9a46a,0 1.5cqw 3cqw rgba(0,0,0,.18)}
+.bar{box-shadow:0 .4cqw 0 #c9a46a}
+.tabs{border:.2cqw solid var(--cream-line)}
+.tabs button.on{border:.2cqw solid var(--line)}
+.row{border-color:#e6cf9f}
+.ic{background:transparent;width:3.2cqw;height:3.2cqw}
+.ic img{width:100%;height:100%;object-fit:contain}
+.modes{background:transparent;border:0;gap:.3cqw;padding:0;left:16.5cqw;top:11cqw}
+.hero{top:15.5cqw;height:21cqw}.hero .art{width:21cqw;height:21cqw}
+.modes a{background:url(art/ui/pill.png) center/100% 100% no-repeat;color:var(--wood-d);padding:.4cqw 1cqw;font-size:1.1cqw}
+.modes a.on{background:url(art/ui/pill_on.png) center/100% 100% no-repeat;color:var(--wood-d);padding-right:1.6cqw}
+.go{border:.3cqw solid #2f5a17}
+.modes a{display:inline-flex;align-items:center;gap:.35cqw}
+.modes a::before{content:"";width:1.6cqw;height:1.6cqw;background:center/contain no-repeat;margin-left:-.5cqw}
+.modes a:nth-child(1)::before{background-image:url(art/ui/nav_dex.png)}
+.modes a:nth-child(2)::before{background-image:url(art/ui/nav_explore.png)}
+.modes a:nth-child(3)::before{background-image:url(art/ui/nav_postcard.png)}
+.modes a:nth-child(4)::before{background-image:url(art/ui/nav_station.png)}
+.modes a:nth-child(5)::before{background-image:url(art/ui/nav_friends.png)}
+.modes a:nth-child(6)::before{background-image:url(art/ui/nav_me.png)}
+.scene{transition:filter .3s}
+.scene.soft{filter:blur(.35cqw) saturate(.75) brightness(1.08);transform:scale(1.04)}
+/* 手機橫放時 Safari 會自動放大文字，造成狀態列、導覽列超出（2026-11-12 使用者回報） */
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+.bar{overflow:hidden;white-space:nowrap}
+.bar>span{min-width:0;overflow:hidden;text-overflow:ellipsis;flex-shrink:1}
+.bar>.sep,.bar>.dot{flex-shrink:0}
+.modes{white-space:nowrap;flex-wrap:nowrap}
+/* 選取中的頭像框右上角腳印被名單上緣切掉（2026-11-12 使用者回報）：名單上下多留空間 */
+.rail{padding-top:2.4cqw;padding-bottom:2cqw}
+.av.on{transform:scale(1.04)}
+/* 腳印在圓框外的右上角：按鈕本身是圓形會把背景切成圓的，所以按鈕改成方形（框的圖本身就是圓的） */
+.av,.av.on{border-radius:0}
+.av:focus-visible{outline:.3cqw solid var(--wood);outline-offset:.2cqw;border-radius:50%}
+/* ===== 直式（iPhone）版面（v0.28.0，2026-11-13 使用者決定：iPhone 直式為主）=====
+   做法：舞台寬度＝手機寬度 ÷ 0.39，只顯示左邊 39%（39cqw＝手機寬）。原本橫向版右側面板就是 39cqw 寬，
+   所以面板裡用 cqw 寫的字級、間距在手機上大小差不多，不用每個字重寫；只要把各區塊重新排位置。
+   已改成直式的頁面在 <main> 加 class="pt"；還沒改的頁面維持橫向。 */
+body:has(.stage.pt){padding:0;overflow:hidden;align-items:stretch}
+.stage.pt{--vw:min(100vw,440px);--st:env(safe-area-inset-top,0px);--sb:env(safe-area-inset-bottom,0px);--tab:calc(6.4cqw + var(--sb));
+  width:calc(var(--vw) / .39);flex:none;height:100dvh;aspect-ratio:auto;border-radius:0;box-shadow:none;
+  clip-path:inset(0 61% 0 0);transform:translateX(30.5%)}
+@media (min-width:600px){body:has(.stage.pt){padding:16px 0;align-items:center}.stage.pt{height:min(calc(100dvh - 32px),900px);clip-path:inset(0 61% 0 0 round 28px)}}
+.stage.pt .scene{width:39cqw}
+.stage.pt .sign{display:none}
+/* 底部導覽列 */
+.stage.pt .modes{left:0;width:39cqw;top:auto;bottom:0;height:var(--tab);padding:.5cqw .4cqw var(--sb);background:var(--cream);border-top:.25cqw solid var(--cream-line);
+  display:grid;grid-template-columns:repeat(6,1fr);gap:.2cqw;z-index:15;border-radius:0}
+.stage.pt .modes a,.stage.pt .modes a.on{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.2cqw;background:none;padding:0;font-size:1.15cqw;border-radius:1.4cqw;color:var(--ink-2)}
+.stage.pt .modes a.on{background:#e4f2d6;color:var(--grass-dd);font-weight:900}
+.stage.pt .modes a::before{width:2.7cqw;height:2.7cqw;margin:0}
+/* 抽屜整個一起捲動（v0.32.1：手機畫面比較矮時，只捲中間資料區會被擠到幾乎 0 高度、滑不動）；分頁固定在抽屜上方 */
+.stage.pt .panel{overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+.stage.pt .panel .rows{flex:none;overflow:visible}
+.stage.pt .panel .tabs{position:sticky;top:-1.3cqw;z-index:3;flex:none}
+/* 小花：右上角 */
+.stage.pt .flowerhud{right:calc(61% + 1.2cqw)!important;top:calc(var(--st) + 1cqw)!important;font-size:1.4cqw!important;z-index:12!important}
+/* ===== 圖鑑頁直式（v0.29.0）：列表（分組格子）→ 點一隻進詳細頁；詳細頁可返回、左右換 ===== */
+.av .nm{display:none}
+.dexback,.dexnav{display:none}
+.stage.dex .bar{display:none}
+/* 列表 */
+.stage.dex.list .hero,.stage.dex.list .namecard,.stage.dex.list .panel,.stage.dex.list .go{display:none}
+.stage.dex .rail{left:0;top:0;width:39cqw;bottom:var(--tab);border-radius:0;border:0;background:rgba(255,248,231,.9);backdrop-filter:none;
+  display:grid;grid-template-columns:repeat(4,1fr);align-content:start;justify-items:center;gap:.4cqw .4cqw;padding:calc(var(--st) + 1.2cqw) 1.2cqw 3cqw}
+.stage.dex.detail .rail{display:none}
+.stage.dex .rail .dextitle{grid-column:1/-1;justify-self:start;font-weight:900;font-size:2cqw;color:var(--wood-d);background:var(--cream);border:.25cqw solid var(--wood);border-radius:1.2cqw;padding:.2cqw 1.2cqw}
+.stage.dex .rail .dextitle small{font-size:1.25cqw;color:var(--ink-2);margin-left:.6cqw}
+.stage.dex .rail .hf{grid-column:1/-1;justify-self:stretch;width:auto;font-size:max(16px,1.55cqw);padding:.7cqw 1.2cqw;margin-top:.4cqw}
+.stage.dex .rail .grp{grid-column:1/-1;justify-self:stretch;width:auto;margin-top:1cqw;padding:.45cqw 1.2cqw}
+.stage.dex .rail .grp b{font-size:1.5cqw}.stage.dex .rail .grp small{font-size:1.25cqw}.stage.dex .rail .grp i{width:2.1cqw;height:2.1cqw}
+.stage.dex .rail .none{grid-column:1/-1;font-size:1.3cqw;padding:2cqw 0}
+.stage.dex .av{width:8.6cqw;height:8.6cqw;margin-bottom:2cqw}
+.stage.dex .av.on{transform:none;background-image:url(art/ui/frame.png)}
+.stage.dex .av .nm{display:block;position:absolute;left:50%;top:100%;transform:translateX(-50%);margin-top:.1cqw;font-size:1.15cqw;font-weight:700;color:var(--ink-2);white-space:nowrap}
+.stage.dex .av .bd{width:2.6cqw;height:2.6cqw}
+.stage.dex .av .ch{font-size:1cqw;bottom:.2cqw}
+/* 詳細 */
+.stage.dex.detail .hero{left:5.5cqw;width:28cqw;top:calc(var(--st) + 3.5cqw);height:calc(min(24cqw, 36%) - 3cqw)}
+.stage.dex.detail .hero .art{width:auto;height:100%;max-height:20cqw;aspect-ratio:1}
+.stage.dex.detail .dexback{display:block;position:absolute;z-index:9;left:1.2cqw;top:calc(var(--st) + 1cqw);font:inherit;font-weight:900;font-size:1.4cqw;color:var(--wood-d);background:var(--cream);border:.25cqw solid var(--cream-line);border-radius:99px;padding:.5cqw 1.4cqw;cursor:pointer}
+.stage.dex.detail .dexnav{display:grid;place-items:center;position:absolute;z-index:9;top:calc(var(--st) + min(12cqw, 16%));width:4.4cqw;height:4.4cqw;border-radius:50%;border:.25cqw solid var(--cream-line);background:rgba(255,248,231,.92);font:inherit;font-weight:900;font-size:2.2cqw;color:var(--wood-d);cursor:pointer;padding:0}
+.stage.dex.detail .dexnav.p{left:1cqw}.stage.dex.detail .dexnav.n{left:33.6cqw}
+.stage.dex.detail .panel{left:0;right:auto;width:39cqw;top:calc(var(--st) + min(24cqw, 36%));bottom:var(--tab);border-radius:2.4cqw 2.4cqw 0 0;border-width:.3cqw 0 0;padding:1.4cqw 1.4cqw 7cqw;z-index:8}
+.stage.dex.detail .namecard{position:static;width:auto;border:0;box-shadow:none;background:none;padding:0 0 .8cqw}
+.stage.dex.detail .namecard h1{font-size:2.6cqw}.stage.dex.detail .namecard .sci,.stage.dex.detail .namecard .fam{font-size:1.25cqw}
+.stage.dex.detail .tag{font-size:1.15cqw}
+.stage.dex.detail .tabs button{font-size:1.5cqw;padding:.9cqw 0}
+.stage.dex.detail .note{font-size:1.2cqw}
+.stage.dex.detail .rows{gap:.7cqw}
+.stage.dex.detail .val{font-size:1.5cqw}.stage.dex.detail .val.sm{font-size:1.35cqw}.stage.dex.detail .lbl{font-size:1.2cqw}.stage.dex.detail .src{font-size:1.15cqw}
+.stage.dex.detail .badge{font-size:1.05cqw}.stage.dex.detail .foot{font-size:1.1cqw}
+.stage.dex.detail .go{left:1.4cqw;right:auto;width:36.2cqw;bottom:calc(var(--tab) + 1cqw);height:5cqw;font-size:1.8cqw;z-index:9}
+.stage.dex.detail .go svg{width:3.6cqw}
+/* ===== postcard ===== */
+.bar span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.bar span:last-child{flex-shrink:0}
+.contacts{position:absolute;left:1.6cqw;top:2cqw;bottom:2cqw;width:12.5cqw;border-radius:6cqw;background:rgba(255,248,231,.6);backdrop-filter:blur(2px);
+  border:.3cqw solid var(--line);display:flex;flex-direction:column;align-items:center;gap:.5cqw;padding:1.2cqw 0;overflow:auto}
+.contacts h4{margin:.4cqw 0 0;font-size:1cqw;color:var(--wood-d);letter-spacing:.1cqw}
+.ct{width:10cqw;border:0;background:var(--cream);border-radius:1.6cqw;padding:.5cqw;display:flex;flex-direction:column;align-items:center;gap:.2cqw;cursor:pointer;font:inherit;
+  box-shadow:0 .3cqw 0 rgba(0,0,0,.15)}
+.ct.on{outline:.4cqw solid var(--gold)}
+.ct.off{opacity:.45;cursor:not-allowed}
+.ct .fc{width:5cqw;height:5cqw;border-radius:50%;overflow:hidden;background:#e9f5dc;border:.2cqw solid var(--cream-line)}
+.ct .fc svg,.ct .fc img{width:100%;height:100%;display:block;object-fit:cover}
+.ct b{font-size:1.1cqw}.ct small{font-size:.85cqw;color:var(--ink-2);font-weight:700}
+.pc{position:absolute;left:16cqw;top:13.6cqw;width:41.5cqw;height:28cqw;perspective:200cqw}
+.pc .inner{position:relative;width:100%;height:100%;transition:transform .6s;transform-style:preserve-3d}
+.pc.flip .inner{transform:rotateY(180deg)}
+.face{position:absolute;inset:0;backface-visibility:hidden;border-radius:1.4cqw;background:#fffaf0;border:.35cqw solid #fff;
+  box-shadow:0 .6cqw 0 rgba(120,90,40,.25),0 1.6cqw 3cqw rgba(0,0,0,.25);overflow:hidden}
+.front{display:grid;grid-template-columns:1fr;place-items:center;background:radial-gradient(ellipse at 50% 60%,#e3f4cf,#b9e08f)}
+.pcbg{position:absolute;inset:0;background:center 70%/cover no-repeat}
+.front::after{content:"";position:absolute;inset:.7cqw;border:.2cqw dashed rgba(255,255,255,.85);border-radius:1cqw;pointer-events:none;z-index:3}
+.front .reg,.front .cap{z-index:2}
+.pc .front .reg{right:2cqw;top:1.8cqw;text-shadow:.15cqw 0 0 var(--line),-.15cqw 0 0 var(--line),0 .15cqw 0 var(--line),0 -.15cqw 0 var(--line),0 .3cqw 0 var(--line)}
+.pc .front .cap{left:2cqw;bottom:1.8cqw;border:.2cqw solid var(--line)}
+.front .cr.left{justify-self:start;margin-left:3cqw;width:19cqw;height:19cqw}
+.front .fact{position:absolute;right:.6cqw;bottom:.8cqw;width:19cqw;z-index:2;background:radial-gradient(closest-side,rgba(255,252,244,.82),rgba(255,252,244,.6) 70%,rgba(255,252,244,0));border:0;border-radius:3cqw;
+  padding:1.6cqw 2cqw;font-size:1.05cqw;line-height:1.55;font-weight:700;color:var(--ink);box-shadow:none;text-shadow:0 0 .4cqw #fffaf0,0 0 .4cqw #fffaf0}
+.front .fact b{display:block;font-size:1.1cqw;color:#8a5a12;margin-bottom:.2cqw}
+.front .fact b::before{content:"";display:inline-block;width:1.3cqw;height:1.3cqw;margin-right:.3cqw;vertical-align:-.2cqw;background:url(art/ui/x_bulb.png) center/contain no-repeat}
+.front .cr{position:relative;z-index:1;width:22cqw;height:22cqw;filter:drop-shadow(0 .8cqw .6cqw rgba(0,0,0,.2))}
+.front .cr img{width:100%;height:100%;object-fit:contain}
+.fx{display:grid;place-items:center;width:100%;height:100%;line-height:1}.front .cr .fx{font-size:13cqw}.pick .fx{font-size:2cqw}.stampbox .mini .fx{font-size:3.4cqw}.mailitem .fx{font-size:2cqw}
+.route{display:flex;flex-wrap:wrap;align-items:center;gap:.3cqw;margin-top:.3cqw}.route span{font-size:.95cqw;font-weight:900;border-radius:99px;padding:.15cqw .7cqw;background:var(--cream-2);border:.15cqw solid var(--cream-line)}.route span.on{background:#e3f2c8;border-color:#8bc34a}.route i{font-style:normal;color:var(--ink-2);font-size:.9cqw}
+.front .cap{position:absolute;left:1.4cqw;bottom:1.2cqw;background:rgba(255,250,240,.92);border-radius:99px;padding:.3cqw 1.2cqw;font-weight:900;font-size:1.3cqw}
+.front .cap.withfact{max-width:calc(100% - 23.5cqw);border-radius:1.2cqw}   /* 有小知識時，說明字不能壓到右邊 */
+.front .stbadge{position:absolute;left:2cqw;top:1.8cqw;z-index:2;background:#b1392d;color:#fff;font-weight:900;font-size:1.05cqw;padding:.25cqw .9cqw;border-radius:.5cqw;border:.2cqw solid #fff;transform:rotate(-4deg);box-shadow:0 .2cqw 0 rgba(0,0,0,.2)}
+.front .reg{position:absolute;right:1.4cqw;top:1.2cqw;font-family:Fredoka,"Noto Sans TC";font-weight:700;color:#fff;font-size:1.6cqw;text-shadow:0 .2cqw 0 rgba(0,0,0,.25)}
+.back{transform:rotateY(180deg);display:grid;grid-template-columns:1.25fr 1fr;gap:1.4cqw;padding:1.6cqw;
+  background:repeating-linear-gradient(0deg,transparent 0 2.6cqw,#efe3c6 2.6cqw 2.7cqw),#fffaf0}
+.back .msg{display:flex;flex-direction:column;border-right:.2cqw dashed #d9c49b;padding-right:1.4cqw;min-height:0}
+.back textarea{flex:1;resize:none;border:0;background:transparent;font:inherit;font-size:1.45cqw;line-height:2.7cqw;color:var(--ink);outline:none}
+.back .cnt{font-size:.95cqw;font-weight:900;color:var(--ink-2);text-align:right}
+.back .cnt.bad{color:#b1392d}
+.back .to{display:flex;flex-direction:column;gap:1cqw;font-size:1.2cqw}
+.back .to .ln{border-bottom:.2cqw solid #d9c49b;padding-bottom:.3cqw;font-weight:900}
+.back .to small{display:block;font-size:.9cqw;color:var(--ink-2);font-weight:700}
+.stampbox{align-self:flex-end;width:7cqw;height:8.4cqw;border:.25cqw dashed #caa173;border-radius:.6cqw;display:grid;place-items:center;background:#fff;
+  font-size:.9cqw;font-weight:900;color:var(--ink-2);text-align:center;overflow:hidden}
+.stampbox .mini{width:5.6cqw;height:5.6cqw}.stampbox .mini img{width:100%;height:100%;object-fit:contain}
+.flipbtn{position:absolute;left:16cqw;top:42.6cqw;display:flex;gap:.6cqw}
+/* 讀信：收件匣的信可以打開，放大成明信片（v0.10.6） */
+.reading #pc,.reading .flipbtn,.reading .go{visibility:hidden}
+.reader{z-index:8}
+.readbtns{position:absolute;left:16cqw;top:42.6cqw;display:flex;gap:.6cqw;z-index:8}
+.reader .back .msg .txt{font-size:1.45cqw;line-height:2.7cqw;color:var(--ink);white-space:pre-wrap;overflow:auto;flex:1;min-height:0}
+.reader .back .msg .trn{font-size:1.05cqw;line-height:1.6;color:var(--ink-2);margin-top:.4cqw;flex-shrink:0;max-height:45%;overflow:auto;border-top:.15cqw dashed #e2d3b0;padding-top:.3cqw}   /* 翻譯固定在下方，不被原文擠出明信片（v0.24.10） */
+.reader .back .to .ln small{display:block;font-size:.85cqw;color:var(--ink-2);font-weight:700}
+.pick{display:flex;gap:.5cqw;flex-wrap:wrap;margin-top:.3cqw}
+.pick button{width:3.6cqw;height:3.6cqw;border-radius:50%;border:.22cqw solid var(--cream-line);background:var(--cream-2);padding:0;overflow:hidden;cursor:pointer;display:grid;place-items:center}
+.pick button.on{border-color:var(--gold);box-shadow:0 0 0 .25cqw #fff3c2}
+.pick button:disabled{opacity:.35;cursor:not-allowed}
+.pick img{width:86%;height:86%;object-fit:contain}
+.btn{border-radius:99px;font:inherit;font-weight:900;font-size:1.1cqw;padding:.45cqw 1.3cqw;cursor:pointer;background:#fffdf6;border:.22cqw solid var(--cream-line);color:var(--ink)}
+.btn.pri{background:linear-gradient(#8bc34a,#5f9e34);border-color:#5f9e34;color:#fff}
+.btn.sm{font-size:.95cqw;padding:.25cqw .9cqw;white-space:nowrap}
+.warn{background:#fff1ee;border-color:#f2c4bb}.warn .val{color:#b1392d}
+.go:disabled{background:linear-gradient(#cfc6b0,#b5ab93);box-shadow:0 .55cqw 0 #8f866f;cursor:not-allowed}
+.lbl .badge{flex-shrink:0;white-space:nowrap}.mailitem .lbl{flex-wrap:wrap;row-gap:.3cqw}   /* 名字太長時，標籤不被壓成直排（v0.24.8） */
+.row.unread{background:#fffbe9;border-color:#e8c46a}.udot{display:inline-block;width:.8cqw;height:.8cqw;border-radius:50%;background:#b1392d;margin-right:.4cqw;vertical-align:.1cqw}
+.row{position:relative}.row:has(>.xdel){padding-right:4.2cqw}.xdel{position:absolute;top:.5cqw;right:.6cqw;z-index:2;border:0;background:rgba(0,0,0,.07);color:var(--ink-2);border-radius:99px;min-width:2.8cqw;height:2.8cqw;font:inherit;font-size:1.3cqw;cursor:pointer;padding:0 .7cqw;line-height:1}.xdel.arm{background:#b1392d;color:#fff;font-weight:900;padding:0 1.2cqw}
+.mailbtns>*{white-space:nowrap;flex:none}.mailbtns .src{align-self:center}
+.mailitem{display:grid;grid-template-columns:4cqw 1fr;gap:1cqw;align-items:start}
+.mailitem .fc{width:4cqw;height:4cqw;border-radius:50%;overflow:hidden;background:#e9f5dc}
+.mailitem .fc svg,.mailitem .fc img{width:100%;height:100%;display:block;object-fit:cover}
+.prog{height:1cqw;border-radius:99px;background:#efe4c8;overflow:hidden;margin-top:.4cqw}
+.prog i{display:block;height:100%;background:repeating-linear-gradient(45deg,#8bc34a 0 1cqw,#7cb342 1cqw 2cqw)}
+.tsteps{margin-top:.5cqw;display:grid;gap:.5cqw}.tstep{display:grid;grid-template-columns:2.4cqw 1fr;gap:.6cqw;align-items:start}.tdot{width:2.4cqw;height:2.4cqw;border-radius:50%;background:var(--cream-2);border:.15cqw solid var(--cream-line);display:flex;align-items:center;justify-content:center;font-size:1.1cqw;font-weight:900}.tstep.done .tdot{background:#e3f2c8;border-color:#8bc34a}.tstep.now .tdot{background:#8bc34a;color:#fff;border-color:#7cb342}.tstep:not(.now):not(.done){opacity:.65}
+.rowsel{display:flex;gap:.4cqw;flex-wrap:wrap;margin-top:.3cqw}
+.chip{border:.2cqw solid var(--cream-line);background:#fff;border-radius:99px;font:inherit;font-weight:700;font-size:1cqw;padding:.12cqw .7cqw;cursor:pointer;color:var(--ink-2)}
+.chip.on{background:#e5f2d5;border-color:#9ccc65;color:var(--grass-dd)}
+.pmwrap{position:relative;align-self:flex-end;margin-bottom:.4cqw}
+.pmwrap .stampbox{align-self:auto}
+.pmark{position:absolute;left:-6.2cqw;top:1.2cqw;width:9cqw;height:9cqw;border-radius:50%;border:.3cqw solid rgba(176,60,45,.75);display:grid;place-items:center;
+  transform:rotate(-14deg);color:rgba(176,60,45,.85);pointer-events:none;box-shadow:inset 0 0 0 .5cqw rgba(255,255,255,0),inset 0 0 0 .7cqw rgba(176,60,45,.55)}
+.pmark span{display:flex;flex-direction:column;align-items:center;font-family:Fredoka,"Noto Sans TC";font-weight:700;font-size:.95cqw;line-height:1.25;text-align:center}
+.pmark b{font-size:1.15cqw;font-weight:900;border-bottom:.15cqw solid rgba(176,60,45,.6);padding:0 .3cqw .1cqw;margin-bottom:.15cqw;max-width:7cqw;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.stampcell{width:6cqw;flex:none}.stampcell .stampsvg{width:100%;height:6cqw;display:block}.arrive{display:flex;gap:1cqw;align-items:center}
+.good{background:#eef8e4;border-color:#b9dc93}
+.agechip select{font:inherit;font-size:.9cqw;border-radius:.6cqw;padding:.1cqw .3cqw}
+.agechip{font-size:.9cqw;font-weight:900;color:var(--ink-2);display:flex;align-items:center;gap:.4cqw;cursor:pointer;justify-content:center;margin-top:.4cqw}
+/* ===== 直式（v0.31.0）：上面收件人一排（可左右滑）＋明信片（等比例縮小），下面分頁抽屜 ===== */
+.stage.pt .bar{display:none}
+.stage.pt .contacts{left:0;top:calc(var(--st) + 4.4cqw);bottom:auto;width:39cqw;height:4.6cqw;border-radius:0;border:0;background:none;backdrop-filter:none;
+  display:block;padding:0 1.2cqw;overflow:visible;z-index:12}
+.rcpt{display:flex;align-items:center;gap:.9cqw;width:100%;height:4.4cqw;border:.2cqw solid var(--cream-line);background:var(--cream);border-radius:99px;padding:0 1.4cqw 0 .5cqw;font:inherit;cursor:pointer;color:var(--ink)}
+.rcpt .fc{width:3.5cqw;height:3.5cqw;border-radius:50%;overflow:hidden;background:#e9f5dc;border:.2cqw solid var(--cream-line);flex:none}
+.rcpt .fc svg,.rcpt .fc img{width:100%;height:100%;display:block;object-fit:cover}
+.rcpt .rt{flex:1;text-align:left;display:flex;flex-direction:column;min-width:0}.rcpt .rt small{font-size:1cqw;color:var(--ink-2);font-weight:700}.rcpt .rt b{font-size:1.4cqw;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rcpt .caret{font-size:1.4cqw;color:var(--ink-2)}
+.rcptlist{position:absolute;left:1.2cqw;right:1.2cqw;top:5cqw;max-height:30cqw;overflow-y:auto;background:var(--cream);border:.25cqw solid var(--cream-line);border-radius:1.6cqw;padding:.6cqw .8cqw;box-shadow:0 .6cqw 1.6cqw rgba(0,0,0,.25)}
+.stage.pt .contacts .rcptlist h4{flex:none;margin:.6cqw 0 .3cqw;font-size:1.15cqw;color:var(--wood-d);writing-mode:horizontal-tb;background:none;padding:0;letter-spacing:.1cqw}
+.ct2{display:flex;align-items:center;gap:.9cqw;width:100%;border:0;background:none;border-radius:1.2cqw;padding:.5cqw;font:inherit;cursor:pointer;text-align:left;color:var(--ink)}
+.ct2.on{background:#e4f2d6;outline:.25cqw solid var(--gold)}.ct2.off{opacity:.45;cursor:not-allowed}
+.ct2 .fc{width:4cqw;height:4cqw;border-radius:50%;overflow:hidden;background:#e9f5dc;border:.2cqw solid var(--cream-line);flex:none}
+.ct2 .fc svg,.ct2 .fc img{width:100%;height:100%;display:block;object-fit:cover}
+.ct2 .tx{display:flex;flex-direction:column}.ct2 b{font-size:1.35cqw}.ct2 small{font-size:1.05cqw;color:var(--ink-2);font-weight:700}
+/* 好友檢視（底部導覽「好友」）：只顯示好友名單，隱藏明信片與收件人列 */
+.grpn{margin:0 0 .5cqw;padding:0 .4cqw}
+.grph{margin:.8cqw 0 .3cqw;font-size:1.3cqw;color:var(--wood-d)}
+.stage.pt.fv .agechip,.stage.pt.fv .contacts,.stage.pt.fv .pc,.stage.pt.fv .flipbtn,.stage.pt.fv .readbtns,.stage.pt.fv .go,.stage.pt.fv .tabs,.stage.pt.fv .sheetbtn{display:none!important}
+.stage.pt.fv .panel{top:calc(var(--st) + 4.4cqw)!important;z-index:10}
+.stage.pt .contacts::-webkit-scrollbar{display:none}
+.stage.pt .contacts h4{flex:none;writing-mode:vertical-rl;font-size:1.15cqw;margin:0;background:var(--wood-d);color:var(--cream);border-radius:99px;padding:.6cqw .25cqw;letter-spacing:.2cqw}
+.stage.pt .ct{flex:none;width:7.6cqw;padding:.5cqw .3cqw}
+.stage.pt .ct .fc{width:4.4cqw;height:4.4cqw}
+.stage.pt .ct b{font-size:1.2cqw;max-width:7cqw;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.stage.pt .ct small{font-size:1.05cqw}
+/* 明信片縮放比例（--pcs）：固定 .882＝手機寬 */
+.stage.pt{--pcs:.882}
+.stage.pt .pc{left:calc((39cqw - 41.5cqw * var(--pcs)) / 2);top:calc(var(--st) + 9.6cqw);transform:scale(var(--pcs));transform-origin:0 0}
+.stage.pt .front .fact{font-size:1.3cqw}.stage.pt .front .fact b{font-size:1.35cqw}
+.stage.pt .front .cap{font-size:1.45cqw}
+.stage.pt .back .to small,.stage.pt .reader .back .to .ln small{font-size:1.05cqw}
+.stage.pt .back{grid-template-rows:minmax(0,1fr);grid-template-columns:minmax(0,1.25fr) minmax(0,1fr)}
+.back textarea{width:100%;min-width:0}   /* 寫信框字放大後不能把右欄擠成一字一行（iPhone 回報 v0.32.1） */
+/* iPhone Safari：翻面時正面會反著透出來（背面隱藏在直式外框裡失效），改成翻到一半時直接把另一面藏起來 */
+.face{-webkit-backface-visibility:hidden}
+.pc .face{transition:visibility 0s .3s}
+.pc .back{visibility:hidden}
+.pc.flip .back{visibility:visible}.pc.flip .front{visibility:hidden}.stage.pt .back .to{min-height:0;overflow:auto;gap:.2cqw;scrollbar-width:none}.stage.pt .back .to .ln{padding-bottom:.15cqw}.stage.pt .back .to .pmwrap{margin-bottom:0}   /* 右欄太長時在卡片裡捲動，不把卡片撐高（翻譯才不會被擠出去） */.stage.pt .back .cnt{font-size:1.2cqw}
+.stage.pt .stampbox{font-size:1.1cqw}
+.stage.pt .flipbtn,.stage.pt .readbtns{left:calc((39cqw - 41.5cqw * var(--pcs)) / 2);top:calc(var(--st) + 10.4cqw + 28cqw * var(--pcs))}
+.stage.pt .panel{left:0;right:auto;width:39cqw;top:calc(var(--st) + 15cqw + 28cqw * var(--pcs));bottom:var(--tab);border-radius:2.4cqw 2.4cqw 0 0;border-width:.3cqw 0 0;padding:1.3cqw 1.4cqw 1.6cqw;z-index:8}
+.stage.pt .tabs button{font-size:1.4cqw;padding:.9cqw 0}
+/* 抽屜「拉開／收起」（v0.32.1）：拉開時蓋過明信片，矮螢幕也有空間看資料 */
+.sheetbtn{display:none}
+.stage.pt .sheetbtn{display:block;align-self:center;flex:none;margin:-.4cqw 0 .6cqw;font:inherit;font-weight:900;font-size:1.2cqw;color:var(--ink-2);background:var(--cream-2);border:.2cqw solid var(--cream-line);border-radius:99px;padding:.35cqw 2cqw;cursor:pointer}
+.stage.pt .panel:has(.sheetbtn)::before{display:none}
+.stage.pt.sheetup .panel{top:calc(var(--st) + 9.2cqw);z-index:10}
+.stage.pt .sheetbtn{color:#fff;background:linear-gradient(#8bc34a,#5f9e34);border-color:#5f9e34}
+.stage.pt .note{font-size:1.2cqw}
+.stage.pt .rows{gap:.7cqw}
+.stage.pt .val{font-size:1.5cqw}.stage.pt .val.sm{font-size:1.35cqw}.stage.pt .lbl{font-size:1.2cqw}.stage.pt .src{font-size:1.15cqw}
+.stage.pt .btn{font-size:1.35cqw;padding:.7cqw 1.4cqw}.stage.pt .btn.sm{font-size:1.2cqw;padding:.5cqw 1.1cqw}
+.stage.pt .chip{font-size:1.2cqw;padding:.4cqw 1cqw}
+.stage.pt .pick button{width:4.6cqw;height:4.6cqw}
+.stage.pt .route span{font-size:1.15cqw}
+.stage.pt .badge{font-size:1.05cqw}
+.stage.pt .agechip{font-size:1.05cqw;white-space:nowrap}.stage.pt .agechip select{max-width:22cqw}
+/* iPhone Safari：輸入框字小於 16px，點下去會自動放大畫面，所以輸入框、選單至少 16px */
+.stage.pt .back textarea{font-size:max(16px,1.6cqw)}.stage.pt .agechip select{font-size:max(16px,1.6cqw)}
+/* 寄出按鈕放在明信片下方、和「翻面寫信」同一排（v0.32.2：矮螢幕時原本的位置會蓋住抽屜的分頁） */
+.stage.pt .go{left:auto;right:calc(61% + 1.2cqw);top:calc(var(--st) + 10.2cqw + 28cqw * var(--pcs));bottom:auto;width:23cqw;height:4cqw;font-size:1.45cqw;letter-spacing:.05cqw;gap:.6cqw;z-index:7}
+.stage.pt .go svg{width:2.8cqw}
+
+</style>
+</head>
+<body>
+<main class="stage pt" id="stage">
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs>
+      <linearGradient id="g-env" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fffaf0"/><stop offset="1" stop-color="#f6e2bd"/></linearGradient>
+      <radialGradient id="g-seal" cx=".38" cy=".35" r=".7"><stop offset="0" stop-color="#ff8a74"/><stop offset=".55" stop-color="#e2493a"/><stop offset="1" stop-color="#b9302a"/></radialGradient>
+      <linearGradient id="g-leaf" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#a6d96a"/><stop offset="1" stop-color="#5c9e34"/></linearGradient>
+      <symbol id="env" viewBox="0 0 72 56">
+        <rect x="3" y="6" width="66" height="46" rx="10" fill="url(#g-env)" stroke="#caa173" stroke-width="2.6"/>
+        <path d="M8 12 Q36 34 64 12" fill="none" stroke="#d3ad80" stroke-width="2.6" stroke-linecap="round"/>
+        <path d="M9 46 Q20 36 27 31 M63 46 Q52 36 45 31" fill="none" stroke="#e7cfa5" stroke-width="2.2" stroke-linecap="round"/>
+        <path d="M27.2 32.5 a8.8 8.6 0 1 1 17.6 0 c0 1.2 1.8 1.6 1.4 3 c-.4 1.3-2.2.9-2.8 2.1 c-1.6 3.4-5.2 5.4-8.4 5.4 c-4.6 0-9.2-4-8.8-8.6 c-1.6-.4-2.4-1.6-1.6-2.6 c.6-.8 1.8-.6 2.6.7z" fill="url(#g-seal)"/>
+        <path d="M36 39.2 c-3.8-2.6-5.6-4.6-5.6-6.7 c0-1.7 1.3-3 2.9-3 c1.1 0 2.1.6 2.7 1.6 c.6-1 1.6-1.6 2.7-1.6 c1.6 0 2.9 1.3 2.9 3 c0 2.1-1.8 4.1-5.6 6.7z" fill="#ffd7cc" opacity=".9"/>
+        <ellipse cx="31.5" cy="27.5" rx="2.2" ry="1.3" fill="#fff" opacity=".55" transform="rotate(-30 31.5 27.5)"/>
+      </symbol>
+      <symbol id="leaf" viewBox="0 0 60 30">
+        <path d="M2 15 C14 0 42 -2 58 15 C42 32 14 30 2 15z" fill="url(#g-leaf)" stroke="#4d8a2a" stroke-width="1.6"/>
+        <path d="M4 15 C22 13 40 13 56 15" fill="none" stroke="#4d8a2a" stroke-width="1.4" stroke-linecap="round" opacity=".7"/>
+      </symbol>
+      <symbol id="flower" viewBox="-12 -12 24 24">
+        <g fill="#fff"><circle cx="0" cy="-6" r="5"/><circle cx="5.7" cy="-1.9" r="5"/><circle cx="3.5" cy="4.9" r="5"/><circle cx="-3.5" cy="4.9" r="5"/><circle cx="-5.7" cy="-1.9" r="5"/></g>
+        <circle r="3.6" fill="#ffcf3d"/>
+      </symbol>
+      <symbol id="tree" viewBox="0 0 120 150">
+        <rect x="52" y="90" width="16" height="60" rx="6" fill="#8b5e34"/>
+        <circle cx="60" cy="60" r="44" fill="#5f9e3a"/><circle cx="35" cy="78" r="30" fill="#6aab42"/><circle cx="86" cy="76" r="30" fill="#5a9636"/>
+        <circle cx="48" cy="44" r="22" fill="#8cc95a" opacity=".85"/><circle cx="76" cy="38" r="12" fill="#a3d870" opacity=".7"/>
+      </symbol>
+    </defs>
+  </svg>
+  <img class="scene" id="bgscene" src="art/ui/bg_postcard.jpg" alt="" aria-hidden="true">
+
+
+
+  <div class="sign"><img src="art/ui/sign.png" alt=""><b>EARTH POST</b></div>
+
+  <nav class="modes"><a href="card_mockup.html">圖鑑</a><a href="explore_mockup.html">探索</a><a class="on" id="nPost" href="#">明信片</a><a href="station_mockup.html">郵站</a><a id="nFri" href="postcard_mockup.html?view=friends">好友</a><a href="profile_mockup.html">我的</a></nav>
+  <nav class="contacts" id="contacts" aria-label="收件人"></nav>
+  <section class="pc" id="pc"><div class="inner">
+    <div class="face front" id="front"></div>
+    <div class="face back" id="back"></div>
+  </div></section>
+  <div class="flipbtn"><button class="btn" id="flip">翻面寫信</button></div>
+  <section class="pc reader" id="reader" hidden><div class="inner"><div class="face front" id="rfront"></div><div class="face back" id="rback"></div></div></section>
+  <div class="readbtns" id="readbtns" hidden><button class="btn" id="rflip">翻面看信</button><button class="btn" id="rclose">關閉</button></div>
+  <section class="panel">
+    <button class="sheetbtn" id="sheetbtn" type="button" aria-expanded="false">▲ 拉開</button>
+    <div class="tabs" id="tabs"><button class="on" data-tab="write">寫明信片</button><button data-tab="inbox">收件匣</button><button data-tab="match">找筆友</button></div>
+    <div class="note" id="note"></div>
+    <div class="rows" id="rows"></div>
+    <label class="agechip">原型測試：玩家年齡 <select id="age">
+      <option value="adult">成年</option>
+      <option value="adult18">剛滿 18 歲</option>
+      <option value="teen">13～17 歲</option>
+      <option value="child">13 歲以下（家長已設定家庭功能）</option>
+      <option value="childnofam">13 歲以下（沒有家庭功能）</option>
+    </select></label>
+  </section>
+  <div class="bar" id="bar"></div>
+  <button class="go" id="go"><svg viewBox="0 0 72 56" aria-hidden="true"><use href="#env"/></svg><span id="goText">寄出明信片</span></button>
+</main>
+
+<script src="player.js"></script>
+<script>
+/* 規則依 drafts/social_letters_v0.1.md。好友、筆友、回信皆為假資料。送信時間為暫定。 */
+const NAME={dog:"台灣犬",cat:"野化家貓",butterfly:"淡紋青斑蝶",macaque:"台灣獼猴",heron:"黑冠麻鷺",dolphin:"台灣白海豚",bluemagpie:"台灣藍鵲",barbet:"五色鳥",thrush:"台灣紫嘯鶇",frog:"莫氏樹蛙",eagle:"大冠鷲",bpartridge:"台灣竹雞",hare:"台灣野兔",civet:"白鼻心",mikado:"帝雉",swinhoe:"藍腹鷴",tpartridge:"台灣山鷓鴣",warbler:"冠羽柳鶯",viper:"赤尾青竹絲",badger:"台灣鼬獾",babbler:"小彎嘴",yuhina:"冠羽畫眉",keelback:"斯文豪氏遊蛇",shrew:"台灣長尾麝鼩",flyingsq:"台灣紅白大飛鼠",squirrel:"台灣條紋松鼠",egret:"小白鷺",reefheron:"岩鷺",nheron:"夜鷺",kingfisher:"翠鳥",robin:"粟背林鴝",liocichla:"藪鳥",sparrow:"麻雀",munia:"斑文鳥",grassfrog:"澤蛙",firefly:"黃緣螢",peacock:"巴黎翠鳳蝶",ghostcrab:"角眼沙蟹",rissos:"花紋海豚",anemonefish:"克氏海葵魚"};
+const SPD={dog:10,cat:6,butterfly:5,macaque:7,heron:8,bluemagpie:9,barbet:6,thrush:8,frog:3,eagle:12,bpartridge:6,hare:12,civet:7,babbler:7,yuhina:9,shrew:4,flyingsq:10,squirrel:8,egret:9,reefheron:9,nheron:8,kingfisher:12,robin:7,liocichla:6,sparrow:8,munia:8,grassfrog:3,firefly:4,peacock:6,ghostcrab:9,rissos:12,anemonefish:4};
+const RANGE={dog:20,cat:5,butterfly:40,macaque:10,heron:14,bluemagpie:18,barbet:8,thrush:12,frog:4,eagle:30,bpartridge:8,hare:10,civet:10,babbler:10,yuhina:15,shrew:3,flyingsq:6,squirrel:8,egret:15,reefheron:16,nheron:14,kingfisher:6,robin:8,liocichla:8,sparrow:10,munia:12,grassfrog:4,firefly:3,peacock:30,ghostcrab:4,rissos:40,anemonefish:5};
+// ✅ 明信片也消耗體力（暫定公式）：距離 ÷ 40 ×（14 ÷ 郵差單次距離），上限 100%；體力不夠時途中休息，每分鐘 +2%
+let STA={dog:100,cat:82,butterfly:100,macaque:65,heron:90,bluemagpie:100,barbet:100,thrush:100,frog:100,eagle:100,bpartridge:100,hare:100,civet:100,babbler:100,yuhina:100,shrew:100,flyingsq:100,squirrel:100,egret:100,reefheron:100,nheron:100,kingfisher:100,robin:100,liocichla:100,sparrow:100,munia:100,grassfrog:100,firefly:100,peacock:100,ghostcrab:100,rissos:100,anemonefish:100};
+let STA_T;({sta:STA,t:STA_T}=loadCourierSta(STA));   // 待命每 3 分鐘 +1%（player.js）
+const saveSta=()=>saveCourierSta(STA,STA_T);
+let restMsg="";
+const FLY=["butterfly","heron","bluemagpie","barbet","thrush","eagle","babbler","yuhina","egret","reefheron","nheron","kingfisher","robin","liocichla","sparrow","munia","firefly","peacock"];   // 紅白大飛鼠是滑翔：不能跨海，所以不在這裡
+const SWIM=["rissos","anemonefish"];   // 會游（v0.51.0）：只走海路，只有「要跨海」的路線（離島）才能送；陸路不能送
+const canCarry=(need,k)=>SWIM.includes(k)?need:(!need||FLY.includes(k));
+/* 明信片正面：自己的郵差，加上已觀察記錄的台灣白海豚（海邊專屬的特別明信片） */
+/* 駐站明信片：最近郵站的駐站生物，駐站好感 10 解鎖（id 寫成 st_黑冠麻鷺的代號） */
+const isSt=id=>String(id).startsWith("st_"),baseOf=id=>isSt(id)?id.slice(3):id;
+const stFronts=()=>{const A=stationAff();return (STATIONS[MYHUB]||[]).filter(k=>stationPerk(A[k]).card&&!OWNED.includes(k)).map(k=>"st_"+k);};   /* 已經是夥伴的生物，不再多列一個圖案一樣的駐站版（v0.45.2） */
+const FRONTS=()=>stFronts().concat(OWNED).concat(OBSERVE_ONLY.filter(k=>DEX[k]&&(DEX[k].state==="recorded"||DEX[k].state==="courier"))).concat(pcardKinds());   // 觀察限定的生物記錄後可當特別明信片樣式   // 明信片冊裡的外國生物也能當特別正面（T6）
+const MATES=OWNED;                                   // 已成為郵差的夥伴（player.js 共用名單）
+const CONTACTS=[
+ {id:"f1",kind:"friend",name:"小葉",where:"台中市",area:"domestic",photo:true,uni:"blue",reply:"收到你的明信片了！台中今天也是晴天，週末一起去河岸找黑冠麻鷺吧。"},
+ {id:"f2",kind:"friend",name:"阿哲",where:"高雄市",area:"domestic",photo:false,uni:"brown",reply:"謝謝你的信，我家附近的公園也有看到淡紋青斑蝶喔。"},
+ {id:"p1",kind:"pen",name:"Hana",where:"日本",area:"near",interest:"黑冠麻鷺",uni:"red",lang:"日文",reply:"はじめまして！日本にもかわいいサルがいます。また手紙を書きますね。",tr:"初次見面！日本也有可愛的猴子。我會再寫信給你。"},
+ {id:"p2",kind:"pen",name:"Minh",where:"越南",area:"near",interest:"淡紋青斑蝶",uni:"yellow",lang:"越南文",reply:"Xin chào! Ở đây cũng có nhiều bướm xanh lắm. Cảm ơn bạn!",tr:"你好！這裡也有很多藍色的蝴蝶。謝謝你！"},
+ {id:"drift",kind:"drift",name:"配對明信片",where:"隨機配對",area:"near"}
+];
+// ✅ 依真實距離換算：時速 8 km 的郵差每 100 km 約 1 小時，再依郵差速度調整。距離為直線概略值（示意）。
+// ✅ 城市必填：寄件城市讀取玩家在新手流程／設定填的城市；好友用對方填的城市。
+// 筆友只用「國家」計算（首都對首都），避免從送達時間推算出對方的城市。漂流信在撿到前不知道對象，以 1,500 km 估算。
+let ME_CITY="台北市";try{const s=JSON.parse(localStorage.getItem("ep-settings")||"{}");if(s.city&&CITIES[s.city])ME_CITY=s.city;}catch(e){}
+const MYHUB=nearestHub(ME_CITY).hub;
+const DRIFT_KM=1500;
+const kmTo=c=>c.kind==="friend"?distKm(CITIES[ME_CITY],CITIES[c.where]):c.kind==="pen"?distKm(COUNTRIES["台灣"],COUNTRIES[c.where]):null;
+const island=city=>!!(CITIES[city]&&CITIES[city][2]);
+/* 字數上限（✅ 使用者決定）：好友 150 字；筆友與配對明信片 80 字 */
+const MAX_FRIEND=150,MAX_PEN=80;
+const maxLen=()=>{const c=C(st.to);return c&&c.kind==="friend"?MAX_FRIEND:MAX_PEN;};
+const FILTERS=[
+ [/(\+?\d[\d\s-]{6,}\d)/,"電話號碼"],
+ [/(https?:\/\/|www\.|\.(com|net|org|tw|jp)\b)/i,"網址"],
+ [/(@[A-Za-z0-9_.]{2,}|\b(line|ig|instagram|fb|facebook|wechat|telegram|discord)\b|微信|臉書|推特)/i,"社群帳號"],
+ [/([一-龥]{1,6}(路|街|大道)[一-龥\d]*\d+\s*(巷|弄|號))/,"地址"]
+];
+/* ✅ 未成年加強過濾（M4）：另外擋約見面、問住址的字眼與不雅字詞。字詞清單為暫定示意，之後再訂 */
+const MINOR_FILTERS=[
+ [/(見面|碰面|約出來|出來玩|單獨出來|住哪|住在哪|你家在|家住|哪間學校|讀哪)/,"約見面、問住址的字眼"],
+ [/(幹你|靠北|白痴|白癡|智障|去死|他媽)/,"不雅字詞"]
+];
+/* 郵資（v0.10.5，設計稿 7.6，使用者決定）：寄好友 5 朵、寄國外（筆友、配對）10 朵；每天第 1 封免費；回信免費。
+   「回信」＝寄給寫信給你、你還沒回的人。小花不夠就不能寄。 */
+const POST_KEY="ep-postage",POSTAGE={domestic:5,intl:10},FREE_DAILY=3;   /* 每天免費額度共 3 封，回信和「今天第 1 封新信」共用（v0.49.1，使用者決定：避免一直來往永遠不用付郵資） */
+const dayStr=()=>{const d=new Date();return `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`};
+function postState(){let p=null;try{p=JSON.parse(localStorage.getItem(POST_KEY)||"null")}catch(e){}return p&&p.day===dayStr()?{free:p.rep||0,...p}:{day:dayStr(),sent:0,free:0};}
+const isReply=c=>st.inbox.some(m=>m.from===c.id&&!m.replied);
+function postage(c){const base=c.kind==="friend"?POSTAGE.domestic:POSTAGE.intl;
+  const ps=postState(),left=FREE_DAILY-ps.free;
+  if(left>0&&isReply(c))return{fee:0,base,why:`回信免費（今天免費額度 ${ps.free+1}／${FREE_DAILY}）`,reply:true};
+  if(left>0&&ps.sent===0)return{fee:0,base,why:`今天第 1 封免費（今天免費額度 ${ps.free+1}／${FREE_DAILY}）`};
+  return{fee:base,base,why:""};}
+/* 好友回信的明信片樣式：從台灣生物裡隨機一種（示意） */
+const FRIEND_FRONTS=["heron","dog","butterfly","cat","bluemagpie","barbet","thrush","frog"];
+const ART={};[...new Set(MATES.concat(Object.keys(NAME)))].forEach(id=>{const im=new Image();im.onload=()=>{ART[id]=true;render()};im.src=`art/${id}.png`;});
+function frontHTML(f){const info=PC_INFO[baseOf(f)]||FOREIGN_INFO[f];
+  return `<div class="pcbg"${info?` style="background-image:url(art/ui/hab_${info[1]}.jpg)"`:""}></div><div class="reg">${fromOf(f)==="台灣"?"TAIWAN":(COUNTRY_EN[fromOf(f)]||"").toUpperCase()}</div><div class="cr${info&&info[0]?" left":""}">${art(f)}</div><div class="cap${info&&info[0]?" withfact":""}">${isSt(f)?`${NAME[baseOf(f)]}｜駐站明信片`:`${nm(f)}｜來自${fromOf(f)}`}</div>${isSt(f)?`<div class="stbadge">${MYHUB}郵站</div>`:""}${info&&info[0]?`<div class="fact"><b>小知識</b>${info[0]}</div>`:""}`;}
+/* 明信片正面：小知識（圖鑑「一句簡介」，真實資料）＋棲地背景，組裝時從 card_mockup.html 讀出 */
+const PC_INFO={"dolphin": ["只生活在台灣西海岸淺水區的白海豚，俗稱「媽祖魚」；出生時深灰，長大後變成粉白色。", "coast"], "heron": ["常在林下慢慢覓食的留鳥，以蚯蚓為主要食物；受驚時會伸頸靜止。", "park"], "dog": ["台灣原產的中型犬，三角形頭、杏仁眼、直立薄耳、鐮刀狀尾；FCI 於 2015 年正式承認。", "farm"], "cat": ["生活在人類聚落周邊、沒有固定飼主的家貓，多在清晨與黃昏活動。", "river"], "butterfly": ["台灣原生的斑蝶，幼蟲以夾竹桃科藤本植物為食。別名「青斑蝶」，和「東方淡紋青斑蝶」是不同種。", "park"], "macaque": ["日行、群居的猴子，在森林與岩地間活動，以植物性食物為主。", "forest"], "bluemagpie": ["台灣特有的鴉科鳥類，常成群活動，群飛時排成一列。", "forest"], "barbet": ["台灣特有種，頭部有藍、黃、紅、黑色塊；會在樹幹或枯木上挖洞築巢。", "park"], "thrush": ["全身深藍紫色、帶金屬光澤的特有鳥，常在溪邊岩石上活動。", "river"], "frog": ["台灣特有的綠色樹蛙，平時躲在樹上，繁殖時在水邊比較活躍。", "forest"], "eagle": ["中低海拔常見的猛禽，常利用熱氣流在天空緩慢盤旋。", "mountain"], "bpartridge": ["圓胖的地棲鳥，常在草叢和灌叢底下活動。", "farm"], "hare": ["在低丘陵、河岸草地常見的野兔，夜間和晨昏比較活躍。", "farm"], "civet": ["臉中央有一條白線的夜行動物，會爬樹，也會到果園找果實。", "farm"], "mikado": ["中高海拔森林的特有雉類，機警隱密，常在地面行走覓食。", "mountain"], "swinhoe": ["台灣特有的森林雉類，雄鳥有白色頭冠、白色背部和藍色身體。", "mountain"], "tpartridge": ["只分布在台灣山區森林的地棲鳥，臉部黑白分明，俗稱深山竹雞。", "mountain"], "warbler": ["在東亞北部繁殖的小型柳鶯，遷徙時偶爾經過台灣。", "park"], "viper": ["全身翠綠、尾端磚紅色的毒蛇，常在潮濕的溪溝、水池旁的樹枝上靜靜伏著。", "forest"], "badger": ["臉上有白色斑紋的夜行動物，白天躲在洞裡休息，黃昏後出來找蚯蚓。", "forest"], "babbler": ["台灣特有的留鳥，有向下彎的長嘴和白色眉線，喜歡在竹籬、灌叢底下活動。", "forest"], "yuhina": ["台灣特有的小鳥，頭上有栗褐色冠羽，常成群在中高海拔的樹冠活動。", "mountain"], "shrew": ["台灣原生的小型哺乳類，鼻子尖長、尾巴細長，住在中海拔的森林、竹林和灌叢。", "forest"], "flyingsq": ["台灣特有亞種的大型鼯鼠，夜晚出來活動，張開翼膜在樹與樹之間滑翔。", "mountain"], "squirrel": ["背上有三條深色縱紋的小松鼠，白天在森林的樹枝間活動，晚上睡在樹洞裡。", "mountain"], "keelback": ["台灣特有的蛇，白天活動，常在潮濕的林緣、灌叢和溪流附近，會吃蛙和蚯蚓。", "river"], "egret": ["全身白色的鷺鳥，黑嘴黑腳，腳趾卻是黃色，會在淺水裡慢慢找小魚。", "river"], "reefheron": ["海岸礁石邊的鷺鳥，有白色和深色兩種羽色，常在礁石附近覓食。", "coast"], "nheron": ["紅眼睛、黑頭頂的矮胖鷺鳥，白天常縮著脖子休息，黃昏才活躍。", "river"], "kingfisher": ["橘色肚子、藍色背的小鳥，會先停在枝頭，再俯衝下去抓魚。", "river"], "robin": ["白眉毛、橘紅色胸部的小鳥，常站在明顯的枝頭上抖動尾巴，不太怕人。", "mountain"], "liocichla": ["灰色頭頂、臉上有黃色斑塊的小鳥，是阿里山步道上常見的鳥。", "mountain"], "sparrow": ["栗色頭頂、白臉頰上有一塊黑斑，田間和聚落都很常見，會在屋簷縫隙築巢。", "farm"], "munia": ["巧克力色的小鳥，胸腹有鱗片狀的花紋，常成群吃草籽。", "farm"], "grassfrog": ["常在水田、溝渠邊活動的褐色青蛙，背上有深色斑，嘴唇有深色橫紋。", "farm"], "firefly": ["橙黃色前胸、黑色翅鞘的螢火蟲，幼蟲住在水裡，會吃小螺。", "river"], "peacock": ["黑色翅膀上有一大塊藍綠色，會隨著角度閃閃發光的鳳蝶。", "forest"], "ghostcrab": ["眼柄頂端有尖角的沙灘螃蟹，跑得很快，會在沙裡挖洞。", "coast"], "rissos": ["身上有很多白色抓痕的圓頭海豚（官方名稱叫瑞氏海豚），疤痕會隨年齡越來越多。", "forest"], "anemonefish": ["深色身體配兩條白帶的小魚，和海葵住在一起（臺灣魚類資料庫的正式中文名是「克氏雙鋸魚」）。", "coast"]};
+const nm=id=>isSt(id)?`${MYHUB}郵站的${NAME[baseOf(id)]}`:NAME[id]||(FOREIGN_BY_ID[id]&&FOREIGN_BY_ID[id].name)||id;
+const fromOf=id=>FOREIGN_BY_ID[id]?FOREIGN_BY_ID[id].country:"台灣";
+/* 外國送信生物還沒有美術，先用圖示代替 */
+const art=id=>isSt(id)?art(baseOf(id)):FOREIGN_BY_ID[id]?(FOREIGN_BY_ID[id].img?`<img src="${FOREIGN_BY_ID[id].img}" alt="${nm(id)}">`:`<span class="fx" role="img" aria-label="${nm(id)}">${FOREIGN_BY_ID[id].icon}</span>`):ART[id]?`<img src="art/${id}.png" alt="${NAME[id]}">`:`<span style="font-size:.8cqw;font-weight:900">${NAME[id]}</span>`;
+const PL=loadPlayer();let ME="小小觀察員";try{const s=JSON.parse(localStorage.getItem("ep-settings")||"{}");if(s.name&&!["島嶼郵差","島嶼觀察員"].includes(s.name))ME=s.name;}catch(e){}
+const esc=t=>String(t).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const QC=new URLSearchParams(location.search).get("courier");
+/* 記住上次的明信片樣式和郵差（2026-11-11 使用者決定）；從圖鑑「派牠寄明信片」進來時，郵差以圖鑑選的為準 */
+const LAST=(()=>{try{return JSON.parse(localStorage.getItem("ep-send")||"{}").last||{}}catch(e){return {}}})();
+const saveLast=()=>{try{const s=JSON.parse(localStorage.getItem("ep-send")||"{}");s.last={front:st.front,courier:st.courier};localStorage.setItem("ep-send",JSON.stringify(s));}catch(e){}};
+const st={to:"f1",front:"heron",courier:(QC&&OWNED.includes(QC))?QC:(OWNED.includes("heron")?"heron":(OWNED[0]||"heron")),text:"",flip:false,tab:"write",minor:false,age:"adult",penOn:true,inbox:[],out:[],blocked:[]};
+if(LAST.front&&FRONTS().includes(LAST.front))st.front=LAST.front;
+if(!(QC&&OWNED.includes(QC))&&LAST.courier&&OWNED.includes(LAST.courier))st.courier=LAST.courier;
+
+const C=id=>CONTACTS.find(c=>c.id===id)||CANDIDATES.find(c=>c.id===id);
+/* 找筆友（暫定：同時最多 3 位筆友；配對對象與回應皆為假資料） */
+const PEN_MAX=3;
+const CANDIDATES=[
+ {id:"c1",kind:"match",name:"Jiho",where:"韓國",interest:"台灣獼猴",uni:"blue",dex:14,lang:"韓文",reply:"안녕하세요! 저도 원숭이를 좋아해요.",tr:"你好！我也喜歡猴子。"},
+ {id:"c2",kind:"match",name:"Ploy",where:"泰國",interest:"淡紋青斑蝶",uni:"yellow",dex:9,lang:"泰文",reply:"สวัสดี! ที่นี่มีผีเสื้อเยอะมาก",tr:"你好！這裡有好多蝴蝶。"},
+ {id:"c3",kind:"match",name:"Ken",where:"日本",interest:"黑冠麻鷺",uni:"green",dex:18,lang:"日文",reply:"よろしく！鳥の写真を交換しましょう。",tr:"請多指教！我們來交換鳥的明信片吧。"},
+ {id:"c4",kind:"match",name:"Ana",where:"菲律賓",interest:"台灣白海豚",uni:"red",dex:11,lang:"英文",reply:"Hi! I love dolphins too. Nice to meet you!",tr:"嗨！我也喜歡海豚，很高興認識你！"},
+ {id:"c5",kind:"match",name:"Aiko",where:"日本",interest:"台灣犬",uni:"brown",dex:7,lang:"日文",reply:"こんにちは！うちにも黒い犬がいます。",tr:"你好！我家也有一隻黑色的狗。"},
+ {id:"c6",kind:"match",name:"Lim",where:"馬來西亞",interest:"野化家貓",uni:"green",dex:15,lang:"英文",reply:"Hello from Kuala Lumpur! Many cats here too.",tr:"從吉隆坡問好！這裡也有很多貓。"}];
+const INTERESTS=["台灣犬","野化家貓","淡紋青斑蝶","台灣獼猴","黑冠麻鷺","台灣白海豚"];
+const REGIONS=["日本","韓國","越南","泰國","菲律賓","馬來西亞"];
+const mt={mode:"random",interest:"黑冠麻鷺",region:"日本"};
+/* 沒回信就改配給別人（✅ 使用者決定）：暫定 3 天沒回信就改配，最多改配 3 次。原型以 NO_REPLY 機率模擬「沒回信」，等待時間加速為幾秒。 */
+const NO_REPLY=.35,REASSIGN_DAYS=3,REASSIGN_MAX=3;
+function deliverMatch(o,pool,tries=0,skip=[]){
+  const left=pool.filter(x=>!skip.includes(x.id));
+  if(!left.length){st.inbox.push({sys:true,text:"目前沒有其他符合條件的玩家，明信片會繼續等待配對。"});render();return;}
+  const src=left[Math.floor(Math.random()*left.length)];
+  if((st.forceNoReply||Math.random()<NO_REPLY)&&tries<REASSIGN_MAX){
+    st.forceNoReply=false;
+    st.inbox.push({sys:true,text:`配對明信片已送到一位玩家手上，但對方 ${REASSIGN_DAYS} 天沒有回信，已改配給另一位（第 ${tries+1} 次改配）。`});render();
+    setTimeout(()=>deliverMatch(o,pool,tries+1,skip.concat(src.id)),3000);return;}
+  const r=replyVia(src.where,o);
+  st.inbox.push({fl:replyFlowers(),at:Date.now(),from:src.id,name:`${src.name}（配對到你的明信片）`,text:src.reply,tr:src.tr,match:true,via:r.via,front:r.card?r.card.id:null});addReplyCard(r.card,src.where,src.name,src.reply);if(addCountryStamp(src.where))st.inbox.push({cstamp:src.where});render();
+}
+/* 回信抵達：記下送信生物與駐站生物，得到那種生物的明信片（T4、T5、T9、T10） */
+function replyVia(country,o){
+  const f=pickForeign(country),hub=o.hub||nearestHub(ME_CITY).hub,sk=stationCourier(hub),station=NAME[sk],a=stationAff()[sk]||0,sp=stationPerk(a).speed;
+  return f?{via:{country,out:f.name,hub,station,aff:a,speed:sp},card:f}:{via:null,card:null};
+}
+function addReplyCard(card,country,from,text){if(!card)return;const isNew=addPCard({id:card.id,country,from,text});st.inbox.push({pcard:card.id,isNew});}
+const condText=()=>mt.mode==="interest"?`興趣：${mt.interest}`:mt.mode==="region"?`地區：${mt.region}`:"隨機配對";
+/* 好友上限（v0.39.20，使用者決定）：起始 6 位，每 5 級 +2；滿了不能再加，可刪除好友後再加 */
+const isFr=c=>c.kind==="friend"||c.isFriend;
+const friendCount=()=>CONTACTS.filter(isFr).length;
+const friendMax=()=>6+2*Math.floor((typeof PLAYER_LEVEL==="number"?PLAYER_LEVEL:1)/5);
+const friendFull=()=>friendCount()>=friendMax();
+const penCount=()=>CONTACTS.filter(c=>c.kind==="pen"&&!c.isFriend).length;   /* 已升成好友的不再佔筆友名額（v0.39.13） */
+const face=c=>c.kind==="friend"&&c.photo?playerSVG(c.uni,true):c.kind==="drift"?`<div style="display:grid;place-items:center;height:100%"><img src="art/ui/x_match.png" alt="漂流瓶" style="width:78%;height:auto"></div>`:playerSVG(c.uni,true);
+/* 未成年（M1′–M5′）：13 歲以下沒有家庭功能時不能寄明信片；未成年不開放筆友；滿 18 歲要自己打開筆友 */
+const noFam=()=>st.age==="childnofam";
+const penLocked=()=>st.minor||!st.penOn;
+const allowed=c=>!noFam()&&!(penLocked()&&c.kind!=="friend")&&!st.blocked.includes(c.id);
+function issues(){
+  const out=[];FILTERS.concat(st.minor?MINOR_FILTERS:[]).forEach(([re,n])=>{if(re.test(st.text))out.push(n)});
+  if([...st.text].length>maxLen())out.push(`超過 ${maxLen()} 字`);return out;
+}
+function trip(){
+  const c=C(st.to),up=courierBonus(st.courier);
+  if(c.kind==="friend"){                                       // 好友：自己的郵差直接送到對方城市
+    const need=island(ME_CITY)||island(c.where),ok=canCarry(need,st.courier);
+    const km=kmTo(c);
+    const travel=km/100*8/(SPD[st.courier]*up.spd);
+    const cost=Math.min(100,Math.round(km/40*14/(RANGE[st.courier]*up.range)));
+    const rest=Math.max(0,cost-STA[st.courier])/2/60;
+    const h=Math.max(.1,Math.round((travel+rest)*10)/10);   /* 同城市或很近時不會變成 0（v0.50.2：會一下子就送到） */
+    return {intl:false,need,ok,h,km,up,est:false,cost,rest,after:Math.max(0,STA[st.courier]-cost)};
+  }
+  /* 筆友、配對明信片：轉運接力（T1–T3、T8）。郵差只跑第一段到最近的郵站；同城市也算 5 km 的市區路程 */
+  const hub=nearestHub(ME_CITY),hubKm=Math.max(5,hub.km),need=island(ME_CITY),ok=canCarry(need,st.courier);
+  const ikm=c.kind==="drift"?DRIFT_KM:distKm(COUNTRIES["台灣"],COUNTRIES[c.where]);
+  const leg1=hubKm/100*8/(SPD[st.courier]*up.spd);
+  const cost=Math.min(100,Math.round(hubKm/40*14/(RANGE[st.courier]*up.range)));
+  const rest=Math.max(0,cost-STA[st.courier])/2/60;
+  const leg2=ikm/1000*INTL_H_PER_1000;
+  const h=Math.round((leg1+rest+leg2)*10)/10;
+  return {intl:true,need,ok,h,km:hubKm+ikm,hub:hub.hub,hubKm,ikm,leg1:leg1+rest,leg2,up,est:c.kind==="drift",cost,rest,after:Math.max(0,STA[st.courier]-cost)};
+}
+/* 回信最後一段：郵站 → 玩家，由駐站生物送；駐站好感 5／15 快 20%／35% */
+function lastLeg(){const hub=nearestHub(ME_CITY),sk=stationCourier(hub.hub),a=stationAff()[sk]||0,p=stationPerk(a);
+  const base=Math.max(5,hub.km)/100*8/(SPD[sk]||7);return {sk,a,speed:p.speed,base,h:base*(1-p.speed),gift:p.gift};}
+function stationGift(){const L=lastLeg();if(!L.gift||Math.random()>=L.gift)return;
+  if(Math.random()<.5){try{const inv=JSON.parse(localStorage.getItem("ep-items")||"{}");inv.restkit=(inv.restkit||0)+1;localStorage.setItem("ep-items",JSON.stringify(inv));}catch(e){}
+    st.inbox.push({sys:true,icon:"🎒",text:`${MYHUB}郵站的${NAME[L.sk]}送回信時，順便帶來小禮物：郵差休息包 ×1（駐站好感 ${L.a}）`});}
+  else{const n=loadFlowers()+5;try{localStorage.setItem(FLOWER_KEY,JSON.stringify(n))}catch(e){}updateFlowerHud(n);
+    st.inbox.push({sys:true,icon:"🌸",text:`${MYHUB}郵站的${NAME[L.sk]}送回信時，順便帶來小禮物：小花 ×5（駐站好感 ${L.a}）`});}}
+const fmtH=h=>h>=1?`${Math.floor(h)} 小時${Math.round((h%1)*60)?` ${Math.round((h%1)*60)} 分`:""}`:`${Math.round(h*60)} 分鐘`;
+
+function renderContacts(){
+  const cur=C(st.to);
+  const grp=(k,t)=>{const L=CONTACTS.filter(c=>k==="friend"?(c.kind==="friend"||c.isFriend):k==="pen"?(c.kind==="pen"&&!c.isFriend):c.kind===k);if(!L.length)return"";
+    return `<h4>${t}</h4>`+L.map(c=>`<button class="ct2${st.to===c.id?" on":""}${allowed(c)?"":" off"}" data-to="${c.id}" ${allowed(c)?"":"disabled"}><span class="fc">${face(c)}</span><span class="tx"><b>${esc(c.name)}</b><small>${esc(c.where)}</small></span></button>`).join("");};
+  document.getElementById("contacts").innerHTML=`<button class="rcpt" id="rcpt" aria-expanded="${st.rcptOpen?"true":"false"}"><span class="fc">${face(cur)}</span><span class="rt"><small>收件人</small><b>${esc(cur.name)}・${esc(cur.where)}</b></span><span class="caret">${st.rcptOpen?"▴":"▾"}</span></button>${st.rcptOpen?`<div class="rcptlist">${grp("friend","好友")}${grp("pen","筆友")}${grp("drift","找筆友")}</div>`:""}`;
+}
+function renderCard(){
+  const c=C(st.to);
+  document.getElementById("front").innerHTML=frontHTML(st.front);
+  const n=[...st.text].length,bad=issues();
+  document.getElementById("back").innerHTML=`<div class="msg"><textarea id="txt" maxlength="200" placeholder="寫下想說的話（最多 ${maxLen()} 字）">${esc(st.text)}</textarea>
+    <div class="cnt${bad.length?" bad":""}" id="cnt">${n}／${maxLen()}</div></div>
+    <div class="to"><div class="ln"><small>寄件人</small>${esc(ME)}</div>
+    <div class="ln"><small>收件人</small>${esc(c.name)}</div>
+    <div class="ln"><small>${c.kind==="friend"?"城市（對方自己填的）":"國家／地區"}</small>${esc(c.where)}</div>
+    <div class="stampbox"><div class="mini">${art(st.courier)}</div>郵差</div></div>`;
+  document.getElementById("pc").classList.toggle("flip",st.flip);
+  document.getElementById("flip").textContent=st.flip?"看正面":"翻面寫信";
+}
+function renderPanel(){
+  const c=C(st.to),t=trip(),bad=issues(),pf=postage(c),fl=loadFlowers();
+  document.querySelectorAll("#tabs button").forEach(b=>b.classList.toggle("on",b.dataset.tab===st.tab));
+  document.querySelector('#tabs [data-tab="inbox"]').textContent=(n=>`收件匣${n?`（未讀 ${n}）`:""}`)(st.inbox.filter(m=>m.from&&!m.read).length);
+  let h="";
+  if(st.view==="friends"){
+    const fr=CONTACTS.filter(isFr),pens=CONTACTS.filter(c=>c.kind==="pen"&&!c.isFriend);
+    document.getElementById("note").textContent=`好友 ${friendCount()}／${friendMax()}　筆友 ${penCount()}／${PEN_MAX}`;
+    const card=(c,sub,del)=>`<div class="row" style="grid-template-columns:1fr"><div class="mailitem"><span class="fc">${face(c)}</span><div><div class="lbl">${esc(c.name)}</div><div class="val sm">${esc(c.where)}${sub}</div><div class="btns mailbtns" style="margin-top:.3cqw;display:flex;flex-wrap:wrap;gap:.4cqw"><button class="btn sm pri" data-writeto="${c.id}" ${allowed(c)?"":"disabled"}>寫信</button>${del}</div></div></div></div>`;
+    const armed=id=>st.frArm===id;
+    document.getElementById("rows").innerHTML=
+      `<h4 class="grph">好友 ${friendCount()}／${friendMax()}</h4><div class="src grpn">好友看得到你的：暱稱、頭貼（有分享照片才顯示照片）、你填的城市。</div>`+
+      (fr.length?fr.map(c=>card(c,c.kind==="pen"?"（原本是筆友，寄信規則仍算國外）":"",`<button class="btn sm${armed(c.id)?" pri":""}" data-delfriend="${c.id}">${armed(c.id)?"確定刪除好友？":"刪除好友"}</button>`)).join(""):`<div class="row"><div class="ic">🤝</div><div class="val sm">還沒有好友。收到筆友來信時，可以在收件匣按「邀請加好友」。</div></div>`)+
+      `<h4 class="grph">筆友 ${penCount()}／${PEN_MAX}</h4><div class="src grpn">筆友只看得到：暱稱、觀察員角色、國家／地區；回信會自動翻譯。</div>`+
+      (pens.length?pens.map(c=>card(c,`｜興趣：${esc(c.interest||"—")}`,`<button class="btn sm${armed(c.id)?" pri":""}" data-endpen="${c.id}">${armed(c.id)?"確定結束通信？":"結束通信"}</button>`)).join(""):`<div class="row"><div class="ic">✉️</div><div class="val sm">還沒有筆友。到「寫明信片 → 找筆友」寄配對明信片試試看。</div></div>`);
+    return;
+  }
+  if(st.tab==="write"){
+    document.getElementById("note").textContent="寫明信片　選明信片樣式，翻到背面寫字";
+    if(c.kind==="drift")h+=`<div class="row"><div class="ic">🍾</div><div><div class="lbl">配對明信片</div><div class="src">配對條件：${condText()}｜寄出後系統隨機配給一位成年、開啟筆友功能的玩家，你在對方回信前不會知道是誰；對方回信才成為筆友</div></div></div>`;   /* 收件人資訊已在上方「收件人」按鈕（v0.40.4）；好友／筆友的管理在「好友」頁 */
+    if(noFam())h+=`<div class="row warn"><div class="ic">🔒</div><div class="val sm">13 歲以下：請家長設定家庭功能（Apple 家人共享／Google Family Link）後，才能寄明信片、加好友。探索、圖鑑、探索點之間送信都可以照常玩。</div></div>`;
+    else if(st.minor)h+=`<div class="row"><div class="ic">🛡️</div><div><div class="lbl">未成年保護</div><div class="val sm">只能寄給好友${st.age==="child"?"；加好友要經家長核准（家庭功能）":""}</div>
+      <div class="src">好友看得到你的：暱稱、觀察員角色。城市與照片預設不公開，可到設定打開${st.age==="child"?"（打開要家長核准）":""}。明信片另外擋約見面、問住址的字眼與不雅字詞</div></div></div>`;
+    h+=`<div class="row"><div class="ic">📮</div><div><div class="lbl">郵差</div><div class="pick">${MATES.map(k=>`<button class="${st.courier===k?"on":""}" data-courier="${k}" title="${NAME[k]}">${art(k)}</button>`).join("")}</div>
+      <div class="src">${t.intl?(t.need?"離島要先飛到本島郵站，只有會飛的郵差能送（滑翔的不行）":"國外的信走轉運，郵差只送到郵站，所有郵差都能送"):(t.need?"這條路線要跨海，只有會飛的郵差能送（滑翔的不行）":"陸路，所有郵差都能送")}${t.intl?"":`｜${ME_CITY} → ${esc(c.where)}，約 ${t.km.toLocaleString()} km`}｜預估 ${t.ok?fmtH(t.h):"—"}${t.up.tags.length?`｜⭐ ${t.up.tags.join("、")}`:""}</div></div></div>`;
+    h+=`<div class="row"><div class="ic">🖼️</div><div><div class="lbl">明信片樣式</div><div class="pick">${FRONTS().map(k=>`<button class="${st.front===k?"on":""}" data-front="${k}" title="${nm(k)}${isSt(k)?"（駐站明信片）":OBSERVE_ONLY.includes(k)||FOREIGN_BY_ID[k]?"（特別明信片）":""}">${art(k)}</button>`).join("")}</div></div></div>`;
+    if(t.intl){const l3=lastLeg().h,dst=c.kind==="drift"?"配對對象的國家":esc(c.where);
+      const stp=(i,ttl,d)=>`<div class="tstep"><span class="tdot">${i}</span><div><div class="lbl">${ttl}</div><div class="src">${d}</div></div></div>`;
+      h+=`<div class="row"><div class="ic">🛫</div><div><div class="lbl">轉運路線（分三段送）</div><div class="tsteps">${stp(1,`${NAME[st.courier]}送到${t.hub}郵站`,`約 ${t.hubKm.toLocaleString()} km・約 ${fmtH(t.leg1)}（郵差只跑這一段）`)}${stp(2,`國際轉運到${dst}`,`約 ${t.ikm.toLocaleString()} km${t.est?"（估算）":""}・約 ${fmtH(t.leg2)}`)}${stp(3,"當地生物送到對方手上",`約 ${fmtH(l3)}`)}</div><div class="src">寄件人只知道對方的國家。</div></div></div>`;}
+    if(t.intl){const L=lastLeg();h+=`<div class="row"><div class="ic">🏤</div><div><div class="lbl">回信最後一段</div><div class="val sm">${MYHUB}郵站的${NAME[L.sk]}送到你手上，約 ${fmtH(L.h)}${L.speed?`（駐站好感 ${L.a}：快 ${Math.round(L.speed*100)}%，原本 ${fmtH(L.base)}）`:""}</div><div class="src">${L.gift?`送回信時有 ${Math.round(L.gift*100)}% 機率附小禮物（郵差休息包或 5 朵小花）`:"到「郵站」照顧駐站生物，好感 5 起回信更快、偶爾附小禮物"}</div></div></div>`;}
+    h+=`<div class="row"><div class="ic">🔋</div><div><div class="lbl">${NAME[st.courier]}的體力</div><div class="val sm">${STA[st.courier]}% → ${t.ok?t.after:STA[st.courier]}%（消耗 ${t.cost}%）</div><div class="src">待命時每 3 分鐘 +1%｜現在${staFullText(STA[st.courier],STA_T[st.courier])}</div><div class="btns" style="display:flex;align-items:center;gap:.6cqw;margin-top:.35cqw"><button class="btn sm" data-restkit="1" ${restkitCount()&&STA[st.courier]<100?"":"disabled"}>${restkitImg()} 用休息包（+${RESTKIT.sta}%）</button><span class="src">你有 ${restkitCount()} 個｜郵站櫃台 ${RESTKIT.p} 朵小花｜每位郵差每天第一次用好感 +1</span></div>${restMsg?`<div class="src"><b>${restMsg}</b></div>`:""}${t.rest&&t.ok?`<div class="src">體力不夠，途中休息約 ${fmtH(t.rest)}（已算進預估時間）</div>`:""}</div></div>`;
+    if(!t.ok)h+=`<div class="row warn"><div class="ic">⚠️</div><div class="val sm">${SWIM.includes(st.courier)?`${NAME[st.courier]}會游，只能走海路（送到離島）；這條是陸路，請改派別的郵差`:`${NAME[st.courier]}不能跨海${t.intl?"飛到本島郵站":""}，請改派會飛或會游的郵差`}</div></div>`;
+    h+=`<div class="row${pf.fee>fl?" warn":""}"><div class="ic">🌸</div><div><div class="lbl">郵資</div><div class="val sm">${pf.fee?`${pf.fee} 朵小花（你有 ${fl} 朵）`:`免費（${pf.why}，原價 ${pf.base} 朵）`}</div><div class="src">${pf.fee>fl?"小花不夠：到「郵站」做委託可以賺小花":"寄好友 5 朵、寄國外 10 朵；每天免費 3 封（回信、第 1 封新信共用）"}</div></div></div>`;
+    if(bad.length)h+=`<div class="row warn"><div class="ic">⚠️</div><div class="val sm">明信片不能包含：${bad.join("、")}</div></div>`;
+    if(!st.text.trim())h+=`<div class="row"><div class="ic">✍️</div><div class="val sm">點「翻面寫信」到背面寫字</div></div>`;
+  }else if(st.tab==="match"){
+    document.getElementById("note").textContent="找筆友　配對對象只看得到暱稱、觀察員角色、國家與興趣";
+    if(st.minor){h+=`<div class="row warn"><div class="ic">🔒</div><div class="val sm">未成年不開放筆友，只能和好友互寄</div></div>`;}
+    else if(!st.penOn){h+=`<div class="row warn"><div class="ic">🔒</div><div><div class="val sm">筆友功能還沒開啟。滿 18 歲後不會自動開放，要自己到設定打開。</div><div class="btns" style="display:flex;margin-top:.4cqw"><button class="btn sm pri" data-penon="1">開啟筆友（設定）</button></div></div></div>`;}
+    else{
+      const full=penCount()>=PEN_MAX;
+      h+=`<div class="row"><div class="ic">✉️</div><div><div class="lbl">筆友名額</div><div class="val sm">${penCount()}／${PEN_MAX}${full?"（已滿，結束一位筆友後才能再配對）":""}</div><div class="src">筆友雙方 30 天沒有通信會自動結束，空出名額</div></div></div>`;
+      h+=`<div class="row"><div class="ic">🎲</div><div><div class="lbl">怎麼配對</div><div class="val sm">寫一張明信片寄出，系統會隨機配給一位符合條件的成年玩家。對方回信後，你才知道是誰，並決定要不要繼續通信。</div></div></div>`;
+      h+=`<div class="row"><div class="ic">🔎</div><div><div class="lbl">配對條件</div><div class="rowsel">${[["random","完全隨機"],["interest","依興趣"],["region","依地區"]].map(([k,v])=>`<button class="chip${mt.mode===k?" on":""}" data-mmode="${k}">${v}</button>`).join("")}</div>
+        ${mt.mode==="interest"?`<div class="rowsel">${INTERESTS.map(v=>`<button class="chip${mt.interest===v?" on":""}" data-mint="${v}">${v}</button>`).join("")}</div>`:""}
+        ${mt.mode==="region"?`<div class="rowsel">${REGIONS.map(v=>`<button class="chip${mt.region===v?" on":""}" data-mreg="${v}">${v}</button>`).join("")}</div>`:""}
+        <div class="btns" style="display:flex;margin-top:.4cqw"><button class="btn sm pri" data-godrift="1" ${full?"disabled":""}>寫配對明信片</button></div></div></div>`;
+    }
+  }else{
+    document.getElementById("note").textContent="收件匣　送達與回信（假資料）";
+    /* 收件匣分成「信件」和「通知」兩類（v0.24.6，使用者回報：通知和明信片混在一起很亂） */
+    const isMail=m=>!!m.from,mailN=st.inbox.filter(isMail).length,unreadN=st.inbox.filter(m=>m.from&&!m.read).length,noteN=st.inbox.length-mailN,noteNew=Math.max(0,noteN-boxSeen());
+    if(st.boxView==="note")markSeen(noteN);
+    h+=`<div class="rowsel" style="display:flex;gap:.6cqw;margin:0 0 .6cqw"><button class="chip${st.boxView!=="note"?" on":""}" data-boxv="mail">✉️ 信件（${mailN+st.out.length}）${unreadN?`<b style="color:#b1392d;margin-left:.3cqw">未讀 ${unreadN}</b>`:""}</button><button class="chip${st.boxView==="note"?" on":""}" data-boxv="note">🔔 通知（${noteN}）${noteNew&&st.boxView!=="note"?`<b style="color:#b1392d;margin-left:.3cqw">新 ${noteNew}</b>`:""}</button></div>`;
+    if(st.boxView==="note"&&noteN>1)h+=`<div style="display:flex;justify-content:flex-end;margin:0 0 .5cqw"><button class="btn sm" data-clearnotes="1">全部清除通知</button></div>`;
+    if(st.boxView!=="note")h+=st.out.map((o,oi)=>{const stage=!o.intl?0:o.el<o.leg1?0:o.el<o.h-(o.l3||o.h*.1)?1:2;
+      const who=!o.intl?`${NAME[o.courier]}送信中`:[NAME[o.courier]+"送往"+o.hub+"郵站","國際轉運中","當地生物送到對方手上"][stage];
+      return `<div class="row"><div class="ic">🚚</div><div style="min-width:0"><div class="lbl">寄給 ${esc(C(o.to).name)}・${who}</div><div class="prog"><i style="width:${Math.min(100,o.el/o.h*100)}%"></i></div>
+      <div class="src">${o.intl?"全程":""}剩約 ${fmtH(Math.max(0,o.h-o.el))}｜🌸 ${o.fee?`已付郵資 ${o.fee} 朵`:`郵資免費（${o.feeWhy}）`}</div>
+      ${o.intl?`<div class="btns" style="display:flex;margin-top:.3cqw"><button class="btn sm" data-oout="${oi}">${o.open?"收起三步進度 ▴":"看三步進度 ▾"}</button></div>${o.open?`<div class="tsteps">${tripSteps(o)}</div>`:""}`:""}</div></div>`;}).join("");
+    h+=st.inbox.map((m,j)=>[m,j]).reverse().filter(([m])=>st.boxView==="note"?!isMail(m):isMail(m)).map(([m,j])=>{const R=(()=>{if(m.cstamp)return `<div class="row good"><div class="ic">📮</div><div class="arrive"><div class="stampcell">${countryStampSVG(m.cstamp,true,loadCountryStamps()[m.cstamp])}</div><div><div class="lbl">新的國家郵戳：${esc(m.cstamp)}</div><div class="val sm">你的明信片第一次寄到${esc(m.cstamp)}！</div><div class="src">🌸 小花 +${EARN.stamp}</div></div></div></div>`;if(m.sys)return `<div class="row"><div class="ic">${m.icon||"🔁"}</div><div><div class="val sm">${esc(m.text)}</div>${m.penBtn&&!st.penOn?`<div class="btns" style="display:flex;margin-top:.4cqw"><button class="btn sm pri" data-penon="1">前往設定：開啟筆友</button></div>`:""}</div></div>`;if(m.pcard){const f=FOREIGN_BY_ID[m.pcard];return `<div class="row good"><div class="ic">🖼️</div><div><div class="lbl">${m.isNew?"新的明信片":"又收到一張明信片"}：${esc(f.name)}（來自${esc(f.country)}）</div><div class="val sm">已收進「我的 → 明信片冊」；寫明信片時可以選為特別明信片樣式</div><div class="src">送信生物與小知識：部分查核（GPT 查證草稿）</div></div></div>`;}const c2=C(m.from);return `<div class="row${m.read?"":" unread"}" style="grid-template-columns:1fr"><div class="mailitem"><span class="fc">${face(c2)}</span><div>
+      <div class="lbl">${m.read?"":`<span class="udot"></span>`}${esc(m.name)}・${esc(c2.where)}${m.read?"":`<span class="badge" style="margin-left:.5cqw;background:#b1392d;color:#fff">未讀</span>`}${m.fl?`<span class="badge b-g" style="margin-left:.5cqw">🌸 +${m.fl}</span>`:""}</div><div class="val sm">${esc(m.text.length>16?m.text.slice(0,16)+"…":m.text)}</div>
+      ${(()=>{const t=[m.match&&m.decided&&!(m.decided==="keep"&&c2.isFriend)?(m.decided==="keep"?"已成為筆友":"已結束這段配對"):"",c2.kind==="pen"?(c2.isFriend?"已是好友":m.friendAsk?"好友邀請已送出，等對方回覆…":""):""].filter(Boolean);return t.length?`<div class="src" style="margin-top:.2cqw">${t.join("・")}</div>`:""})()}
+      <div class="btns mailbtns" style="margin-top:.3cqw;display:flex;flex-wrap:wrap;align-items:center;gap:.4cqw"><button class="btn sm pri" data-open="${j}">打開</button>${m.match&&!m.decided?`<button class="btn sm pri" data-keep="${m.from}" ${penCount()>=PEN_MAX?"disabled":""}>繼續通信（成為筆友）</button><button class="btn sm" data-drop="${m.from}">不繼續</button>`:""}${c2.kind==="pen"&&!c2.isFriend&&!m.friendAsk?`<button class="btn sm" data-askfriend="${m.from}"${friendFull()?" disabled":""}>${friendFull()?"好友已滿":"邀請加好友"}</button>`:""}<button class="btn sm" data-report="${m.from}">檢舉</button><button class="btn sm" data-block="${m.from}">封鎖</button></div>
+    </div></div></div>`})();return addDel(R,j,m)}).join("");
+    if(st.boxView==="note"&&!noteN)h+=`<div class="row"><div class="ic">🔔</div><div class="val sm">還沒有通知。新郵戳、新明信片、小禮物會出現在這裡。</div></div>`;
+    if(st.boxView!=="note"&&!mailN&&!st.out.length)h+=`<div class="row"><div class="ic">📭</div><div class="val sm">還沒有信。寄一張明信片試試看！</div></div>`;
+  }
+  document.getElementById("rows").innerHTML=h;
+  /* 按鈕寫「派 郵差名字 寄出」（2026-11-11 使用者決定，原本固定寫「寄出」）：背面還沒寫字、或有其他問題時是灰色不能按；寫了字才變綠色可以按。原因寫在上方的提示列 */
+  const ok=allowed(c)&&t.ok&&!bad.length&&!!st.text.trim()&&pf.fee<=fl;
+  document.getElementById("go").disabled=!ok;
+  document.getElementById("goText").textContent=`派 ${NAME[st.courier]||"郵差"} 寄出`;
+  document.getElementById("bar").innerHTML=`<span>✉️ ${esc(ME)} → ${esc(c.name)}（${esc(c.where)}）</span><span class="sep"></span><span>${noFam()?"13 歲以下：家長設定家庭功能後開放寄信":st.minor?"未成年：只能寄給好友":!st.penOn?"筆友未開啟：只能寄給好友":"原型加速：一封信約 1～2 分鐘送達"}</span>`;
+}
+function tripSteps(o){const l3=o.l3||o.h*.1,b1=o.leg1,b2=o.h-l3,cur=o.el<b1?0:o.el<b2?1:2,seg=[[0,b1],[b1,b2],[b2,o.h]];
+  const T=[`${NAME[o.courier]}送到${o.hub}郵站`,"國際轉運","當地生物送到對方手上"];
+  const D=[o.hubKm?`約 ${o.hubKm.toLocaleString()} km`:"",o.ikm?`約 ${o.ikm.toLocaleString()} km${o.est?"（估算）":""}`:"",""];
+  return seg.map(([a,b],i)=>{const done=cur>i,now=cur===i,rem=Math.max(0,b-Math.max(o.el,a));
+    const t=[D[i],done?"已完成":now?`這段剩約 ${fmtH(rem)}`:`約 ${fmtH(b-a)}`].filter(Boolean).join("・");
+    return `<div class="tstep${now?" now":done?" done":""}"><span class="tdot">${done?"✔":i+1}</span><div><div class="lbl">${T[i]}${now?"（目前）":""}</div><div class="src">${t}</div>${now?`<div class="prog"><i style="width:${Math.min(100,Math.max(0,(o.el-a)/(b-a)*100))}%"></i></div>`:""}</div></div>`;}).join("");}
+/* 原型加速（v0.48.1）：國外信每一步至少停 10 秒，三步都看得到；國內信照整封至少 60 秒的速度 */
+function tripRate(o){if(!o.intl||!o.l3)return o.k||2;
+  const b1=o.leg1,b2=o.h-o.l3,H=[b1,b2-b1,o.l3],i=o.el<b1?0:o.el<b2?1:2;
+  return H[i]/Math.max(10,H[i]*10);}
+function startTrip(o){const c=C(o.to);if(!c)return;
+  const iv=setInterval(()=>{o.el+=tripRate(o);
+      if(o.el>=o.h){clearInterval(iv);st.out=st.out.filter(x=>x!==o);
+        if(c.kind==="drift"){
+          const free=CANDIDATES.filter(x=>!CONTACTS.some(y=>y.id===x.id)&&!st.inbox.some(m=>m.from===x.id));
+          const fit=free.filter(x=>o.cond.mode==="interest"?x.interest===o.cond.interest:o.cond.mode==="region"?x.where===o.cond.region:true);
+          const pool=fit.length?fit:free;
+          deliverMatch(o,pool);stationGift();
+        }else if(c.kind==="friend"){st.inbox.push({fl:replyFlowers(),at:Date.now(),from:c.id,name:c.name,text:c.reply,tr:c.tr,front:FRIEND_FRONTS[Math.floor(Math.random()*FRIEND_FRONTS.length)]});}else{const r=replyVia(c.where,o);st.inbox.push({fl:replyFlowers(),at:Date.now(),from:c.id,name:c.name,text:c.reply,tr:c.tr,via:r.via,front:r.card?r.card.id:null});addReplyCard(r.card,c.where,c.name,c.reply);if(c.kind==="pen"&&addCountryStamp(c.where))st.inbox.push({cstamp:c.where});stationGift();}}
+      render();},1000);
+}
+/* 收件匣保存（v0.23.1）：收到的信、送信中的明信片、封鎖名單、留下來的筆友存在 ep-box；關掉再開會接著算 */
+const BOX_KEY="ep-box";let RM_FR=[];
+const boxSeen=()=>{try{return +localStorage.getItem("ep-box-seen")||0}catch(e){return 0}};
+const markSeen=n=>{try{localStorage.setItem("ep-box-seen",String(n))}catch(e){}};
+/* 好友邀請（v0.34.0）：筆友是假資料，邀請送出幾秒後對方「同意」，筆友轉到「好友」名單（寄信規則仍照筆友＝國外）。 */
+function acceptFriend(id){const c=CONTACTS.find(x=>x.id===id);if(!c||c.isFriend)return;if(friendFull()){delete c.friendAsk;st.inbox.filter(m=>m.from===id).forEach(m=>{delete m.friendAsk});st.inbox.push({sys:true,icon:"🤝",text:`${c.name}想成為好友，但你的好友已滿（${friendCount()}／${friendMax()}）。刪除一位好友或升級後再邀請一次。`});render();return;}c.isFriend=true;
+  st.inbox.push({sys:true,icon:"🤝",text:`${c.name}同意了你的好友邀請！現在 ${c.name} 在「好友」名單裡，你也看得到對方填的城市與頭貼。`});render();}
+function saveBox(){try{localStorage.setItem(BOX_KEY,JSON.stringify({inbox:st.inbox,blocked:st.blocked,out:st.out.map(o=>({...o,savedAt:Date.now()})),kept:CONTACTS.filter(c=>c.kept),friends:CONTACTS.filter(c=>c.isFriend).map(c=>c.id),rmFr:RM_FR}));}catch(e){}}
+function loadBox(){let b;try{b=JSON.parse(localStorage.getItem(BOX_KEY)||"null");}catch(e){}if(!b)return;
+  (b.kept||[]).forEach(k=>{if(!CONTACTS.some(c=>c.id===k.id))CONTACTS.splice(CONTACTS.findIndex(x=>x.kind==="drift"),0,k);});
+  (b.rmFr||[]).forEach(id=>{const i=CONTACTS.findIndex(x=>x.id===id);if(i>=0)CONTACTS.splice(i,1);RM_FR.push(id);});
+  (b.friends||[]).forEach(id=>{const c=CONTACTS.find(x=>x.id===id);if(c)c.isFriend=true;});
+  st.inbox=b.inbox||[];st.blocked=b.blocked||[];
+  st.inbox.filter(m=>m.friendAsk&&m.from).forEach(m=>{const c=CONTACTS.find(x=>x.id===m.from);if(c&&!c.isFriend)setTimeout(()=>acceptFriend(m.from),3000);});   // 重新整理時還在等的邀請，繼續等
+  (b.out||[]).forEach(o=>{o.el=(o.el||0)+Math.max(0,(Date.now()-(o.savedAt||Date.now()))/1000*(o.k||2));delete o.savedAt;st.out.push(o);startTrip(o);});}
+function addDel(R,j,m){const arm=m.from&&st.delArm===j,b=`<button class="xdel${arm?" arm":""}" data-del="${j}" aria-label="${arm?"確定刪除這封信":"刪除"}">${arm?"確定刪除？":"✕"}</button>`;return R.replace(/^(\s*<div class="row[^>]*>)/,"$1"+b);}
+function applyView(){const S=document.getElementById("stage");if(S)S.classList.toggle("fv",st.view==="friends");const a=document.getElementById("nPost"),b=document.getElementById("nFri");if(a)a.classList.toggle("on",st.view!=="friends");if(b)b.classList.toggle("on",st.view==="friends");}
+function render(){applyView();CONTACTS.find(c=>c.kind==="drift").where=condText();renderContacts();renderCard();renderPanel();saveBox();}
+
+/* 收到的信：背面右上角貼郵票、蓋郵戳（寄出地＋日期）（2026-11-11 使用者：收信應該要有郵戳） */
+function postmarkHTML(f,where,at){const d=new Date(at||Date.now()),ds=`${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,"0")}.${String(d.getDate()).padStart(2,"0")}`;
+  return `<div class="pmwrap"><div class="stampbox"><div class="mini">${art(f)}</div>郵票</div><div class="pmark" aria-label="郵戳：${esc(where)} ${ds}"><span><b>${esc(where)}</b>${ds}</span></div></div>`;}
+let RD=null;
+function openLetter(idx){
+  const m=st.inbox[idx];if(!m||!m.from)return;const c2=C(m.from),f=m.front||"heron";RD={m,flip:false};
+  if(!m.read){m.read=true;render();}   // 打開過＝已讀（v0.24.7）
+  document.getElementById("rfront").innerHTML=frontHTML(f);
+  document.getElementById("rback").innerHTML=`<div class="msg"><div class="txt">${esc(m.text)}</div>${m.tr?`<div class="trn">自動翻譯：${esc(m.tr)}</div>`:""}${m.via&&m.via.speed?`<div class="trn" style="${m.tr?"border-top:0;margin-top:0;padding-top:0":""}">🚚 駐站好感 ${m.via.aff}，最後一段快 ${Math.round(m.via.speed*100)}%</div>`:""}</div>
+    <div class="to">${postmarkHTML(f,c2.where,m.at)}<div class="ln"><small>寄件人</small>${esc(c2.name)}</div><div class="ln"><small>${c2.kind==="friend"?"城市":"國家／地區"}</small>${esc(c2.where)}</div>
+    <div class="ln"><small>收件人</small>${esc(ME)}</div>${m.via?`<div class="ln" style="font-size:.95cqw"><small>送信</small>${esc(m.via.out)} → ${esc(m.via.hub)}郵站的${esc(m.via.station)}</div>`:""}</div>`;
+  const rd=document.getElementById("reader");rd.classList.remove("flip");rd.hidden=false;document.getElementById("readbtns").hidden=false;
+  {const S=document.querySelector(".stage");if(S.classList.contains("sheetup"))document.getElementById("sheetbtn").click();}   /* 打開信時收起抽屜 */
+  document.querySelector(".stage").classList.add("reading");document.getElementById("rflip").textContent="翻面看信";document.getElementById("rflip").focus();
+}
+function closeLetter(){RD=null;document.getElementById("reader").hidden=true;document.getElementById("readbtns").hidden=true;document.querySelector(".stage").classList.remove("reading");}
+document.addEventListener("click",e=>{
+  if(e.target.closest("#rclose")){closeLetter();return;}
+  if(e.target.closest("#rflip")){RD.flip=!RD.flip;document.getElementById("reader").classList.toggle("flip",RD.flip);document.getElementById("rflip").textContent=RD.flip?"看正面":"翻面看信";return;}
+  const op=e.target.closest("[data-open]");if(op){openLetter(+op.dataset.open);return;}
+});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&RD)closeLetter();});
+document.addEventListener("click",e=>{
+  const t=e.target.closest("#rcpt,[data-endpen],[data-writeto],[data-delfriend],[data-del],[data-clearnotes],[data-to],[data-front],[data-courier],[data-tab],#flip,#go,[data-report],[data-block],[data-keep],[data-drop],[data-askfriend],[data-mmode],[data-mint],[data-mreg],[data-godrift],[data-penon],[data-restkit],[data-boxv],[data-oout]");if(!t)return;
+  if(t.dataset.restkit){const r=useRestkit(st.courier,STA);if(r){saveSta();restMsg=`${NAME[st.courier]}休息了一下，體力 +${RESTKIT.sta}%${r.first?"，好感 +1":"（今天已經加過好感）"}`;}render();return;}
+  if(t.id==="rcpt"){st.rcptOpen=!st.rcptOpen;render();return;}
+  if(t.dataset.endpen){const id=t.dataset.endpen;if(st.frArm!==id){st.frArm=id;render();return;}
+    const c=CONTACTS.find(x=>x.id===id);st.frArm=null;
+    if(c){CONTACTS.splice(CONTACTS.indexOf(c),1);RM_FR.push(id);if(st.to===id)st.to="f1";
+      st.inbox.push({sys:true,icon:"✉️",text:`已結束與「${c.name}」的通信。筆友名額 ${penCount()}／${PEN_MAX}，可以再配對新的筆友了。`});}
+    render();return;}
+  if(t.dataset.writeto){const c=C(t.dataset.writeto);if(!allowed(c))return;st.to=c.id;st.tab="write";st.view="";st.flip=true;st.rcptOpen=false;render();return;}
+  if(t.dataset.delfriend){const id=t.dataset.delfriend;if(st.frArm!==id){st.frArm=id;render();return;}
+    const c=CONTACTS.find(x=>x.id===id);st.frArm=null;
+    if(c){if(c.kind==="friend"){CONTACTS.splice(CONTACTS.indexOf(c),1);RM_FR.push(id);}else{c.isFriend=false;delete c.friendAsk;st.inbox.filter(m=>m.from===id).forEach(m=>{delete m.friendAsk});}
+      st.inbox.push({sys:true,icon:"🤝",text:`已刪除好友「${c.name}」。好友名額 ${friendCount()}／${friendMax()}。`});
+      st.to=(CONTACTS.find(isFr)||CONTACTS[0]).id;}
+    render();return;}
+  if(t.dataset.del!==undefined){const j=+t.dataset.del,m=st.inbox[j];if(!m)return;
+    if(m.from&&st.delArm!==j){st.delArm=j;render();return;}
+    st.inbox.splice(j,1);st.delArm=null;render();return;}
+  if(t.dataset.clearnotes){st.inbox=st.inbox.filter(m=>!!m.from);st.delArm=null;render();return;}
+  if(t.dataset.oout!==undefined){const o=st.out[+t.dataset.oout];if(o){o.open=!o.open;saveBox();render();}return;}
+  if(t.dataset.boxv){st.delArm=null;st.boxView=t.dataset.boxv;render();return;}
+  if(t.dataset.penon){st.penOn=true;st.inbox.push({sys:true,icon:"⚙️",text:"已在設定開啟筆友功能，可以到「找筆友」寄配對明信片了。"});render();return;}
+  if(t.dataset.mmode){mt.mode=t.dataset.mmode;render();return;}
+  if(t.dataset.mint){mt.interest=t.dataset.mint;render();return;}
+  if(t.dataset.mreg){mt.region=t.dataset.mreg;render();return;}
+  if(t.dataset.godrift){st.to="drift";st.tab="write";st.flip=true;render();return;}
+  if(t.dataset.keep){const c=CANDIDATES.find(x=>x.id===t.dataset.keep);if(!c||penCount()>=PEN_MAX)return;
+    CONTACTS.splice(CONTACTS.findIndex(x=>x.kind==="drift"),0,{kept:true,id:c.id,kind:"pen",name:c.name,where:c.where,area:"near",interest:c.interest,uni:c.uni,lang:c.lang,reply:c.reply,tr:c.tr});
+    st.inbox.filter(m=>m.from===c.id).forEach(m=>m.decided="keep");render();return;}
+  if(t.dataset.drop){st.inbox.filter(m=>m.from===t.dataset.drop).forEach(m=>m.decided="drop");render();return;}
+  if(t.dataset.to){st.to=t.dataset.to;st.rcptOpen=false;}
+  else if(t.dataset.front){st.front=t.dataset.front;st.flip=false;saveLast();}
+  else if(t.dataset.courier){st.courier=t.dataset.courier;restMsg="";saveLast();}
+  else if(t.dataset.tab){st.tab=t.dataset.tab;if(st.tab==="match"&&!penLocked()&&penCount()<PEN_MAX)st.to="drift";}
+  else if(t.id==="flip"){st.flip=!st.flip;}
+  else if(t.dataset.report){st.inbox.push({sys:true,text:"已送出檢舉（原型示意），我們會審查這封信。"});st.tab="inbox";}
+  else if(t.dataset.block){st.blocked.push(t.dataset.block);st.inbox=st.inbox.filter(m=>m.from!==t.dataset.block);if(st.to===t.dataset.block)st.to="f1";}
+  else if(t.dataset.askfriend){if(friendFull())return;st.inbox.filter(m=>m.from===t.dataset.askfriend).forEach(m=>m.friendAsk=true);st.inbox.push({sys:true,text:"已送出好友邀請，等對方回覆。雙方都同意後，才會看到對方自己填的城市與頭貼。（原型：幾秒後對方會同意）"});setTimeout(()=>acceptFriend(t.dataset.askfriend),4000);}
+  else if(t.id==="go"){
+    const c=C(st.to),tr=trip(),pf=postage(c);
+    if(pf.fee>loadFlowers())return;
+    const TH=tr.h+(tr.intl?lastLeg().h:0),TK=TH/Math.max(60,TH*10);   /* 原型加速（v0.45.1）：每封信至少 60 秒，長路線每 1 小時 = 10 秒；TK＝每秒走幾小時 */
+    STA[st.courier]=tr.after;STA_T[st.courier]=Date.now()+(tr.intl?Math.max(10,tr.leg1*10):tr.h/TK)*1000;saveSta();   // 送信途中不回復
+    if(pf.fee){const n=loadFlowers()-pf.fee;try{localStorage.setItem(FLOWER_KEY,JSON.stringify(n))}catch(e){}updateFlowerHud(n);}
+    {const ps=postState();if(!pf.reply)ps.sent++;if(!pf.fee)ps.free++;try{localStorage.setItem(POST_KEY,JSON.stringify(ps))}catch(e){}}
+    st.inbox.filter(m=>m.from===c.id).forEach(m=>m.replied=true);
+    const o={to:c.id,courier:st.courier,h:tr.h+(tr.intl?lastLeg().h:0),el:0,cond:{...mt},intl:tr.intl,hub:tr.hub,leg1:tr.leg1,hubKm:tr.hubKm,ikm:tr.ikm,est:tr.est,l3:tr.intl?lastLeg().h:0,fee:pf.fee,feeWhy:pf.why};o.k=TK;st.out.push(o);window.EPSFX&&EPSFX.play("send");st.text="";st.flip=false;st.tab="inbox";
+    startTrip(o);
+  }
+  render();
+});
+document.addEventListener("input",e=>{
+  if(e.target.id==="txt"){st.text=e.target.value;const n=[...st.text].length,bad=issues();const el=document.getElementById("cnt");el.textContent=`${n}／${maxLen()}`;el.classList.toggle("bad",!!bad.length);renderPanel();}
+});
+document.getElementById("age").addEventListener("change",e=>{
+  st.age=e.target.value;st.minor=["teen","child","childnofam"].includes(st.age);
+  st.penOn=st.age==="adult";
+  if(st.age==="adult18")st.inbox.push({sys:true,icon:"🎂",penBtn:true,text:"生日快樂！你已經滿 18 歲，現在可以開啟筆友功能，和其他國家的玩家通信。筆友不會自動開啟，想用的話到設定打開。（這封提醒只會寄一次）"});
+  if(penLocked()&&C(st.to).kind!=="friend")st.to="f1";render();});
+loadBox();
+/* 底部導覽「好友」「明信片」在本頁內切換檢視（?view=friends 從別的頁面過來） */
+if(new URLSearchParams(location.search).get("view")==="friends")st.view="friends";
+document.addEventListener("click",e=>{const n=e.target.closest("#nFri,#nPost");if(!n)return;e.preventDefault();e.stopPropagation();st.view=n.id==="nFri"?"friends":"";st.rcptOpen=false;render();},true);
+document.addEventListener("click",e=>{if(st.rcptOpen&&e.target.isConnected&&!e.target.closest("#contacts")){st.rcptOpen=false;render();}});
+render();
+/* v0.32.2 使用者回報：明信片縮太小。抽屜已經可以整個捲動、也有「拉開」，所以明信片固定手機寬（--pcs .882），不再跟著畫面高度縮小 */
+document.getElementById("sheetbtn").addEventListener("click",()=>{const S=document.querySelector(".stage"),up=S.classList.toggle("sheetup"),b=document.getElementById("sheetbtn");b.textContent=up?"▼ 收起，看明信片":"▲ 拉開";b.setAttribute("aria-expanded",up);});
+/* 畫面太矮、資料區幾乎看不到時，點分頁就自動拉開 */
+document.getElementById("tabs").addEventListener("click",()=>{const S=document.querySelector(".stage");if(S.classList.contains("pt")&&!S.classList.contains("sheetup")&&document.querySelector(".panel").clientHeight<260)document.getElementById("sheetbtn").click();});
+/* 翻面寫信、讀信時自動收起，才看得到明信片 */
+["flip","rflip"].forEach(id=>{const e=document.getElementById(id);if(e)e.addEventListener("click",()=>{const S=document.querySelector(".stage");if(S.classList.contains("sheetup"))document.getElementById("sheetbtn").click();});});
+</script>
+</body>
+</html>

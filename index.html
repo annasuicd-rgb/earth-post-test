@@ -1,0 +1,135 @@
+<meta charset="utf-8">
+<meta name="robots" content="noindex,nofollow">
+<title>EARTH POST 測試版</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@700&family=Noto+Sans+TC:wght@500;700;900&display=swap" rel="stylesheet">
+<style>
+/* Layout: a single centered start card over the game's sky-to-grass backdrop; one primary action, then the other screens. */
+:root{--sky:#cfeeff;--grass:#a9d98a;--card:#fff8e7;--line:#efdfb8;--ink:#3d2a17;--muted:#7a6248;--green:#5f9e34;--green-d:#386b1f;--wood:#8a5a32;
+  --display:"Fredoka","Noto Sans TC",system-ui,sans-serif;--body:"Noto Sans TC",system-ui,sans-serif}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--sky:#1f3a4a;--grass:#2f4a22;--card:#2a2419;--line:#4a3d27;--ink:#f3e8d4;--muted:#c9b48f;--green:#8fcf5a;--green-d:#5f9e34;--wood:#d1a274;color-scheme:dark}}
+:root[data-theme="dark"]{--sky:#1f3a4a;--grass:#2f4a22;--card:#2a2419;--line:#4a3d27;--ink:#f3e8d4;--muted:#c9b48f;--green:#8fcf5a;--green-d:#5f9e34;--wood:#d1a274;color-scheme:dark}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+body{margin:0;min-height:100vh;background:url(art/ui/bg_home.jpg) center/cover fixed,linear-gradient(var(--sky),var(--grass));color:var(--ink);font-family:var(--body);
+  display:grid;place-items:center;padding-block:32px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.card{width:100%;max-width:560px;background:var(--card);border:3px solid #5b3a1e;border-radius:24px;padding:28px 24px;box-shadow:0 8px 0 #c9a46a,0 16px 40px rgba(0,0,0,.25)}
+.brand{font-family:var(--display);font-size:34px;color:var(--wood);letter-spacing:.06em;margin:0}
+h1{font-size:18px;margin:4px 0 12px;font-weight:900}
+p{margin:0 0 12px;line-height:1.7;color:var(--muted)}
+.go{display:block;text-align:center;text-decoration:none;font-weight:900;font-size:18px;color:#fff;background:linear-gradient(var(--green),var(--green-d));
+  border-radius:99px;padding:14px;margin:18px 0 14px;box-shadow:0 5px 0 var(--green-d)}
+.go:focus-visible,.links a:focus-visible{outline:3px solid var(--wood);outline-offset:2px}
+.links{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px}
+.links a{text-decoration:none;color:var(--ink);font-weight:700;font-size:14px;border:2px solid var(--line);border-radius:14px;padding:10px 12px;background:transparent}
+.links small{display:block;color:var(--muted);font-weight:500;font-size:12px}
+#frame{position:fixed;left:0;right:0;top:env(safe-area-inset-top,0px);width:100%;height:calc(100% - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px));border:0;background:var(--sky)}   /* 直式（v0.28.0）：避開動態島和底部橫條 */
+#homebtn{position:fixed;left:50%;transform:translateX(-50%);top:calc(env(safe-area-inset-top,0px) + 8px);z-index:5;font:inherit;font-weight:700;font-size:12px;border:2px solid var(--line);background:var(--card);color:var(--ink);border-radius:99px;padding:4px 10px;cursor:pointer}
+.foot{margin-top:16px;font-size:12px;color:var(--muted)}
+.survey{color:var(--green-d);font-weight:900}
+</style>
+
+<main class="card" id="home">
+  <p class="brand">EARTH POST</p>
+  <h1>台灣原型・測試版 v0.51.0</h1>
+  <p>走到探索點觀察生物、結識郵差夥伴，再請牠們把明信片寄給好友和筆友。這是試玩用的原型：位置用點地圖模擬，好友和筆友是假資料，進度只存在你這台裝置上。</p>
+  <p>建議用手機直拿開啟（iPhone 直式版面）；用電腦開會顯示成中間一支手機寬的畫面。</p>
+  <a class="go" href="player_mockup.html">從新手流程開始</a>
+  <div class="links">
+    <a href="explore_mockup.html">探索<small>走路、遇見生物</small></a>
+    <a href="card_mockup.html">圖鑑<small>生物資料與狀態</small></a>
+    <a href="postcard_mockup.html">明信片<small>好友、找筆友</small></a>
+    <a href="station_mockup.html">郵站<small>照顧駐站生物、小花</small></a>
+    <a href="postcard_mockup.html?view=friends">好友<small>好友名單、寫信</small></a>
+    <a href="profile_mockup.html">我的<small>郵戳冊、成就、設定</small></a>
+  </div>
+  <p>玩完了嗎？請填 <a class="survey" href="survey_mockup.html">試玩問卷</a>（約 5 分鐘），填完複製答案傳給邀請你的人。</p>
+  <p class="foot">想重新開始：我的 → 設定 → 清除遊戲資料（按兩次）。</p>
+</main>
+
+<iframe id="frame" title="EARTH POST 畫面" hidden></iframe>
+<button id="homebtn" type="button" hidden>回入口</button>
+<script>
+/* 線上版不允許頁面之間直接跳轉，所以入口頁當外框：讀取各畫面的 HTML，放進框裡顯示。
+   框內的切換由各畫面共用的 player.js 直接呼叫外框的 __load（不行時再用 postMessage）（線上版只允許發布時就存在的程式，外框不能另外塞程式進去）。 */
+const home=document.getElementById("home"),homebtn=document.getElementById("homebtn");
+let frame=document.getElementById("frame");
+const cache={},V=Date.now();   /* V：這次開啟只下載一次 player.js，之後切換直接用快取 */
+const PAGES=["survey_mockup.html","player_mockup.html","card_mockup.html","explore_mockup.html","postcard_mockup.html","station_mockup.html","profile_mockup.html"];
+const getPage=p=>cache[p]||(cache[p]=fetch(p).then(r=>{if(!r.ok)throw new Error(r.status);return r.text();}).catch(e=>{delete cache[p];throw e;}));
+/* 入口頁一打開就在背景先下載各畫面和共用程式，點下去時不用再等 */
+setTimeout(()=>{PAGES.forEach(p=>getPage(p).catch(()=>{}));fetch("player.js?v="+V).catch(()=>{});},300);
+async function __load(url){
+  let [path,q]=String(url).split("?");
+  if(!path)path=__load.cur||"player_mockup.html";
+  if(!/\.html$/.test(path))return;
+  __load.cur=path;
+  if(path==="index.html"){frame.hidden=true;homebtn.hidden=true;home.hidden=false;return;}
+  try{
+    const html=(await getPage(path)).replace(/location\.href\s*=/g,"window.__nav=").replace(/location\.search/g,"window.__search").replace(/src="player\.js"/g,'src="player.js?v='+V+'"');
+    const f=document.createElement("iframe");               /* 每次換新的框，讓框的名字帶上這次的參數 */
+    f.id="frame";f.title="EARTH POST 畫面";f.name=JSON.stringify({shell:true,search:q?"?"+q:""});
+    frame.replaceWith(f);frame=f;
+    f.srcdoc=html;homebtn.hidden=false;home.hidden=true;
+  }catch(err){home.hidden=false;frame.hidden=true;document.querySelector(".foot").textContent="畫面載入失敗（"+path+"），請重新整理後再試。";}
+}
+window.__load=__load;
+window.addEventListener("message",e=>{if(e.data&&e.data.__nav)__load(e.data.__nav);});
+document.addEventListener("click",e=>{const a=e.target.closest("a[href]");if(!a||/^https?:/.test(a.getAttribute("href")))return;e.preventDefault();__load(a.getAttribute("href"));});
+homebtn.addEventListener("click",()=>__load("index.html"));
+
+/* ===== 背景音樂（v0.44.4）：程式即時合成的輕柔循環音樂，沒有外部音檔、沒有授權問題。
+   放在入口外框（換頁時外框不會重載，所以音樂不會斷）。音量與靜音讀設定頁的 ep-settings（music 0～100、mute）。
+   瀏覽器規定要玩家先點一下畫面才能出聲，所以第一次點擊後才開始。C 大調、約 88 拍：長音和弦墊底＋稀疏的音樂盒旋律＋回音，
+   和弦 Cmaj7→Am7→Fmaj7→G6 循環，旋律每次隨機挑五聲音階的音，所以不會一模一樣地重複。 */
+const MU=(function(){
+  let ctx=null,master=null,dly=null,timer=0,nextT=0,ci=0,mi=3,started=false;
+  const cfg=()=>{try{const s=JSON.parse(localStorage.getItem("ep-settings")||"{}");return{vol:(typeof s.music==="number"?s.music:70)/100,mute:!!s.mute}}catch(e){return{vol:.7,mute:false}}};
+  const hz=m=>440*Math.pow(2,(m-69)/12), BEAT=60/88, CHORDS=[[48,[0,4,7,11]],[45,[0,3,7,10]],[41,[0,4,7,11]],[43,[0,4,7,9]]], MEL=[72,74,76,79,81,84,86,88];
+  function build(){
+    const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return false;
+    try{ctx=new AC();}catch(e){return false}
+    master=ctx.createGain();master.gain.value=0;master.connect(ctx.destination);
+    dly=ctx.createDelay(2);dly.delayTime.value=BEAT*.75;
+    const fb=ctx.createGain(),lp=ctx.createBiquadFilter(),wet=ctx.createGain();fb.gain.value=.38;
+    lp.type="lowpass";lp.frequency.value=2400;wet.gain.value=.4;
+    dly.connect(lp);lp.connect(fb);fb.connect(dly);lp.connect(wet);wet.connect(master);
+    return true;
+  }
+  function osc(type,f,t,a,hold,rel,peak,send){
+    const o=ctx.createOscillator(),g=ctx.createGain();o.type=type;o.frequency.value=f;
+    g.gain.setValueAtTime(.0001,t);g.gain.linearRampToValueAtTime(peak,t+a);g.gain.setValueAtTime(peak,t+a+hold);g.gain.exponentialRampToValueAtTime(.0001,t+a+hold+rel);
+    o.connect(g);g.connect(master);if(send){const s=ctx.createGain();s.gain.value=send;g.connect(s);s.connect(dly);}
+    o.start(t);o.stop(t+a+hold+rel+.1);
+  }
+  function chord(t){
+    const [root,iv]=CHORDS[ci%4];ci++;const dur=BEAT*8;
+    iv.forEach((x,i)=>{osc("triangle",hz(root+24+x),t+i*.07,.006,.02,1.9,.03,.5);});   /* 持續的和弦墊音（嗡嗡聲）已拿掉；改成每個和弦開頭短短一撥的音樂盒和弦（v0.44.4） */
+    /* 低音已拿掉（v0.44.4） */
+    for(let k=0;k<16;k++){const p=k===0?.85:(k%2?.3:.5);if(Math.random()>p)continue;
+      mi=Math.max(0,Math.min(MEL.length-1,mi+[-2,-1,-1,0,1,1,2][Math.floor(Math.random()*7)]));
+      const n=MEL[mi],tt=t+k*BEAT/2+(Math.random()*.02);
+      osc("triangle",hz(n),tt,.006,.02,1.5,.075,.55);osc("sine",hz(n+12),tt,.004,.01,.8,.03,0);}
+    return dur;
+  }
+  function tick(){
+    if(!ctx)return;const c=cfg(),on=!c.mute&&c.vol>0;
+    try{master.gain.setTargetAtTime(on?c.vol*.55:0,ctx.currentTime,.4);}catch(e){}
+    if(!on||ctx.state!=="running"||document.hidden)return;
+    if(nextT<ctx.currentTime)nextT=ctx.currentTime+.2;
+    while(nextT<ctx.currentTime+3)nextT+=chord(nextT);
+  }
+  document.addEventListener("visibilitychange",()=>{if(!ctx)return;try{document.hidden?ctx.suspend():ctx.resume();}catch(e){}});
+  return{
+    kick(){
+      if(!ctx){if(!build())return;}
+      if(ctx.state!=="running"){try{ctx.resume();}catch(e){}}
+      if(!started){started=true;timer=setInterval(tick,250);}tick();
+    },
+    info(){return{started,state:ctx&&ctx.state,t:ctx&&ctx.currentTime,next:nextT,ci,gain:master&&master.gain.value}}
+  };
+})();
+window.EPMUSIC=MU;
+document.addEventListener("click",()=>MU.kick(),true);
+</script>

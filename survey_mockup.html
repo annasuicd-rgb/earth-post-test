@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>EARTH POST 試玩問卷</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&family=Noto+Sans+TC:wght@500;700;900&display=swap">
+<style>
+/* Layout: one narrow column like a postcard back — header sign, short sections, a sticky "copy answers" bar at the bottom. */
+:root{
+  --bg:#e7f3d8; --paper:#fff8e7; --line:#ead9b0; --ink:#3d2a17; --muted:#7a6248;
+  --green:#5f9e34; --green-d:#3f7421; --wood:#8a5a32; --stamp:#c8473a; --chip:#f4ead2;
+  --display:"Fredoka","Noto Sans TC",system-ui,sans-serif; --body:"Noto Sans TC",system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#1c2817; --paper:#2a2419; --line:#4a3d27; --ink:#f3e8d4; --muted:#c9b48f;
+  --green:#8fcf5a; --green-d:#5f9e34; --wood:#d1a274; --stamp:#ef7a6c; --chip:#352d20; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#1c2817; --paper:#2a2419; --line:#4a3d27; --ink:#f3e8d4; --muted:#c9b48f;
+  --green:#8fcf5a; --green-d:#5f9e34; --wood:#d1a274; --stamp:#ef7a6c; --chip:#352d20; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);line-height:1.6;
+  padding-block:24px 120px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+main{max-width:640px;margin:0 auto;display:flex;flex-direction:column;gap:18px}
+header{display:flex;flex-direction:column;gap:6px}
+.brand{font-family:var(--display);font-weight:700;color:var(--wood);font-size:30px;letter-spacing:.06em;margin:0}
+h1{font-size:20px;margin:0;font-weight:900;text-wrap:balance}
+.lead{color:var(--muted);margin:0;font-size:15px}
+section{background:var(--paper);border:2px solid var(--line);border-radius:18px;padding:18px 16px;display:flex;flex-direction:column;gap:14px}
+h2{font-size:16px;margin:0;font-weight:900;display:flex;align-items:center;gap:8px}
+h2 .tag{font-family:var(--display);font-size:12px;color:var(--stamp);border:1.5px solid var(--stamp);border-radius:99px;padding:0 8px;letter-spacing:.04em}
+label.f{display:flex;flex-direction:column;gap:6px;font-weight:700;font-size:14px}
+input[type=text],textarea{font:inherit;font-weight:500;color:var(--ink);background:var(--bg);border:1.5px solid var(--line);border-radius:12px;padding:10px 12px;width:100%}
+textarea{min-height:76px;resize:vertical}
+input:focus-visible,textarea:focus-visible,button:focus-visible{outline:3px solid var(--wood);outline-offset:2px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chips button{font:inherit;font-size:14px;font-weight:700;color:var(--ink);background:var(--chip);border:1.5px solid var(--line);border-radius:99px;padding:6px 14px;cursor:pointer}
+.chips button[aria-pressed=true]{background:var(--green);border-color:var(--green-d);color:#fff}
+.q{display:flex;flex-direction:column;gap:8px;padding-top:12px;border-top:1px dashed var(--line)}
+.q:first-of-type{border-top:0;padding-top:0}
+.q p{margin:0;font-weight:700;font-size:15px}
+.q p b{font-family:var(--display);color:var(--wood);margin-right:6px}
+.scale{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.scale button{font:inherit;font-family:var(--display);font-size:18px;font-weight:700;color:var(--ink);background:var(--chip);border:1.5px solid var(--line);border-radius:12px;padding:8px 0;cursor:pointer;font-variant-numeric:tabular-nums}
+.scale button[aria-pressed=true]{background:var(--green);border-color:var(--green-d);color:#fff}
+.ends{display:flex;justify-content:space-between;font-size:12px;color:var(--muted)}
+.bar{position:fixed;left:0;right:0;bottom:0;background:var(--paper);border-top:2px solid var(--line);
+  padding-block:12px calc(12px + env(safe-area-inset-bottom,0px));padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.bar .in{max-width:640px;margin:0 auto;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.bar .st{flex:1;min-width:0;font-size:13px;color:var(--muted)}
+.go{font:inherit;font-weight:900;font-size:16px;color:#fff;background:linear-gradient(var(--green),var(--green-d));border:0;border-radius:99px;padding:12px 22px;cursor:pointer;box-shadow:0 4px 0 var(--green-d)}
+#out{font-size:13px;min-height:220px;font-family:ui-monospace,Menlo,monospace}
+.note{font-size:13px;color:var(--muted);margin:0}
+@media (prefers-reduced-motion: reduce){*{transition:none!important}}
+</style>
+
+<main>
+  <header>
+    <p class="brand">EARTH POST</p>
+    <h1>試玩問卷（題目 v0.11）</h1>
+    <p class="lead">謝謝你幫忙試玩！大約 6 分鐘。填完按最下面的「複製答案」，再用 LINE 或訊息傳給邀請你的人。這一頁不會自動送出任何資料。</p>
+  </header>
+
+  <section aria-labelledby="s1">
+    <h2 id="s1">關於你</h2>
+    <label class="f" for="nick">怎麼稱呼你（暱稱或代號就好）
+      <input type="text" id="nick" maxlength="20" placeholder="例如：小明、A">
+    </label>
+    <label class="f" for="ver">玩的是哪一版（遊戲畫面最下面中間的版本號）
+      <input type="text" id="ver" maxlength="20" placeholder="例如：v0.24.0">
+      <span class="note" id="verNote" hidden>已自動填入你正在玩的版本，不對的話可以改</span>
+    </label>
+    <div class="f" style="display:flex;flex-direction:column;gap:6px;font-weight:700;font-size:14px">用什麼裝置玩
+      <div class="chips" id="device" role="group" aria-label="裝置">
+        <button type="button" data-v="電腦">電腦</button><button type="button" data-v="平板">平板</button><button type="button" data-v="手機">手機</button>
+      </div>
+    </div>
+    <div class="f" style="display:flex;flex-direction:column;gap:6px;font-weight:700;font-size:14px">平常玩手機遊戲嗎
+      <div class="chips" id="games" role="group" aria-label="平常玩手機遊戲嗎">
+        <button type="button" data-v="幾乎每天">幾乎每天</button><button type="button" data-v="偶爾">偶爾</button><button type="button" data-v="幾乎不玩">幾乎不玩</button>
+      </div>
+    </div>
+  </section>
+
+  <section aria-labelledby="s2">
+    <h2 id="s2">你同意嗎？<span class="tag">1～5 分</span></h2>
+    <p class="note">1＝非常不同意，5＝非常同意。不確定可以跳過。</p>
+    <div id="likert"></div>
+  </section>
+
+  <section aria-labelledby="s3">
+    <h2 id="s3">想聽你說說</h2>
+    <div id="open" style="display:flex;flex-direction:column;gap:14px"></div>
+  </section>
+
+  <section aria-labelledby="s4" id="result" hidden>
+    <h2 id="s4">你的答案</h2>
+    <p class="note" id="copyMsg">已複製。請貼到 LINE 或訊息傳給邀請你的人。</p>
+    <textarea id="out" readonly aria-label="問卷答案文字"></textarea>
+  </section>
+</main>
+
+<div class="bar"><div class="in">
+  <span class="st" id="st">已回答 0／15 題</span>
+  <button class="go" id="copy" type="button">複製答案</button>
+</div></div>
+
+<script src="player.js"></script>
+<script>
+const LIKERT=[
+ "我知道要走到探索點的範圍裡才能探索",
+ "觀察生物、選擇互動方式很有趣",
+ "我清楚自己是觀察員，生物是我自己去觀察認識的，郵差（生物）只負責寄信",
+ "「精神」的限制可以接受，不會讓我不想玩",
+ "寄明信片的流程很容易",
+ "隨機配對筆友讓我期待收到回信",
+ "我看得懂國外的信是怎麼一段一段送過去的",
+ "我放心和筆友通信（不擔心被知道位置或照片）",
+ "郵戳、線索和明信片冊讓我想再去其他地點、再寄信",
+ "畫面風格可愛、我喜歡",
+ "我會想在真實生活中帶著這個遊戲出門",
+ "郵站的照顧委託（照顧駐站生物）很有趣",
+ "我知道小花怎麼賺、可以拿來做什麼",
+ "寄信要付郵資（每天免費 3 封，回信和第 1 封新信共用）可以接受",
+ "新的生物（台灣藍鵲、五色鳥、台灣紫嘯鶇、莫氏樹蛙）讓我想再去探索"];
+const OPEN=[
+ "最喜歡的一刻是什麼？",
+ "最困惑或最不喜歡的地方是什麼？",
+ "你最想在遊戲裡遇到哪一種生物（不限台灣）？",
+ "你會寄明信片給誰？為什麼？",
+ "如果明天就能玩正式版，你最先會做什麼？",
+ "畫面風格：你最喜歡哪裡？最不喜歡哪裡？（角色、生物、介面、地圖、顏色……都可以）"];
+const KEY="survey-ep-v010";   // 不用 ep- 開頭：測試版「清除遊戲資料」不會清掉填到一半的問卷
+let S={nick:"",ver:"",device:"",games:"",lik:{},open:{}};
+try{Object.assign(S,JSON.parse(localStorage.getItem(KEY)||localStorage.getItem("ep-survey-v010")||"{}"));}catch(e){}   // 舊的存檔名也讀得到
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}};
+/* 放在測試版裡（survey_mockup.html）時，從共用的 player.js 讀版本號自動填入；獨立的問卷連結讀不到，照舊手動填。
+   （claude.ai 不會把網址參數傳給頁面，所以不用網址帶版本） */
+let AUTO="";try{if(typeof BUILD!=="undefined"&&BUILD.ver)AUTO=BUILD.ver;}catch(e){}
+if(/^v\d+\.\d+\.\d+$/.test(AUTO)){S.ver=AUTO;save();}else AUTO="";
+
+document.getElementById("likert").innerHTML=LIKERT.map((t,i)=>`<div class="q"><p><b>${i+1}</b>${t}</p>
+  <div class="scale" role="group" aria-label="第 ${i+1} 題">${[1,2,3,4,5].map(n=>`<button type="button" data-q="${i}" data-n="${n}" aria-label="${n} 分">${n}</button>`).join("")}</div>
+  <div class="ends"><span>非常不同意</span><span>非常同意</span></div></div>`).join("");
+document.getElementById("open").innerHTML=OPEN.map((t,i)=>`<label class="f" for="o${i}">${t}<textarea id="o${i}" data-o="${i}" maxlength="400"></textarea></label>`).join("");
+
+function paint(){
+  document.getElementById("nick").value=S.nick||"";
+  document.getElementById("ver").value=S.ver||"";
+  document.querySelectorAll("#device button").forEach(b=>b.setAttribute("aria-pressed",String(S.device===b.dataset.v)));
+  document.querySelectorAll("#games button").forEach(b=>b.setAttribute("aria-pressed",String(S.games===b.dataset.v)));
+  document.querySelectorAll(".scale button").forEach(b=>b.setAttribute("aria-pressed",String(S.lik[b.dataset.q]===+b.dataset.n)));
+  OPEN.forEach((_,i)=>{const el=document.getElementById("o"+i);if(document.activeElement!==el)el.value=S.open[i]||"";});
+  document.getElementById("st").textContent=`已回答 ${Object.keys(S.lik).length}／${LIKERT.length} 題`;
+}
+document.addEventListener("click",e=>{
+  const b=e.target.closest("button");if(!b)return;
+  if(b.closest("#device")){S.device=S.device===b.dataset.v?"":b.dataset.v;}
+  else if(b.closest("#games")){S.games=S.games===b.dataset.v?"":b.dataset.v;}
+  else if(b.dataset.q!==undefined){const q=b.dataset.q,n=+b.dataset.n;if(S.lik[q]===n)delete S.lik[q];else S.lik[q]=n;}
+  else return;
+  save();paint();
+});
+document.addEventListener("input",e=>{
+  if(e.target.id==="nick")S.nick=e.target.value;
+  else if(e.target.id==="ver")S.ver=e.target.value;
+  else if(e.target.dataset.o!==undefined)S.open[e.target.dataset.o]=e.target.value;
+  else return;
+  save();
+});
+function text(){
+  const L=["【EARTH POST 試玩問卷｜題目 v0.11】",
+    `稱呼：${S.nick.trim()||"（未填）"}`,`版本：${(S.ver||"").trim()||"（未填）"}`,`裝置：${S.device||"（未填）"}`,`平常玩手機遊戲：${S.games||"（未填）"}`,"",
+    "— 1～5 分（1 非常不同意，5 非常同意）—"];
+  LIKERT.forEach((t,i)=>L.push(`${i+1}. ${t}：${S.lik[i]??"跳過"}`));
+  L.push("","— 開放題 —");
+  OPEN.forEach((t,i)=>L.push(`Q${i+1} ${t}`,`　${(S.open[i]||"").trim()||"（未填）"}`));
+  return L.join("\n");
+}
+document.getElementById("copy").addEventListener("click",async()=>{
+  const out=document.getElementById("out"),msg=document.getElementById("copyMsg");
+  out.value=text();document.getElementById("result").hidden=false;
+  try{await navigator.clipboard.writeText(out.value);msg.textContent="已複製。請貼到 LINE 或訊息傳給邀請你的人。";}
+  catch(e){out.focus();out.select();msg.textContent="沒辦法自動複製。答案已經全部選取，請長按（或按 Ctrl＋C／⌘＋C）複製後傳給邀請你的人。";}
+  document.getElementById("result").scrollIntoView({behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth",block:"start"});
+});
+paint();
+if(AUTO)document.getElementById("verNote").hidden=false;
+</script>
