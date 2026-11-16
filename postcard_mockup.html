@@ -765,7 +765,7 @@ function loadBox(){let b;try{b=JSON.parse(localStorage.getItem(BOX_KEY)||"null")
   (b.out||[]).forEach(o=>{o.el=(o.el||0)+Math.max(0,(Date.now()-(o.savedAt||Date.now()))/1000*(o.k||2));delete o.savedAt;st.out.push(o);startTrip(o);});}
 function addDel(R,j,m){const arm=m.from&&st.delArm===j,b=`<button class="xdel${arm?" arm":""}" data-del="${j}" aria-label="${arm?"確定刪除這封信":"刪除"}">${arm?"確定刪除？":"✕"}</button>`;return R.replace(/^(\s*<div class="row[^>]*>)/,"$1"+b);}
 function applyView(){const S=document.getElementById("stage");if(S)S.classList.toggle("fv",st.view==="friends");const a=document.getElementById("nPost"),b=document.getElementById("nFri");if(a)a.classList.toggle("on",st.view!=="friends");if(b)b.classList.toggle("on",st.view==="friends");}
-function render(){applyView();CONTACTS.find(c=>c.kind==="drift").where=condText();renderContacts();renderCard();renderPanel();saveBox();}
+function render(){applyView();CONTACTS.find(c=>c.kind==="drift").where=condText();renderContacts();renderCard();renderPanel();saveBox();try{updateAchDot()}catch(e){}}
 
 /* 收到的信：背面右上角貼郵票、蓋郵戳（寄出地＋日期）（2026-11-11 使用者：收信應該要有郵戳） */
 function postmarkHTML(f,where,at){const d=new Date(at||Date.now()),ds=`${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,"0")}.${String(d.getDate()).padStart(2,"0")}`;

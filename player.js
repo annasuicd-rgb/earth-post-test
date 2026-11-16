@@ -437,11 +437,37 @@ function achDotCount() {   // 底部「我的」的紅點：有未領成就，�
   const n = newDots();
   return achUnclaimed() + n.mates + n.stamps + n.pcards;
 }
-function updateAchDot() {
-  const a = document.querySelector(".modes a:nth-child(6)"); if (!a) return;
+/* 明信片紅點（v0.52.0）：關掉遊戲再打開時，有信送達、有未讀的信、有新通知，底部「明信片」亮紅點（所有頁面）。
+   送達與否由 ep-box 的「送信中」紀錄加上離開的時間推算；真正收進收件匣是開明信片頁時。 */
+function advanceTrip(o, sec) {   // 送信進度快轉 sec 秒（和 postcard 的 tripRate 同一套算法）
+  let el = o.el || 0;
+  while (sec > 0 && el < o.h) {
+    let rate, end;
+    if (!o.intl || !o.l3) { rate = o.k || 2; end = o.h; }
+    else { const b1 = o.leg1, b2 = o.h - o.l3, i = el < b1 ? 0 : el < b2 ? 1 : 2, H = [b1, b2 - b1, o.l3][i]; rate = H / Math.max(10, H * 10); end = [b1, b2, o.h][i]; }
+    const need = (end - el) / rate;
+    if (sec >= need) { el = end; sec -= need; if (end >= o.h) break; } else { el += rate * sec; sec = 0; }
+  }
+  return el;
+}
+function mailDotCount() {
+  let b = null; try { b = JSON.parse(localStorage.getItem("ep-box") || "null"); } catch (e) {}
+  if (!b) return 0;
+  const inbox = b.inbox || [], now = Date.now();
+  const unread = inbox.filter(m => m.from && !m.read).length;
+  const newNotes = Math.max(0, inbox.filter(m => !m.from).length - (+localStorage.getItem("ep-box-seen") || 0));
+  const arrived = (b.out || []).filter(o => o.h > 0 && advanceTrip(o, Math.max(0, (now - (o.savedAt || now)) / 1000)) >= o.h).length;
+  return unread + newNotes + arrived;
+}
+function updateAchDot() {   // 底部導覽的紅點：「我的」（成就與新東西）與「明信片」（信與通知）
   if (!document.getElementById("achdot-css")) { const st = document.createElement("style"); st.id = "achdot-css"; st.textContent = ".modes a{position:relative}.achdot{position:absolute;top:.6cqw;left:calc(50% + 1.2cqw);width:1.6cqw;height:1.6cqw;border-radius:50%;background:#d93c2b;border:.25cqw solid #fff8e7;pointer-events:none}"; document.head.appendChild(st); }
-  let d = a.querySelector(".achdot");
-  if (achDotCount() > 0) { if (!d) { d = document.createElement("i"); d.className = "achdot"; a.appendChild(d); } } else if (d) d.remove();
+  const setDot = (n, on) => {
+    const a = document.querySelector(".modes a:nth-child(" + n + ")"); if (!a) return;
+    let d = a.querySelector(".achdot");
+    if (on) { if (!d) { d = document.createElement("i"); d.className = "achdot"; a.appendChild(d); } } else if (d) d.remove();
+  };
+  setDot(6, achDotCount() > 0);
+  setDot(3, mailDotCount() > 0);
 }
 function achAfterAdopt() { achSync(adoptAch()); updateAchDot(); }
 (function () { const go = () => { try { achSync(adoptAch()); updateAchDot(); } catch (e) {} }; if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", go); else go(); })();
@@ -465,7 +491,7 @@ function fullSweep() {
   } catch (e) {}
 }
 (function () { const go = () => { setTimeout(fullSweep, 1500); setInterval(fullSweep, 30000); }; if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", go); else go(); })();
-const BUILD = { name: "測試版", ver: "v0.51.1", date: "2026-11-15" };
+const BUILD = { name: "測試版", ver: "v0.52.0", date: "2026-11-15" };
 const BUILD_LABEL = `${BUILD.name} ${BUILD.ver}（${BUILD.date}）`;
 (function addBuildBadge() {
   const put = () => {
