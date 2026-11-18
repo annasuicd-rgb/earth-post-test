@@ -1,6 +1,6 @@
-/* EARTH POST 玩家角色：觀察員（2026-11-08 使用者決定，角色圖 art/player.png）。
+/* EARTH POST 玩家角色：觀察員（2026-11-08 使用者決定，角色圖 art/player.webp）。
    只有一個角色，只換制服顏色（七色）；另可上傳自己的照片當頭像。 */
-const UNIFORMS = {   // 七色觀察員（使用者提供的角色圖 art/player_<色>.png，2026-11-08）
+const UNIFORMS = {   // 七色觀察員（使用者提供的角色圖 art/player_<色>.webp，2026-11-08）
   green:  { name: "森林綠", c: "#6b7a3c", d: "#4f5b2a" },
   blue:   { name: "天空藍", c: "#4f8fd0", d: "#3a6fa8" },
   teal:   { name: "湖水綠", c: "#2f8a6a", d: "#236a51" },
@@ -30,10 +30,10 @@ function playerSVG(uniform, face) {
   const key = UNIFORMS[uniform] ? uniform : "green";
   const vb = face ? "30 1 60 60" : "0 0 120 170";
   return `<svg viewBox="${vb}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="玩家觀察員">
-  <image href="art/player_${key}.png" x="0" y="0" width="120" height="170" preserveAspectRatio="xMidYMax meet"/></svg>`;
+  <image href="art/player_${key}.webp" x="0" y="0" width="120" height="170" preserveAspectRatio="xMidYMax meet"/></svg>`;
 }
 /* 先載入目前制服的角色圖，切換畫面時不會先空白一下 */
-try { new Image().src = `art/player_${loadPlayer().uniform}.png`; } catch (e) {}
+try { new Image().src = `art/player_${loadPlayer().uniform}.webp`; } catch (e) {}
 /* downscale an uploaded image to a 256px square JPEG data URL (center crop) */
 function photoToDataUrl(file) {
   return new Promise((res, rej) => {
@@ -118,7 +118,7 @@ const FOREIGN_INFO = {
 const FOREIGN_BY_ID = {};
 [FOREIGN, FOREIGN_RETIRED].forEach(src => Object.entries(src).forEach(([country, list]) => list.forEach(([id, name, icon]) => FOREIGN_BY_ID[id] = { id, name, icon, country })));
 /* 外國送信生物的 2D 美術（v0.48.0）：有圖的用圖，沒有的（已退役的冠斑犀鳥）仍用表情符號 */
-["jp_macaque","jp_pheasant","kr_magpie","kr_squirrel","vn_robin","vn_leopardcat","th_monitor","th_myna","ph_sunbird","my_tailorbird","my_mousedeer"].forEach(id => { if (FOREIGN_BY_ID[id]) FOREIGN_BY_ID[id].img = `art/${id}.png`; });
+["jp_macaque","jp_pheasant","kr_magpie","kr_squirrel","vn_robin","vn_leopardcat","th_monitor","th_myna","ph_sunbird","my_tailorbird","my_mousedeer"].forEach(id => { if (FOREIGN_BY_ID[id]) FOREIGN_BY_ID[id].img = `art/${id}.webp`; });
 const foreignIconHTML = k => k.img ? `<img src="${k.img}" alt="${k.name}" style="width:100%;height:100%;object-fit:contain">` : k.icon;
 const pickForeign = country => { const l = FOREIGN[country] || []; const x = l[Math.floor(Math.random() * l.length)]; return x ? FOREIGN_BY_ID[x[0]] : null; };
 /* 明信片冊（T5）：收到筆友回信時，得到一張送信生物的明信片。不算進圖鑑進度。 */
@@ -491,7 +491,7 @@ function fullSweep() {
   } catch (e) {}
 }
 (function () { const go = () => { setTimeout(fullSweep, 1500); setInterval(fullSweep, 30000); }; if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", go); else go(); })();
-const BUILD = { name: "測試版", ver: "v0.54.0", date: "2026-11-15" };
+const BUILD = { name: "測試版", ver: "v0.55.0", date: "2026-11-15" };
 const BUILD_LABEL = `${BUILD.name} ${BUILD.ver}（${BUILD.date}）`;
 (function addBuildBadge() {
   const put = () => {
@@ -542,7 +542,7 @@ function updateSpiritHud() {
     const el = document.createElement("div");
     el.className = "flowerhud";
     el.title = "小花（遊戲幣）";
-    el.innerHTML = `<span class="fl" style="display:flex;align-items:center;gap:.4cqw"><img src="art/flower.png" alt="小花"><b>${loadFlowers()}</b></span>`;
+    el.innerHTML = `<span class="fl" style="display:flex;align-items:center;gap:.4cqw"><img src="art/flower.webp" alt="小花"><b>${loadFlowers()}</b></span>`;
     el.style.cssText = "position:absolute;right:42.6cqw;top:2cqw;z-index:6;display:flex;align-items:center;gap:.4cqw;background:rgba(255,248,231,.95);border:.2cqw solid #efdfb8;border-radius:99px;padding:.25cqw 1cqw .25cqw .35cqw;font-weight:900;font-size:1.3cqw;color:#3d2a17;box-shadow:0 .25cqw 0 rgba(0,0,0,.12);pointer-events:none";
     el.querySelector("img").style.cssText = "width:2.2cqw;height:2.2cqw;display:block";
     if (document.getElementById("mapme") || document.getElementById("pcard")) {   // 探索頁、我的頁才有精神
@@ -587,7 +587,7 @@ const EMOJI_ICON = (() => {
   const m = {}, put = (list, file) => [...list].forEach(e => m[e] = file);
   put(["🗺", "📍"], "ui/nav_explore.png"); put(["📖", "📗"], "ui/nav_dex.png");
   put(["📮", "✉", "📨"], "ui/ic_mail.png"); put(["🖼"], "ui/nav_postcard.png");
-  put(["🛡"], "ui/ic_conserve.png"); put(["🌸"], "flower.png"); put(["🔋"], "ui/ic_stamina.png");
+  put(["🛡"], "ui/ic_conserve.png"); put(["🌸"], "flower.webp"); put(["🔋"], "ui/ic_stamina.png");
   put(["⏱", "🪽"], "ui/ic_speed.png"); put(["🛤"], "ui/ic_route.png"); put(["🌤", "🌦"], "ui/nav_sun.png");
   put(["👀", "🔭"], "ui/ic_observe.png"); put(["🧭"], "ui/x_compass.png");
   put(["🍎", "🍊", "🍒", "🫐", "🐟", "🪱", "🪲", "🐍", "🌱", "🌗", "🦴"], "ui/ic_diet.png");

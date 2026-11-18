@@ -525,7 +525,7 @@ function postage(c){const base=c.kind==="friend"?POSTAGE.domestic:POSTAGE.intl;
   return{fee:base,base,why:""};}
 /* 好友回信的明信片樣式：從台灣生物裡隨機一種（示意） */
 const FRIEND_FRONTS=["heron","dog","butterfly","cat","bluemagpie","barbet","thrush","frog"];
-const ART={};[...new Set(MATES.concat(Object.keys(NAME)))].forEach(id=>{const im=new Image();im.onload=()=>{ART[id]=true;render()};im.src=`art/${id}.png`;});
+const ART={};[...new Set(MATES.concat(Object.keys(NAME)))].forEach(id=>{const im=new Image();im.onload=()=>{ART[id]=true;render()};im.src=`art/${id}.webp`;});
 function frontHTML(f){const info=PC_INFO[baseOf(f)]||FOREIGN_INFO[f];
   return `<div class="pcbg"${info?` style="background-image:url(art/ui/hab_${info[1]}.jpg)"`:""}></div><div class="reg">${fromOf(f)==="台灣"?"TAIWAN":(COUNTRY_EN[fromOf(f)]||"").toUpperCase()}</div><div class="cr${info&&info[0]?" left":""}">${art(f)}</div><div class="cap${info&&info[0]?" withfact":""}">${isSt(f)?`${NAME[baseOf(f)]}｜駐站明信片`:`${nm(f)}｜來自${fromOf(f)}`}</div>${isSt(f)?`<div class="stbadge">${MYHUB}郵站</div>`:""}${info&&info[0]?`<div class="fact"><b>小知識</b>${info[0]}</div>`:""}`;}
 /* 明信片正面：小知識（圖鑑「一句簡介」，真實資料）＋棲地背景，組裝時從 card_mockup.html 讀出 */
@@ -533,7 +533,7 @@ const PC_INFO={"dolphin": ["只生活在台灣西海岸淺水區的白海豚，�
 const nm=id=>isSt(id)?`${MYHUB}郵站的${NAME[baseOf(id)]}`:NAME[id]||(FOREIGN_BY_ID[id]&&FOREIGN_BY_ID[id].name)||id;
 const fromOf=id=>FOREIGN_BY_ID[id]?FOREIGN_BY_ID[id].country:"台灣";
 /* 外國送信生物還沒有美術，先用圖示代替 */
-const art=id=>isSt(id)?art(baseOf(id)):FOREIGN_BY_ID[id]?(FOREIGN_BY_ID[id].img?`<img src="${FOREIGN_BY_ID[id].img}" alt="${nm(id)}">`:`<span class="fx" role="img" aria-label="${nm(id)}">${FOREIGN_BY_ID[id].icon}</span>`):ART[id]?`<img src="art/${id}.png" alt="${NAME[id]}">`:`<span style="font-size:.8cqw;font-weight:900">${NAME[id]}</span>`;
+const art=id=>isSt(id)?art(baseOf(id)):FOREIGN_BY_ID[id]?(FOREIGN_BY_ID[id].img?`<img src="${FOREIGN_BY_ID[id].img}" alt="${nm(id)}">`:`<span class="fx" role="img" aria-label="${nm(id)}">${FOREIGN_BY_ID[id].icon}</span>`):ART[id]?`<img src="art/${id}.webp" alt="${NAME[id]}">`:`<span style="font-size:.8cqw;font-weight:900">${NAME[id]}</span>`;
 const PL=loadPlayer();let ME="小小觀察員";try{const s=JSON.parse(localStorage.getItem("ep-settings")||"{}");if(s.name&&!["島嶼郵差","島嶼觀察員"].includes(s.name))ME=s.name;}catch(e){}
 const esc=t=>String(t).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const QC=new URLSearchParams(location.search).get("courier");

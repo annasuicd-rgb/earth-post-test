@@ -401,8 +401,8 @@ body:has(.stage.pt){padding:0;overflow:hidden;align-items:stretch}
     <img src="art/post_station_wide.jpg" alt="郵站：木造小屋、櫃台、信件格與布告欄">
     <div class="st-name" id="stname"></div>
     <div class="say" id="say"></div>
-    <div class="staff boss"><img src="art/station_master.png" alt="站長"><span>站長</span></div>
-    <div class="staff cat"><div class="meow" id="meow" aria-hidden="true"></div><img src="art/station_cat.png" alt="小貓助手"><span>小貓助手</span></div>
+    <div class="staff boss"><img src="art/station_master.webp" alt="站長"><span>站長</span></div>
+    <div class="staff cat"><div class="meow" id="meow" aria-hidden="true"></div><img src="art/station_cat.webp" alt="小貓助手"><span>小貓助手</span></div>
     <div class="care" id="care" hidden></div>
     <div class="hview" id="hview" hidden></div>
   </section>
@@ -449,9 +449,9 @@ function todayReqs(){
 if(SS.day!==dayKey()||SS.hub!==HUB){SS.day=dayKey();SS.hub=HUB;SS.done=[];}
 const REQ=()=>todayReqs();
 const save=()=>{saveJ(FKEY,FL);updateFlowerHud(FL);saveJ(IKEY,INV);SS.dayOffset=dayOffset;saveJ(SKEY,SS)};
-const ART={};RES.forEach(id=>{const im=new Image();im.onload=()=>{ART[id]=true;render()};im.src=`art/${id}.png`;});
-const art=id=>ART[id]?`<img src="art/${id}.png" alt="${NAME[id]}">`:`<span style="font-weight:900;font-size:.9cqw">${NAME[id]}</span>`;
-const fl=n=>`<span class="fl"><img src="art/flower.png" alt="">${n}</span>`;
+const ART={};RES.forEach(id=>{const im=new Image();im.onload=()=>{ART[id]=true;render()};im.src=`art/${id}.webp`;});
+const art=id=>ART[id]?`<img src="art/${id}.webp" alt="${NAME[id]}">`:`<span style="font-weight:900;font-size:.9cqw">${NAME[id]}</span>`;
+const fl=n=>`<span class="fl"><img src="art/flower.webp" alt="">${n}</span>`;
 const text=(o)=>{const n=NAME[o.k];return {walk:`陪${n}散步`,bowl:`${n}的水盆空了`,tool:`整理${n}的休息區`,cushion:`幫${n}換新軟墊`,comb:o.k==="heron"?`幫${n}整理羽毛`:`幫${n}梳毛`}[o.need]};
 let tab="req",msg="";
 const QTY={};let toastT=0;function toast(t){let e=document.getElementById("toast");if(!e){e=document.createElement("div");e.id="toast";e.className="toast";e.setAttribute("role","status");document.querySelector(".stage").appendChild(e);}
@@ -543,7 +543,7 @@ function renderView(){
   v.innerHTML=`${placeImg(viewK,"bg",!!ef)}
     <div class="hn">${A.n}</div><button class="hx" data-view="">回郵站</button>
     ${ef?["12%","38%","64%","84%"].map((x,i)=>`<span class="sprout" style="left:${x};bottom:${18+(i%2)*9}%;animation-delay:${i*.3}s">${A.mark==="✨"?`<img src="art/ui/x_sparkle.png" alt="" style="width:3cqw;display:block">`:A.mark}</span>`).join(""):""}
-    ${vis?`<button class="visitor${vis.done?" done":""}" ${vis.done?"disabled":`data-observe="${vis.id}"`} aria-label="${vis.done?`今天已經觀察過${SITE_NM[vis.id]}`:`觀察${SITE_NM[vis.id]}`}"><img src="art/${vis.id}.png" alt=""></button><div class="vhint${vis.done?" done":""}">${vis.done?`今天觀察過${SITE_NM[vis.id]}了`:`${DEX[vis.id]&&DEX[vis.id].state!=="none"&&DEX[vis.id].state!=="seen"?SITE_NM[vis.id]:"有生物"}來了！點牠觀察`}</div>`:""}`;
+    ${vis?`<button class="visitor${vis.done?" done":""}" ${vis.done?"disabled":`data-observe="${vis.id}"`} aria-label="${vis.done?`今天已經觀察過${SITE_NM[vis.id]}`:`觀察${SITE_NM[vis.id]}`}"><img src="art/${vis.id}.webp" alt=""></button><div class="vhint${vis.done?" done":""}">${vis.done?`今天觀察過${SITE_NM[vis.id]}了`:`${DEX[vis.id]&&DEX[vis.id].state!=="none"&&DEX[vis.id].state!=="seen"?SITE_NM[vis.id]:"有生物"}來了！點牠觀察`}</div>`:""}`;
   v.hidden=false;
 }
 function doCare(i){
@@ -552,7 +552,7 @@ function doCare(i){
   if(it)INV[o.need]--;
   const gain=it?it.r:NONE_R,ag=it?2:1;FL+=gain;SS.aff[o.k]=(SS.aff[o.k]||0)+ag;SS.done.push(i);save();
   const c=document.getElementById("care");
-  c.innerHTML=`<div class="pair"><div class="cr">${art(o.k)}</div><div class="tool">${it?it.ic:"🐾"}</div><div class="cat"><img src="art/station_cat.png" alt="小貓助手"></div></div>
+  c.innerHTML=`<div class="pair"><div class="cr">${art(o.k)}</div><div class="tool">${it?it.ic:"🐾"}</div><div class="cat"><img src="art/station_cat.webp" alt="小貓助手"></div></div>
     <h3>${text(o)}，完成！</h3><div class="gain"><span>${fl("+"+gain)}</span><span>❤ 駐站好感 +${ag}</span></div>
     <button class="ok" id="careOk">好</button>`;
   c.hidden=false;msg=`謝謝你，${ME}！${NAME[o.k]}看起來很開心。`;

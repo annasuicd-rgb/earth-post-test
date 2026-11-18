@@ -304,7 +304,7 @@ body:has(.stage.pt){padding:0;overflow:hidden;align-items:stretch}
 
 <script src="player.js"></script>
 <script>
-/* 內容來源：drafts/card_content_v0.2.md。角色圖：放在 drafts/mockup/art/<id>.png，沒有圖時顯示佔位。 */
+/* 內容來源：drafts/card_content_v0.2.md。角色圖：放在 drafts/mockup/art/<id>.webp，沒有圖時顯示佔位。 */
 const S = {
  dolphin:{name:"台灣白海豚",sci:"Sousa chinensis taiwanensis",fam:"海豚科 Delphinidae｜台灣西海岸",type:"野生動物",check:"部分查核",endangered:true,
   intro:"只生活在台灣西海岸淺水區的白海豚，俗稱「媽祖魚」；出生時深灰，長大後變成粉白色。",
@@ -701,7 +701,7 @@ st.view="list";
 const GROUPS=[["鳥類","bird",["heron","bluemagpie","barbet","thrush","eagle","bpartridge","babbler","yuhina","egret","reefheron","nheron","kingfisher","robin","liocichla","sparrow","munia","mikado","swinhoe","tpartridge","warbler"]],
   ["哺乳類","mammal",["dog","cat","macaque","hare","civet","shrew","flyingsq","squirrel","badger","dolphin","rissos"]],
   ["兩棲爬行類","amphibian",["frog","grassfrog","keelback","viper"]],
-  ["魚類","fish",["anemonefish"]],
+  ["魚類","marine",["anemonefish"]],
   ["無脊椎動物","insect",["butterfly","peacock","firefly","ghostcrab"]]];
 const HABS=["淺山森林","山區","河岸","農田／聚落","市區公園","海邊"];
 const HAB_SHORT={"淺山森林":"森林","山區":"山區","河岸":"河岸","農田／聚落":"農田","市區公園":"公園","海邊":"海邊"};
@@ -711,14 +711,14 @@ if(st.hab&&!HABS.includes(st.hab))st.hab="";
 
 const esc=t=>String(t).replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
 const ART={};
-ORDER.forEach(id=>{const im=new Image();im.onload=()=>{ART[id]=true;renderRail();render()};im.src=`art/${id}.png`;});
+ORDER.forEach(id=>{const im=new Image();im.onload=()=>{ART[id]=true;renderRail();render()};im.src=`art/${id}.webp`;});
 const STLBL={none:"未發現",seen:"目擊",recorded:"已記錄",courier:"郵差"};
 const dst=id=>(DEX[id]||{state:"recorded"}).state;
 const locked=id=>dst(id)==="none"||dst(id)==="seen";
 function artHTML(id,big){
   const c=S[id];
   if(dst(id)==="none") return `<div class="ph" style="font-size:${big?"6cqw":"2.6cqw"};color:#b9ab8b">？</div>`;
-  if(ART[id]) return `<img src="art/${id}.png" alt="${dst(id)==="seen"?"目擊的剪影":c.name}" ${dst(id)==="seen"?'style="filter:brightness(0) opacity(.45)"':""}>`;
+  if(ART[id]) return `<img src="art/${id}.webp" alt="${dst(id)==="seen"?"目擊的剪影":c.name}" ${dst(id)==="seen"?'style="filter:brightness(0) opacity(.45)"':""}>`;
   return `<div class="ph">${big?c.name+"<br><small>角色圖待放</small>":c.name}</div>`;
 }
 const UI_IC=[["保育","conserve"],["食","diet"],["棲地","habitat"],["遷徙","range"],["分布","range"],["出現地點","route"],["偏好互動","observe"],["互動方式","observe"],["觀察","observe"],["速度","speed"],["體力","stamina"],["可送距離","mail"],["明信片","mail"],["路線","route"],["移動方式","speed"],["飛行","bird"],["較常遇到","dawn"],["出勤條件","sun"],["委託","task"],["認養","adopt"]];

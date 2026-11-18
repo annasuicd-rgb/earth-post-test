@@ -32,7 +32,7 @@ p{margin:0 0 12px;line-height:1.7;color:var(--muted)}
 
 <main class="card" id="home">
   <p class="brand">EARTH POST</p>
-  <h1>台灣原型・測試版 v0.54.0</h1>
+  <h1>台灣原型・測試版 v0.55.0</h1>
   <p>走到探索點觀察生物、結識郵差夥伴，再請牠們把明信片寄給好友和筆友。這是試玩用的原型：位置用點地圖模擬，好友和筆友是假資料，進度只存在你這台裝置上。</p>
   <p>建議用手機直拿開啟（iPhone 直式版面）；用電腦開會顯示成中間一支手機寬的畫面。</p>
   <a class="go" href="player_mockup.html">從新手流程開始</a>
@@ -57,7 +57,7 @@ const home=document.getElementById("home"),homebtn=document.getElementById("home
 let frame=document.getElementById("frame");
 const cache={},V=Date.now();   /* V：這次開啟只下載一次 player.js，之後切換直接用快取 */
 const PAGES=["survey_mockup.html","player_mockup.html","card_mockup.html","explore_mockup.html","postcard_mockup.html","station_mockup.html","profile_mockup.html"];
-const getPage=p=>cache[p]||(cache[p]=fetch(p).then(r=>{if(!r.ok)throw new Error(r.status);return r.text();}).catch(e=>{delete cache[p];throw e;}));
+const getPage=p=>cache[p]||(cache[p]=fetch(p,{cache:"no-cache"}).then(r=>{if(!r.ok)throw new Error(r.status);return r.text();}).catch(e=>{delete cache[p];throw e;}));
 /* 入口頁一打開就在背景先下載各畫面和共用程式，點下去時不用再等 */
 setTimeout(()=>{PAGES.forEach(p=>getPage(p).catch(()=>{}));fetch("player.js?v="+V).catch(()=>{});},300);
 async function __load(url){

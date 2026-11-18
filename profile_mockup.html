@@ -427,8 +427,8 @@ const ACH=[
 /* 成就獎勵小花（設計稿 7.6：30～100，各成就數量暫定）；領過的記在 ep-ach */
 let ACHC={};try{ACHC=JSON.parse(localStorage.getItem("ep-ach")||"{}")}catch(e){}
 const _ADT=adoptAch().map(x=>x.t);achSync(ACH);try{localStorage.setItem("ep-ach-other",String(ACH.filter(x=>x.p>=x.n&&!ACHC[x.t]&&!_ADT.includes(x.t)).length))}catch(e){}updateAchDot();
-const ART={};ORDER.forEach(id=>{const im=new Image();im.onload=()=>{ART[id]=true;render()};im.src=`art/${id}.png`;});
-const art=id=>ART[id]?`<img src="art/${id}.png" alt="${NAME[id]}">`:`<span style="font-size:.9cqw;font-weight:900">${NAME[id]}</span>`;
+const ART={};ORDER.forEach(id=>{const im=new Image();im.onload=()=>{ART[id]=true;render()};im.src=`art/${id}.webp`;});
+const art=id=>ART[id]?`<img src="art/${id}.webp" alt="${NAME[id]}">`:`<span style="font-size:.9cqw;font-weight:900">${NAME[id]}</span>`;
 const isMate=k=>OWNED.includes(k);
 const UNLOCK={2:"稱號欄",3:"自訂信件內容",5:"裝飾：信箱造型",7:"頭像框",10:"同時派 2 位郵差",12:"信紙樣式",15:"裝飾：招牌樣式",18:"頭像框 2",20:"同時派 3 位郵差"};
 const nextUnlock=lv=>{const k=Object.keys(UNLOCK).map(Number).find(n=>n>lv);return k?`Lv${k} ${UNLOCK[k]}`:"全部解鎖";};

@@ -382,8 +382,8 @@ let SET={...DEF};
 try{Object.assign(SET,JSON.parse(localStorage.getItem("ep-settings")||"{}"))}catch(e){}
 const saveSet=()=>{try{const{_arm,_about,...o}=SET;localStorage.setItem("ep-settings",JSON.stringify(o))}catch(e){}};
 const view=new URLSearchParams(location.search).get("view")==="settings"?"settings":"onboard";
-const ART={};["dog","cat","butterfly","heron"].forEach(id=>{const im=new Image();im.onload=()=>{ART[id]=true;render()};im.src=`art/${id}.png`;});
-const art=id=>ART[id]?`<img src="art/${id}.png" alt="${NAME[id]}">`:`<div class="ph" style="font-size:1.6cqw">${NAME[id]}</div>`;
+const ART={};["dog","cat","butterfly","heron"].forEach(id=>{const im=new Image();im.onload=()=>{ART[id]=true;render()};im.src=`art/${id}.webp`;});
+const art=id=>ART[id]?`<img src="art/${id}.webp" alt="${NAME[id]}">`:`<div class="ph" style="font-size:1.6cqw">${NAME[id]}</div>`;
 const STEPS=["啟動","安全","權限","取名","探索","互動","郵戳","出發"];
 const $=id=>document.getElementById(id);
 /* 第一次完成新手教學：圖鑑從新手狀態開始（教學那隻＝郵差，其他＝未發現），郵戳冊只有河岸。重看教學時不會改動進度。 */

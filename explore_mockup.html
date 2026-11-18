@@ -504,8 +504,8 @@ let SP=loadSpirit();
 setInterval(()=>{const old=SP.v;SP=loadSpirit();if(!old||SP.v!==old)try{render()}catch(e){}},20000);
 let SEEN={};try{SEEN=JSON.parse(localStorage.getItem("ep-seen-slot")||"{}")}catch(e){}
 const saveSeen=()=>{try{localStorage.setItem("ep-seen-slot",JSON.stringify(SEEN))}catch(e){}};
-const ART={};ORDER.forEach(id=>{const im=new Image();im.onload=()=>{ART[id]=true;render()};im.src=`art/${id}.png`;});
-const art=id=>ART[id]?`<img src="art/${id}.png" alt="${NAME[id]}">`:`<div class="q nf">${NAME[id]}<br><small>角色圖待放</small></div>`;
+const ART={};ORDER.forEach(id=>{const im=new Image();im.onload=()=>{ART[id]=true;render()};im.src=`art/${id}.webp`;});
+const art=id=>ART[id]?`<img src="art/${id}.webp" alt="${NAME[id]}">`:`<div class="q nf">${NAME[id]}<br><small>角色圖待放</small></div>`;
 const esc=t=>String(t).replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
 const $=id=>document.getElementById(id);
 const row=(ic,lbl,inner,cls="")=>`<div class="row ${cls}"><div class="ic">${ic}</div><div><div class="lbl">${lbl}</div>${inner}</div></div>`;
@@ -533,13 +533,20 @@ function renderRail(){
 const PT=document.querySelector(".stage").classList.contains("pt");
 /* 地圖視角（v0.33.0）：平常跟著玩家（follow）；拖動地圖就停止跟隨，按 🧭 回來；🗺️ 切換看全部 */
 const MV={follow:true,c:null,all:false};
+/* 地圖可見比例（v0.55.0）：抽屜只佔畫面下面 1/3，地圖約佔上方 2/3（以整個畫面高度算；地圖元素本身不含底部導覽，所以要換算） */
+const mapF=()=>{const el=$("map"),st_=el&&el.parentElement;const H=st_?st_.clientHeight:0,h=el?el.clientHeight:0;return(H&&h)?Math.min(1,H*.66/h):.73;};
 function mapVB(px,py){
   if(!PT)return [0,0,WORLD.w,WORLD.h];
   const el=$("map"),a=(el.clientHeight||700)/(el.clientWidth||400);
-  if(MV.all){const w=WORLD.w*1.06,h=w*a;return [-WORLD.w*.03,-WORLD.h*.06,w,h];}   /* 整張地圖放在上半部（下半部被抽屜蓋住） */
-  const w=1300,h=w*a;   /* 下半部被抽屜蓋住，視角中心放在可見區（上方約 1/3）；地圖外面用草地色補 */
+  /* 視角不超出地圖邊緣（不露出平的綠色空白）；靠近邊緣時玩家就不在可見區正中央 */
+  const clampXY=(w,h,cx,cy)=>{const vh=h*mapF();let x=cx-w/2,y=cy-vh/2;
+    x=w>=WORLD.w?(WORLD.w-w)/2:Math.max(0,Math.min(WORLD.w-w,x));
+    y=vh>=WORLD.h?(WORLD.h-vh)/2:Math.max(0,Math.min(WORLD.h-vh,y));return [x,y];};
+  if(MV.all){   /* 看全部：放大到剛好填滿可見區的高度；寬度超出的部分左右拖動來看 */
+    const h=WORLD.h/mapF(),w=h/a,[x,y]=clampXY(w,h,MV.ax==null?WORLD.w/2:MV.ax,WORLD.h/2);return [x,y,w,h];}
+  const w=1300,h=w*a;
   const [cx,cy]=MV.follow||!MV.c?[px,py]:MV.c;
-  const x=Math.max(-w*.3,Math.min(WORLD.w-w*.7,cx-w/2)),y=cy-h*.33;   /* 抽屜只有 1/3，玩家放在可見地圖（上方 2/3）的中間 */
+  const [x,y]=clampXY(w,h,cx,cy);
   return [x,y,w,h];
 }
 function mapBtns(){const me=$("mapme"),all=$("mapall");if(!me)return;me.classList.toggle("on",MV.follow&&!MV.all);all.classList.toggle("on",MV.all);all.setAttribute("aria-label",MV.all?"回到附近":"看全部探索點");}
@@ -610,14 +617,14 @@ function render(){
     }
   }else if(st.phase==="empty"){
     $("note").textContent="探索　這次什麼都沒遇到";
-    $("scene").innerHTML=`<div class="pl">${playerSVG(PL.uniform)}</div><div class="keep">草叢裡安安靜靜……</div>`;
+    $("scene").innerHTML=`<div class="pl">${playerSVG(PL.uniform)}</div><div class="keep">${({M:"山徑上安安靜靜……",F:"林子裡安安靜靜……",R:"河邊安安靜靜……",A:"田埂上安安靜靜……",C:"草地上安安靜靜……",S:"只聽見海浪聲……"})[st.at]||"四周安安靜靜……"}</div>`;
     if(st.newStamp)h+=stampRow(st.newStamp);
     h+=row("🍃","沒有遇到生物",`<div class="val sm">保底進度 ${st.empty[st.at]}／3。再探索一次，或換個時段、地點。</div>`);
     go="再探索一次";
   }else if(st.phase==="encounter"){
     const k=key(),d=DEX[st.met],first=d.state==="none";
     $("note").innerHTML=steps(2);
-    $("scene").innerHTML=`<div class="pl">${playerSVG(PL.uniform)}</div><div class="keep">⟵ 保持距離 ⟶</div><div class="cr${first?" sil":""}">${art(st.met)}</div>${st.met==="dog"&&st.owner?`<div class="owner"><img src="art/owner_${st.ownerImg||"a"}.png" alt="台灣犬的飼主"></div>`:""}`;
+    $("scene").innerHTML=`<div class="pl">${playerSVG(PL.uniform)}</div><div class="keep">⟵ 保持距離 ⟶</div><div class="cr${first?" sil":""}">${art(st.met)}</div>${st.met==="dog"&&st.owner?`<div class="owner"><img src="art/owner_${st.ownerImg||"a"}.webp" alt="台灣犬的飼主"></div>`:""}`;
     if(st.newStamp)h+=stampRow(st.newStamp);
     h+=row("✨",first?"✨ 新發現！沒見過的生物":"遇到了",`<div class="val">${first?"？？？":NAME[st.met]}${st.met==="dog"?(st.owner?"（有飼主陪同）":"（單獨出現）"):""}</div>${first?"":(OBSERVE_ONLY.includes(st.met)?`<div class="src">圖鑑：${STLBL[d.state]}（只觀察，不當郵差）</div>`:`<div class="meter"><i style="width:${Math.min(100,d.aff/THRESH[st.met]*100)}%"></i></div><div class="src">圖鑑：${STLBL[d.state]}・好感 ${d.aff}／${THRESH[st.met]}${d.state==="courier"?"＋":""}</div>`)}<div class="src">${st.met==="dog"&&!st.owner?"不熟悉的狗請保持距離，不要伸手或餵食":(["viper","badger","keelback"].includes(st.met)?"用觀察的方式認識牠，請看下方的安全提醒":OBS_SAFETY[st.met]||"不靠近、不觸碰、不餵食，用觀察的方式認識牠")}</div>`);
     if(["viper","badger","keelback"].includes(st.met))h+=row("⚠️","安全提醒",`<div class="val sm">${OBS_SAFETY[st.met]}</div><div class="src">只能保持距離觀察</div>`,"warn");
@@ -742,13 +749,14 @@ function walkTo(tgt){
   el.addEventListener("pointermove",e=>{if(!d)return;const dx=e.clientX-d.x,dy=e.clientY-d.y;
     if(!d.moved&&Math.hypot(dx,dy)<8)return;
     if(!d.moved){d.moved=true;el.classList.add("dragging");try{el.setPointerCapture(e.pointerId)}catch(_){}
-      if(MV.all){const [vx,vy,vw,vh]=MV.vb;MV.all=false;MV.c=[vx+vw/2,vy+vh*.33];}   /* 從看全部開始拖：換回附近視角 */
-      d.c=(MV.follow||!MV.c)?st.pos.slice():MV.c.slice();d.x=e.clientX;d.y=e.clientY;MV.follow=false;}
+      if(MV.all){d.all=true;d.ax=MV.ax==null?WORLD.w/2:MV.ax;d.x=e.clientX;d.y=e.clientY;}   /* 看全部：只左右拖動 */
+      else{d.c=(MV.follow||!MV.c)?st.pos.slice():MV.c.slice();d.x=e.clientX;d.y=e.clientY;MV.follow=false;}}
+    if(d.all){const k=MV.vb[2]/el.clientWidth;MV.ax=Math.max(0,Math.min(WORLD.w,d.ax-(e.clientX-d.x)*k));liveMap();return;}
     const k=MV.vb[2]/el.clientWidth;MV.c=[Math.max(0,Math.min(WORLD.w,d.c[0]-(e.clientX-d.x)*k)),Math.max(0,Math.min(WORLD.h,d.c[1]-(e.clientY-d.y)*k))];liveMap();});
   const end=()=>{if(d&&d.moved){MV.dragAt=Date.now();el.classList.remove("dragging");}d=null;};
   el.addEventListener("pointerup",end);el.addEventListener("pointercancel",end);
   $("mapme").addEventListener("click",()=>{MV.follow=true;MV.all=false;MV.c=null;renderMap();});
-  $("mapall").addEventListener("click",()=>{MV.all=!MV.all;if(!MV.all){MV.follow=true;MV.c=null;}renderMap();});
+  $("mapall").addEventListener("click",()=>{MV.all=!MV.all;MV.ax=null;if(!MV.all){MV.follow=true;MV.c=null;}renderMap();});
 })();
 document.addEventListener("click",e=>{
   if(st.phase!=="map")return;const svg=e.target.closest("#world");if(!svg)return;
