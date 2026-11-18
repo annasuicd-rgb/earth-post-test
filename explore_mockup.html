@@ -678,8 +678,6 @@ function render(){
     go="繼續探索";
   }
   const tired=(st.phase==="map"||st.phase==="empty")&&!SP.v;
-  if(tired){const m=minutesToNextSpirit(SP);
-    h=`<div class="row rest"><div class="ic">😴</div><div style="flex:1"><div class="lbl">休息中</div><div class="val sm">約 ${m} 分鐘後精神 +1，就能再出發</div></div></div>`+h;}
   $("go").style.display=(tired||go==="靠近探索點")?"none":"";
   $("rows").innerHTML=h;$("goText").textContent=go;$("go").disabled=dis;
   document.querySelector(".stage").classList.toggle("fold-open",!!(fold.tools||fold.detail)&&st.phase==="map");

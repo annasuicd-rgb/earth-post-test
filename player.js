@@ -491,7 +491,7 @@ function fullSweep() {
   } catch (e) {}
 }
 (function () { const go = () => { setTimeout(fullSweep, 1500); setInterval(fullSweep, 30000); }; if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", go); else go(); })();
-const BUILD = { name: "測試版", ver: "v0.57.0", date: "2026-11-15" };
+const BUILD = { name: "測試版", ver: "v0.58.0", date: "2026-11-15" };
 const BUILD_LABEL = `${BUILD.name} ${BUILD.ver}（${BUILD.date}）`;
 (function addBuildBadge() {
   const put = () => {
@@ -532,7 +532,7 @@ function updateSpiritHud() {
   const el = document.querySelector(".stage .flowerhud .sphud"); if (!el) return;
   const s = loadSpirit(), max = spiritMax();
   el.querySelector("img").src = s.v ? "art/ui/ic_spirit.png" : "art/ui/ic_rest.png";
-  el.querySelector("b").textContent = s.v ? s.v + "／" + max : "休息中・約 " + minutesToNextSpirit(s) + " 分";
+  el.querySelector("b").textContent = s.v + "／" + max + (s.v < max ? "・" + minutesToNextSpirit(s) + " 分" : "");   // 沒滿時加倒數（0 也照樣顯示 0／6）
   el.parentNode.title = s.v ? "精神 " + s.v + "／" + max + "，每次探索 -1；" + (s.v < max ? "約 " + minutesToNextSpirit(s) + " 分鐘後 +1" : "已回滿") : "精神用完了，約 " + minutesToNextSpirit(s) + " 分鐘後 +1";
 }
 (function addFlowerHud() {
