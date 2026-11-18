@@ -374,6 +374,10 @@ body:has(.stage.pt){padding:0;overflow:hidden;align-items:stretch}
 .encscene .pl,.encscene .cr{position:relative;z-index:1;filter:drop-shadow(0 .3cqw .3cqw rgba(0,0,0,.16))}
 .encscene .pl::before,.encscene .cr::before{content:"";position:absolute;left:6%;right:6%;bottom:-.8cqw;height:2cqw;border-radius:50%;background:rgba(30,50,10,.32);filter:blur(.5cqw);z-index:-1}
 .encscene .cr img{object-position:50% 100%}
+/* 海洋生物在海裡（v0.57.0）：往上放到海面，腳下改成淡藍水波，不加地面陰影 */
+.encscene .cr.sea{transform:translateY(-6cqw)}
+.encscene .cr.sea.gone{transform:translateY(-6cqw) translateX(4cqw)}
+.encscene .cr.sea::before{background:rgba(255,255,255,.55);box-shadow:0 0 0 .35cqw rgba(120,200,255,.55);bottom:-.4cqw}
 .stage.pt .place{left:1.2cqw;top:calc(var(--st) + 1cqw);font-size:1.4cqw;z-index:9}
 .stage.pt:has(.encscene:not([hidden])) .panel{max-height:calc(70% - var(--tab))}
 .stage.pt:has(.encscene:not([hidden])) .encscene{height:23cqw;top:calc(var(--st) + 3.6cqw)}
@@ -580,7 +584,8 @@ function liveMap(){
   mo.style.left=((px-vx)/vw*100)+"%";mo.style.top=((py-vy)/vh*100-3)+"%";
   tr.innerHTML=st.trail.slice(-24).map((q,i)=>`<circle cx="${q[0]}" cy="${q[1]}" r="11" fill="#fff" opacity="${(i+1)/26}"/>`).join("");
 }
-const HABG={M:{fx:.5,gy:.76,c:"#cbda4b"},F:{fx:.62,gy:.8,c:"#c6d147"},R:{fx:.27,gy:.7,c:"#c2d04d"},A:{fx:.28,gy:.72,c:"#badd37"},C:{fx:.5,gy:.7,c:"#c5ec3c"},S:{fx:.45,gy:.76,c:"#fdd78a"}};
+const SEA=["dolphin","rissos","anemonefish"];   /* 海洋生物 */
+const HABG={M:{fx:.5,gy:.76,c:"#cbda4b"},F:{fx:.62,gy:.8,c:"#c6d147"},R:{fx:.27,gy:.7,c:"#c2d04d"},A:{fx:.28,gy:.72,c:"#badd37"},C:{fx:.5,gy:.7,c:"#c5ec3c"},S:{fx:.45,gy:.66,c:"#fdd78a"}};
 /* 遇到生物／沒遇到時，把棲地背景放大移位，讓地面剛好在人物腳下（圖是 1672×941，原本置中放滿，地面在畫面下半部，人物在上方像飄在天空） */
 function placeBg(){
   const bgs=$("bgscene"),sc=$("scene");if(!bgs||!sc)return;
@@ -642,7 +647,7 @@ function render(){
   }else if(st.phase==="encounter"){
     const k=key(),d=DEX[st.met],first=d.state==="none";
     $("note").innerHTML=steps(2);
-    $("scene").innerHTML=`<div class="pl">${playerSVG(PL.uniform)}</div><div class="keep">⟵ 保持距離 ⟶</div><div class="cr${first?" sil":""}">${art(st.met)}</div>${st.met==="dog"&&st.owner?`<div class="owner"><img src="art/owner_${st.ownerImg||"a"}.webp" alt="台灣犬的飼主"></div>`:""}`;
+    $("scene").innerHTML=`<div class="pl">${playerSVG(PL.uniform)}</div><div class="keep">⟵ 保持距離 ⟶</div><div class="cr${first?" sil":""}${SEA.includes(st.met)?" sea":""}">${art(st.met)}</div>${st.met==="dog"&&st.owner?`<div class="owner"><img src="art/owner_${st.ownerImg||"a"}.webp" alt="台灣犬的飼主"></div>`:""}`;
     if(st.newStamp)h+=stampRow(st.newStamp);
     h+=row("✨",first?"✨ 新發現！沒見過的生物":"遇到了",`<div class="val">${first?"？？？":NAME[st.met]}${st.met==="dog"?(st.owner?"（有飼主陪同）":"（單獨出現）"):""}</div>${first?"":(OBSERVE_ONLY.includes(st.met)?`<div class="src">圖鑑：${STLBL[d.state]}（只觀察，不當郵差）</div>`:`<div class="meter"><i style="width:${Math.min(100,d.aff/THRESH[st.met]*100)}%"></i></div><div class="src">圖鑑：${STLBL[d.state]}・好感 ${d.aff}／${THRESH[st.met]}${d.state==="courier"?"＋":""}</div>`)}<div class="src">${st.met==="dog"&&!st.owner?"不熟悉的狗請保持距離，不要伸手或餵食":(["viper","badger","keelback"].includes(st.met)?"用觀察的方式認識牠，請看下方的安全提醒":OBS_SAFETY[st.met]||"不靠近、不觸碰、不餵食，用觀察的方式認識牠")}</div>`);
     if(["viper","badger","keelback"].includes(st.met))h+=row("⚠️","安全提醒",`<div class="val sm">${OBS_SAFETY[st.met]}</div><div class="src">只能保持距離觀察</div>`,"warn");
@@ -653,7 +658,7 @@ function render(){
   }else if(st.phase==="outcome"){
     const r=st.result,d=DEX[st.met];
     $("note").textContent=r.ok?"記錄成功":"牠離開了";
-    $("scene").innerHTML=`<div class="pl">${playerSVG(PL.uniform)}</div><div class="keep">${r.ok?"📖 記錄完成":"…牠走遠了"}</div><div class="cr${r.ok?"":" gone"}${d.state==="seen"?" sil":""}">${art(st.met)}${r.ok&&!r.popped?`<div class="heartpop">${OBSERVE_ONLY.includes(st.met)?"📖 觀察 +1":`❤ 好感 +${r.gain}`}</div>`:""}</div>`;
+    $("scene").innerHTML=`<div class="pl">${playerSVG(PL.uniform)}</div><div class="keep">${r.ok?"📖 記錄完成":"…牠走遠了"}</div><div class="cr${r.ok?"":" gone"}${SEA.includes(st.met)?" sea":""}${d.state==="seen"?" sil":""}">${art(st.met)}${r.ok&&!r.popped?`<div class="heartpop">${OBSERVE_ONLY.includes(st.met)?"📖 觀察 +1":`❤ 好感 +${r.gain}`}</div>`:""}</div>`;
     r.popped=true;
     if(r.ok&&(r.became||r.firstRecord)&&!r.rewarded){r.rewarded=true;showReward(r,d);}
     if(r.ok){
