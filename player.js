@@ -265,7 +265,7 @@ function loadSpirit() {
   if (s.v >= max) { s.v = max; s.t = Date.now(); }
   return s;
 }
-function saveSpirit(s) { try { localStorage.setItem(SPIRIT_KEY, JSON.stringify(s)); } catch (e) {} }
+function saveSpirit(s) { try { localStorage.setItem(SPIRIT_KEY, JSON.stringify(s)); } catch (e) {} try { updateSpiritHud(); } catch (e) {} }
 function minutesToNextSpirit(s) { return Math.max(0, SPIRIT_MIN - Math.floor((Date.now() - s.t) / 60000)); }
 
 /* 郵差體力（設計稿 8.x）：待命時每 3 分鐘 +1%（真實時間，約 5 小時回滿）；寄信時扣除。
@@ -491,7 +491,7 @@ function fullSweep() {
   } catch (e) {}
 }
 (function () { const go = () => { setTimeout(fullSweep, 1500); setInterval(fullSweep, 30000); }; if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", go); else go(); })();
-const BUILD = { name: "測試版", ver: "v0.53.0", date: "2026-11-15" };
+const BUILD = { name: "測試版", ver: "v0.54.0", date: "2026-11-15" };
 const BUILD_LABEL = `${BUILD.name} ${BUILD.ver}（${BUILD.date}）`;
 (function addBuildBadge() {
   const put = () => {
@@ -525,7 +525,15 @@ function loadObsCards() { try { return JSON.parse(localStorage.getItem("ep-items
 function addObsCard(c) { try { const inv = JSON.parse(localStorage.getItem("ep-items") || "{}"); inv.obscards = (inv.obscards || []).concat([c]); localStorage.setItem("ep-items", JSON.stringify(inv)); } catch (e) {} }
 function updateFlowerHud(n) {
   const el = document.querySelector(".stage .flowerhud");
-  if (el) el.querySelector("b").textContent = n == null ? loadFlowers() : n;
+  if (el) el.querySelector(".fl b").textContent = n == null ? loadFlowers() : n;
+}
+/* 精神標籤（v0.54.0）：和小花同一個位置、同一個圓角標籤（小花的左邊），只在「探索」與「我的」頁顯示 */
+function updateSpiritHud() {
+  const el = document.querySelector(".stage .flowerhud .sphud"); if (!el) return;
+  const s = loadSpirit(), max = spiritMax();
+  el.querySelector("img").src = s.v ? "art/ui/ic_spirit.png" : "art/ui/ic_rest.png";
+  el.querySelector("b").textContent = s.v ? s.v + "／" + max : "休息中・約 " + minutesToNextSpirit(s) + " 分";
+  el.parentNode.title = s.v ? "精神 " + s.v + "／" + max + "，每次探索 -1；" + (s.v < max ? "約 " + minutesToNextSpirit(s) + " 分鐘後 +1" : "已回滿") : "精神用完了，約 " + minutesToNextSpirit(s) + " 分鐘後 +1";
 }
 (function addFlowerHud() {
   const put = () => {
@@ -534,13 +542,21 @@ function updateFlowerHud(n) {
     const el = document.createElement("div");
     el.className = "flowerhud";
     el.title = "小花（遊戲幣）";
-    el.innerHTML = `<img src="art/flower.png" alt="小花"><b>${loadFlowers()}</b>`;
+    el.innerHTML = `<span class="fl" style="display:flex;align-items:center;gap:.4cqw"><img src="art/flower.png" alt="小花"><b>${loadFlowers()}</b></span>`;
     el.style.cssText = "position:absolute;right:42.6cqw;top:2cqw;z-index:6;display:flex;align-items:center;gap:.4cqw;background:rgba(255,248,231,.95);border:.2cqw solid #efdfb8;border-radius:99px;padding:.25cqw 1cqw .25cqw .35cqw;font-weight:900;font-size:1.3cqw;color:#3d2a17;box-shadow:0 .25cqw 0 rgba(0,0,0,.12);pointer-events:none";
     el.querySelector("img").style.cssText = "width:2.2cqw;height:2.2cqw;display:block";
+    if (document.getElementById("mapme") || document.getElementById("pcard")) {   // 探索頁、我的頁才有精神
+      const sp = document.createElement("span");
+      sp.className = "sphud"; sp.style.cssText = "display:flex;align-items:center;gap:.4cqw;padding-right:.9cqw;margin-right:.7cqw;border-right:.2cqw solid #efdfb8";
+      sp.innerHTML = `<img src="art/ui/ic_spirit.png" alt="精神" style="width:2.2cqw;height:2.2cqw;display:block"><b></b>`;
+      el.insertBefore(sp, el.firstChild);
+    }
     stage.appendChild(el);
+    try { updateSpiritHud(); } catch (e) {}
   };
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", put); else put();
   window.addEventListener("storage", e => { if (e.key === FLOWER_KEY) updateFlowerHud(); });
+  setInterval(() => { try { updateSpiritHud(); } catch (e) {} }, 20000);
 })();
 
 /* 線上版外框切換：畫面放在入口頁的框裡時，切換連結改成通知外框（線上版只允許發布時就存在的程式，

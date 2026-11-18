@@ -344,10 +344,20 @@ body:has(.stage.pt){padding:0;overflow:hidden;align-items:stretch}
 .stage.pt .mapbtns button.on{background:#dff2d6;border-color:#5f9e34}
 .stage.pt .mapbtns button:disabled{opacity:.45}
 .stage:has(.map[hidden]) .mapbtns{display:none}
-.stage.pt .panel{left:0;right:auto;width:39cqw;top:auto;bottom:var(--tab);max-height:calc(56% - var(--tab));border-radius:2.4cqw 2.4cqw 0 0;border-width:.3cqw 0 0;
+.stage.pt .panel{left:0;right:auto;width:39cqw;top:auto;bottom:var(--tab);max-height:calc(34% - var(--tab));border-radius:2.4cqw 2.4cqw 0 0;border-width:.3cqw 0 0;
   padding:1.1cqw 1.4cqw 6.8cqw;box-shadow:0 -.6cqw 1.6cqw rgba(0,0,0,.15);z-index:8}
 .stage.pt .panel::before{content:"";display:block;width:4cqw;height:.5cqw;border-radius:99px;background:var(--cream-line);margin:0 auto .6cqw}
 .stage.pt .note{margin:0 0 .6cqw}
+/* 找生物時地圖至少佔 2/3 畫面（v0.54.0）：抽屜只有 1/3，展開詳細資訊或測試工具時才暫時變高 */
+.stage.pt.fold-open .panel{max-height:calc(62% - var(--tab))}
+.stage.pt .panel{overflow-y:auto}
+.row .lbl:has(.small-btn){display:flex;justify-content:space-between;align-items:center;gap:1cqw}
+.toolbtn{flex:none;white-space:nowrap}
+.hs{flex-wrap:nowrap!important;overflow-x:auto;white-space:nowrap;scrollbar-width:none}.hs::-webkit-scrollbar{display:none}.hs>*{flex:none}
+.stage.pt .rows .row.cmp .src{margin-top:.1cqw}
+.stage.pt .rows .chips2 span{font-size:1.25cqw;padding:.05cqw .8cqw}
+.stage.pt .row.cmp.one .lbl{font-size:1.45cqw;color:var(--ink)}.stage.pt .row.cmp.one{padding-top:.7cqw;padding-bottom:.7cqw}
+.stage.pt .panel::before{margin-bottom:.3cqw!important}.stage.pt .note{margin:0 0 .4cqw}
 .stage.pt .rows{gap:.7cqw}
 .stage.pt .val{font-size:1.5cqw}.stage.pt .val.sm{font-size:1.35cqw}.stage.pt .lbl{font-size:1.2cqw}.stage.pt .src{font-size:1.15cqw}
 .stage.pt .chip{font-size:1.25cqw;padding:.45cqw 1cqw}
@@ -413,7 +423,6 @@ body:has(.stage.pt){padding:0;overflow:hidden;align-items:stretch}
   <section class="panel">
     <div class="note" id="note"></div>
     <div class="rows" id="rows"></div>
-    <div class="foot">機率與成功率為遊戲估算｜<button class="small-btn" id="reset">原型：清空圖鑑進度</button>｜<button class="small-btn" id="demo">恢復示意進度</button>｜<button class="small-btn" id="refill">回滿精神</button></div>
   </section>
   <div class="bar" id="bar"></div>
   <button class="go" id="go"><svg viewBox="0 0 72 56" aria-hidden="true"><use href="#env"/></svg><span id="goText">探索</span></button>
@@ -530,7 +539,7 @@ function mapVB(px,py){
   if(MV.all){const w=WORLD.w*1.06,h=w*a;return [-WORLD.w*.03,-WORLD.h*.06,w,h];}   /* 整張地圖放在上半部（下半部被抽屜蓋住） */
   const w=1300,h=w*a;   /* 下半部被抽屜蓋住，視角中心放在可見區（上方約 1/3）；地圖外面用草地色補 */
   const [cx,cy]=MV.follow||!MV.c?[px,py]:MV.c;
-  const x=Math.max(-w*.3,Math.min(WORLD.w-w*.7,cx-w/2)),y=cy-h*.27;
+  const x=Math.max(-w*.3,Math.min(WORLD.w-w*.7,cx-w/2)),y=cy-h*.33;   /* 抽屜只有 1/3，玩家放在可見地圖（上方 2/3）的中間 */
   return [x,y,w,h];
 }
 function mapBtns(){const me=$("mapme"),all=$("mapall");if(!me)return;me.classList.toggle("on",MV.follow&&!MV.all);all.classList.toggle("on",MV.all);all.setAttribute("aria-label",MV.all?"回到附近":"看全部探索點");}
@@ -572,25 +581,33 @@ function render(){
   let h="",go="探索",dis=false;
   const here=st.phase==="map"?inRange(st.pos):st.at;
   const steps=(n)=>`<div class="stepline">${["靠近探索點","進入探索範圍","遇見生物"].map((t,i)=>`<span class="${i<n?"done":i===n?"on":""}">${i+1} ${t}</span>`).join("")}</div>`;
+  const fold=st.fold=st.fold||{};
+  const toolBtn=()=>`<button class="small-btn toolbtn" data-fold="tools">測試工具 ${fold.tools?"▴":"▾"}</button>`;
+  const toolsHTML=()=>fold.tools?`<div class="row tools"><div class="ic">🛠️</div><div style="min-width:0">
+      <div class="lbl">時段・天氣</div>${chips("slot",SLOT,st.slot)}${chips("wx",WX,st.wx)}
+      <div class="lbl" style="margin-top:.6cqw">直接走到${sim?"（模擬模式也可以點地圖或用方向鍵）":""}</div><div class="rowsel hs">${Object.keys(WP).map(k=>`<button class="chip" data-p="${k}">${P[k].name}</button>`).join("")}</div>
+      <div class="lbl" style="margin-top:.6cqw">進度</div><div class="rowsel"><button class="chip" id="reset">清空圖鑑進度</button><button class="chip" id="demo">恢復示意進度</button><button class="chip" id="refill">回滿精神</button></div></div></div>`:"";
   if(st.phase==="map"&&!here){
     const nb=nearest(st.pos);
     $("note").innerHTML=steps(0);
-    h+=row("🧭","最近的探索點",`<div class="val">${P[nb.k].ic} ${P[nb.k].name}・約 ${Math.max(0,Math.round(nb.d-P[nb.k].r))} m</div><div class="src">走進虛線圈（半徑 ${P[nb.k].r} m）就算抵達，以範圍判定，不需要精確座標</div>`);
-    h+=row("🚶","怎麼走",`<div class="val sm">${sim?"模擬模式：點地圖上想去的位置，或用方向鍵走":"GPS：實際走過去"}</div><div class="rowsel">${Object.keys(WP).map(k=>`<button class="chip" data-p="${k}">直接走到${P[k].name}</button>`).join("")}</div>`);
+    h+=row("🧭",`<span>最近的探索點</span>${toolBtn()}`,`<div class="val">${P[nb.k].ic} ${P[nb.k].name}・約 ${Math.max(0,Math.round(nb.d-P[nb.k].r))} m</div><div class="src">走進虛線圈（半徑 ${P[nb.k].r} m）就算抵達</div>`,"cmp");
+    h+=toolsHTML();
     go="靠近探索點";dis=true;
   }else if(st.phase==="map"){
     st.at=here;
     $("note").innerHTML=steps(1);
     const n=st.empty[st.at]||0;
-    h+=row("📍","已進入探索範圍",`<div class="val">${p.ic} ${p.name}</div><div class="src">範圍半徑 ${p.r} m｜在範圍內任何位置都可以探索</div>`,"good");
-    h+=row("🌤️","時段・天氣（原型可切換）",chips("slot",SLOT,st.slot)+chips("wx",WX,st.wx));
-    h+=row("🧠","精神",`<div class="pity">${Array.from({length:spiritMax()},(_,i)=>`<i class="${i<SP.v?"on":""}" style="${i<SP.v?"background:#7cb342":""}"></i>`).join("")}</div><div class="src">${SP.v}／${spiritMax()}（Lv${PLAYER_LEVEL}）｜每次探索 -1，${SP.v<spiritMax()?`約 ${minutesToNextSpirit(SP)} 分鐘後 +1`:"已回滿"}</div>`,SP.v?"":"warn");
+    h+=row("📍",`<span>${p.ic} ${p.name}・已進入探索範圍</span>${toolBtn()}`,"","good cmp one");
+    h+=toolsHTML();
     const kinds=Object.keys(POOL[st.at]).filter(k=>k!=="none"&&TM[k][st.slot]>0);
     const seen=SEEN[`${st.at}-${st.slot}`]||[];
-    if(kinds.length&&kinds.every(k=>seen.includes(k)))h+=row("💡","回訪提示",`<div class="val sm">${p.name}的${SLOT[st.slot]}你都認識了。換個時段或天氣再來，也許會有新發現。</div>`,"good");
-    h+=row("🎯","保底",`<div class="pity">${[0,1,2].map(i=>`<i class="${i<n?"on":""}"></i>`).join("")}</div><div class="src">${n>=3?"下一次一定會遇到生物！":`連續 3 次沒遇到，下一次必定遇到（目前 ${n}／3）`}</div>`);
     const w=weights(),tot=Object.values(w).reduce((a,b)=>a+b,0);
-    h+=row("👀","這裡可能出現",`<div class="val sm"><div class="chips2">${Object.keys(POOL[st.at]).filter(k=>k!=="none"&&w[k]>0).map(k=>`<span>${DEX[k].state==="none"?"？？？":NAME[k]}</span>`).join("")||"這個時段幾乎遇不到生物"}</div></div><div class="src">沒遇到的機率約 ${Math.round(w.none/tot*100)}%</div>`);
+    h+=row("👀",`<span>這裡可能出現</span><button class="small-btn" data-fold="detail">詳細 ${fold.detail?"▴":"▾"}</button>`,`<div class="chips2 hs">${Object.keys(POOL[st.at]).filter(k=>k!=="none"&&w[k]>0).map(k=>`<span>${DEX[k].state==="none"?"？？？":NAME[k]}</span>`).join("")||"這個時段幾乎遇不到生物"}</div>`);
+    if(fold.detail){
+      if(kinds.length&&kinds.every(k=>seen.includes(k)))h+=row("💡","回訪提示",`<div class="val sm">${p.name}的${SLOT[st.slot]}你都認識了。換個時段或天氣再來，也許會有新發現。</div>`,"good");
+      h+=row("🎯","保底",`<div class="pity">${[0,1,2].map(i=>`<i class="${i<n?"on":""}"></i>`).join("")}</div><div class="src">${n>=3?"下一次一定會遇到生物！":`連續 3 次沒遇到，下一次必定遇到（目前 ${n}／3）`}</div>`);
+      h+=row("🎲","機率",`<div class="val sm">沒遇到的機率約 ${Math.round(w.none/tot*100)}%</div><div class="src">範圍半徑 ${p.r} m，範圍內任何位置都可以探索｜機率與成功率為遊戲估算</div>`);
+    }
   }else if(st.phase==="empty"){
     $("note").textContent="探索　這次什麼都沒遇到";
     $("scene").innerHTML=`<div class="pl">${playerSVG(PL.uniform)}</div><div class="keep">草叢裡安安靜靜……</div>`;
@@ -631,10 +648,11 @@ function render(){
     go="繼續探索";
   }
   const tired=(st.phase==="map"||st.phase==="empty")&&!SP.v;
-  if(tired){const m=minutesToNextSpirit(SP),pc=Math.round((1-m/SPIRIT_MIN)*100);
-    h=`<div class="row rest"><div class="ic">😴</div><div style="flex:1"><div class="lbl">休息中</div><div class="val sm">約 ${m} 分鐘後精神 +1，就能再出發</div><div class="restbar"><i style="width:${pc}%"></i></div></div></div>`+h;}
+  if(tired){const m=minutesToNextSpirit(SP);
+    h=`<div class="row rest"><div class="ic">😴</div><div style="flex:1"><div class="lbl">休息中</div><div class="val sm">約 ${m} 分鐘後精神 +1，就能再出發</div></div></div>`+h;}
   $("go").style.display=(tired||go==="靠近探索點")?"none":"";
   $("rows").innerHTML=h;$("goText").textContent=go;$("go").disabled=dis;
+  document.querySelector(".stage").classList.toggle("fold-open",!!(fold.tools||fold.detail)&&st.phase==="map");
   $("bar").innerHTML=`<span>📍 ${p.name}</span><span class="sep"></span><span>今日探索 ${st.log.length} 次・遇到 ${st.log.filter(x=>x!=="none").length} 次</span>`;
 }
 /* 獎勵卡：成為郵差（最大）＞第一次記錄（新圖鑑）。按「收下」關閉。 */
@@ -679,8 +697,9 @@ function interact(a){
   saveDex(DEX);st.result=r;st.phase="outcome";render();
 }
 document.addEventListener("click",e=>{
-  const t=e.target.closest("[data-p],[data-g],[data-act],#go,#reset,#demo,#refill");if(!t)return;
+  const t=e.target.closest("[data-p],[data-g],[data-act],[data-fold],#go,#reset,#demo,#refill");if(!t)return;
   if(t.dataset.p&&st.phase==="map"){MV.follow=true;MV.all=false;walkTo(WP[t.dataset.p].slice());return;}
+  else if(t.dataset.fold){st.fold=st.fold||{};st.fold[t.dataset.fold]=!st.fold[t.dataset.fold];}
   else if(t.dataset.g&&st.phase==="map"){st[t.dataset.g]=t.dataset.v;}
   else if(t.dataset.act){interact(t.dataset.act);return;}
   else if(t.id==="reset"){{Object.assign(DEX,resetDex(true));st.phase="map";}}
@@ -723,7 +742,7 @@ function walkTo(tgt){
   el.addEventListener("pointermove",e=>{if(!d)return;const dx=e.clientX-d.x,dy=e.clientY-d.y;
     if(!d.moved&&Math.hypot(dx,dy)<8)return;
     if(!d.moved){d.moved=true;el.classList.add("dragging");try{el.setPointerCapture(e.pointerId)}catch(_){}
-      if(MV.all){const [vx,vy,vw,vh]=MV.vb;MV.all=false;MV.c=[vx+vw/2,vy+vh*.27];}   /* 從看全部開始拖：換回附近視角 */
+      if(MV.all){const [vx,vy,vw,vh]=MV.vb;MV.all=false;MV.c=[vx+vw/2,vy+vh*.33];}   /* 從看全部開始拖：換回附近視角 */
       d.c=(MV.follow||!MV.c)?st.pos.slice():MV.c.slice();d.x=e.clientX;d.y=e.clientY;MV.follow=false;}
     const k=MV.vb[2]/el.clientWidth;MV.c=[Math.max(0,Math.min(WORLD.w,d.c[0]-(e.clientX-d.x)*k)),Math.max(0,Math.min(WORLD.h,d.c[1]-(e.clientY-d.y)*k))];liveMap();});
   const end=()=>{if(d&&d.moved){MV.dragAt=Date.now();el.classList.remove("dragging");}d=null;};

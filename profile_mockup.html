@@ -442,7 +442,6 @@ function render(){
   document.getElementById("pcard").innerHTML=`<div class="pav">${avatarHTML()}</div>
     <div class="pname">${name.replace(/[<>&]/g,"")}<button class="pencil" id="go" title="${editing?"完成編輯":"編輯資料"}" aria-label="${editing?"完成編輯":"編輯資料"}">${editing?"✓":"✏️"}</button></div><span class="ptitle">${title}</span>
     <div class="lv"><b>Lv${L.lv}</b><div class="xp"><div class="bar2"><i style="width:${L.cur/L.need*100}%"></i></div><small>經驗值 ${L.cur}／${L.need}（累計 ${XP}）</small></div></div>
-    ${(()=>{const S=loadSpirit(),M=spiritMax();return `<div class="sp${S.v?"":" empty"}"><b>🧠 精神</b><div class="dots">${Array.from({length:M},(_,i)=>`<i class="${i<S.v?"on":""}"></i>`).join("")}</div><small>${S.v}／${M}｜${S.v<M?`約 ${minutesToNextSpirit(S)} 分鐘後 +1`:"已回滿"}${S.v?"":"・用完了，回復後才能探索"}</small></div>`;})()}
     <div class="pmeta">開始日期 ${STAT.start}｜下一個解鎖：${nextUnlock(L.lv)}</div>`;
   const buddy=ORDER.filter(isMate).sort((a,b)=>MATES[b].sent-MATES[a].sent)[0];
   document.getElementById("mshow").innerHTML=`<div class="me">${playerSVG(PL.uniform)}</div>${buddy?`<div class="buddy">${art(buddy)}</div>
