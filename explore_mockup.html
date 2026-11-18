@@ -370,6 +370,10 @@ body:has(.stage.pt){padding:0;overflow:hidden;align-items:stretch}
 .stage.pt .encscene .pl{width:8.5cqw}.stage.pt .encscene .cr{width:17cqw;height:17cqw}
 .stage.pt .encscene .owner{right:-1cqw;width:10cqw}
 .stage.pt .keep{font-size:1.1cqw;padding:.2cqw .7cqw}
+/* 人物和生物站在地面上（v0.56.0）：背景依環境移位到地面在腳下，腳下加一圈淡淡的地面陰影；生物圖貼著底部（寬的生物原本是垂直置中，腳會浮起來） */
+.encscene .pl,.encscene .cr{position:relative;z-index:1;filter:drop-shadow(0 .3cqw .3cqw rgba(0,0,0,.16))}
+.encscene .pl::before,.encscene .cr::before{content:"";position:absolute;left:6%;right:6%;bottom:-.8cqw;height:2cqw;border-radius:50%;background:rgba(30,50,10,.32);filter:blur(.5cqw);z-index:-1}
+.encscene .cr img{object-position:50% 100%}
 .stage.pt .place{left:1.2cqw;top:calc(var(--st) + 1cqw);font-size:1.4cqw;z-index:9}
 .stage.pt:has(.encscene:not([hidden])) .panel{max-height:calc(70% - var(--tab))}
 .stage.pt:has(.encscene:not([hidden])) .encscene{height:23cqw;top:calc(var(--st) + 3.6cqw)}
@@ -576,6 +580,20 @@ function liveMap(){
   mo.style.left=((px-vx)/vw*100)+"%";mo.style.top=((py-vy)/vh*100-3)+"%";
   tr.innerHTML=st.trail.slice(-24).map((q,i)=>`<circle cx="${q[0]}" cy="${q[1]}" r="11" fill="#fff" opacity="${(i+1)/26}"/>`).join("");
 }
+const HABG={M:{fx:.5,gy:.76,c:"#cbda4b"},F:{fx:.62,gy:.8,c:"#c6d147"},R:{fx:.27,gy:.7,c:"#c2d04d"},A:{fx:.28,gy:.72,c:"#badd37"},C:{fx:.5,gy:.7,c:"#c5ec3c"},S:{fx:.45,gy:.76,c:"#fdd78a"}};
+/* 遇到生物／沒遇到時，把棲地背景放大移位，讓地面剛好在人物腳下（圖是 1672×941，原本置中放滿，地面在畫面下半部，人物在上方像飄在天空） */
+function placeBg(){
+  const bgs=$("bgscene"),sc=$("scene");if(!bgs||!sc)return;
+  if(!PT||st.phase==="map"){bgs.style.cssText="";return;}
+  bgs.style.cssText="";const r=bgs.getBoundingClientRect(),W=r.width,H=r.height;if(!W||!H)return;
+  const FY=sc.getBoundingClientRect().bottom-r.top,g=HABG[st.at]||HABG.F;
+  const cov=st.phase==="empty"?.74:.62;   /* 「沒遇到」的抽屜比較矮，背景要多蓋一點，底部才不會露出單色 */
+  const k=Math.max(W/1672,H/941,(cov*H-FY)/(941*(1-g.gy)));
+  const iw=1672*k,ih=941*k;let left=W/2-g.fx*iw,top=FY-g.gy*ih;
+  left=Math.max(W-iw,Math.min(0,left));top=Math.min(0,top);
+  bgs.style.cssText=`position:absolute;inset:auto;left:${left}px;top:${top}px;width:${iw}px;height:${ih}px;max-width:none;object-fit:fill;transform:none;filter:none;box-shadow:0 0 0 3000px ${g.c}`;
+}
+window.addEventListener("resize",()=>{try{placeBg()}catch(e){}});
 function render(){
   renderRail();
   if(st.phase==="map"){const hr=inRange(st.pos);if(hr)st.at=hr;}
@@ -660,6 +678,7 @@ function render(){
   $("go").style.display=(tired||go==="靠近探索點")?"none":"";
   $("rows").innerHTML=h;$("goText").textContent=go;$("go").disabled=dis;
   document.querySelector(".stage").classList.toggle("fold-open",!!(fold.tools||fold.detail)&&st.phase==="map");
+  placeBg();
   $("bar").innerHTML=`<span>📍 ${p.name}</span><span class="sep"></span><span>今日探索 ${st.log.length} 次・遇到 ${st.log.filter(x=>x!=="none").length} 次</span>`;
 }
 /* 獎勵卡：成為郵差（最大）＞第一次記錄（新圖鑑）。按「收下」關閉。 */
