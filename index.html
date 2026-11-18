@@ -25,14 +25,14 @@ p{margin:0 0 12px;line-height:1.7;color:var(--muted)}
 .links a{text-decoration:none;color:var(--ink);font-weight:700;font-size:14px;border:2px solid var(--line);border-radius:14px;padding:10px 12px;background:transparent}
 .links small{display:block;color:var(--muted);font-weight:500;font-size:12px}
 #frame{position:fixed;left:0;right:0;top:env(safe-area-inset-top,0px);width:100%;height:calc(100% - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px));border:0;background:var(--sky)}   /* 直式（v0.28.0）：避開動態島和底部橫條 */
-#homebtn{position:fixed;left:50%;transform:translateX(-50%);top:calc(env(safe-area-inset-top,0px) + 8px);z-index:5;font:inherit;font-weight:700;font-size:12px;border:2px solid var(--line);background:var(--card);color:var(--ink);border-radius:99px;padding:4px 10px;cursor:pointer}
+#homebtn{position:fixed;left:8px;top:calc(env(safe-area-inset-top,0px) + 6px);z-index:5;font:inherit;font-weight:700;font-size:11px;border:2px solid var(--line);background:var(--card);color:var(--ink);border-radius:99px;padding:3px 8px;opacity:.85;cursor:pointer}
 .foot{margin-top:16px;font-size:12px;color:var(--muted)}
 .survey{color:var(--green-d);font-weight:900}
 </style>
 
 <main class="card" id="home">
   <p class="brand">EARTH POST</p>
-  <h1>台灣原型・測試版 v0.58.0</h1>
+  <h1>台灣原型・測試版 v0.58.1</h1>
   <p>走到探索點觀察生物、結識郵差夥伴，再請牠們把明信片寄給好友和筆友。這是試玩用的原型：位置用點地圖模擬，好友和筆友是假資料，進度只存在你這台裝置上。</p>
   <p>建議用手機直拿開啟（iPhone 直式版面）；用電腦開會顯示成中間一支手機寬的畫面。</p>
   <a class="go" href="player_mockup.html">從新手流程開始</a>
@@ -49,7 +49,7 @@ p{margin:0 0 12px;line-height:1.7;color:var(--muted)}
 </main>
 
 <iframe id="frame" title="EARTH POST 畫面" hidden></iframe>
-<button id="homebtn" type="button" hidden>回入口</button>
+<button id="homebtn" type="button" hidden>‹ 入口</button>
 <script>
 /* 線上版不允許頁面之間直接跳轉，所以入口頁當外框：讀取各畫面的 HTML，放進框裡顯示。
    框內的切換由各畫面共用的 player.js 直接呼叫外框的 __load（不行時再用 postMessage）（線上版只允許發布時就存在的程式，外框不能另外塞程式進去）。 */
