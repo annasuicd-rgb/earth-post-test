@@ -304,6 +304,7 @@ body:has(.stage.pt){padding:0;overflow:hidden;align-items:stretch}
 .reader .back .to .ln small{display:block;font-size:.85cqw;color:var(--ink-2);font-weight:700}
 .pick{display:flex;gap:.5cqw;flex-wrap:wrap;margin-top:.3cqw}
 .pick button{width:3.6cqw;height:3.6cqw;border-radius:50%;border:.22cqw solid var(--cream-line);background:var(--cream-2);padding:0;overflow:hidden;cursor:pointer;display:grid;place-items:center}
+.pick button.busy{opacity:.35;filter:grayscale(1);cursor:not-allowed}
 .pick button.on{border-color:var(--gold);box-shadow:0 0 0 .25cqw #fff3c2}
 .pick button:disabled{opacity:.35;cursor:not-allowed}
 .pick img{width:86%;height:86%;object-fit:contain}
@@ -473,6 +474,9 @@ const RANGE={dog:20,cat:5,butterfly:40,macaque:10,heron:14,bluemagpie:18,barbet:
 let STA={dog:100,cat:82,butterfly:100,macaque:65,heron:90,bluemagpie:100,barbet:100,thrush:100,frog:100,eagle:100,bpartridge:100,hare:100,civet:100,babbler:100,yuhina:100,shrew:100,flyingsq:100,squirrel:100,egret:100,reefheron:100,nheron:100,kingfisher:100,robin:100,liocichla:100,sparrow:100,munia:100,grassfrog:100,firefly:100,peacock:100,ghostcrab:100,rissos:100,anemonefish:100};
 let STA_T;({sta:STA,t:STA_T}=loadCourierSta(STA));   // 待命每 3 分鐘 +1%（player.js）
 const saveSta=()=>saveCourierSta(STA,STA_T);
+const busyC=k=>(STA_T[k]||0)>Date.now();   /* 送信中的郵差（v0.58.2）：同一隻送信中不能再派，回到郵站才能再派 */
+const busySig=()=>MATES.filter(busyC).join(",");let BUSY_SIG="";
+setInterval(()=>{if(busySig()!==BUSY_SIG){try{render()}catch(e){}}},1000);   /* 郵差回到郵站（或剛派出）時更新郵差列 */
 let restMsg="";
 const FLY=["butterfly","heron","bluemagpie","barbet","thrush","eagle","babbler","yuhina","egret","reefheron","nheron","kingfisher","robin","liocichla","sparrow","munia","firefly","peacock"];   // 紅白大飛鼠是滑翔：不能跨海，所以不在這裡
 const SWIM=["rissos","anemonefish"];   // 會游（v0.51.0）：只走海路，只有「要跨海」的路線（離島）才能送；陸路不能送
@@ -675,7 +679,8 @@ function renderPanel(){
     if(noFam())h+=`<div class="row warn"><div class="ic">🔒</div><div class="val sm">13 歲以下：請家長設定家庭功能（Apple 家人共享／Google Family Link）後，才能寄明信片、加好友。探索、圖鑑、探索點之間送信都可以照常玩。</div></div>`;
     else if(st.minor)h+=`<div class="row"><div class="ic">🛡️</div><div><div class="lbl">未成年保護</div><div class="val sm">只能寄給好友${st.age==="child"?"；加好友要經家長核准（家庭功能）":""}</div>
       <div class="src">好友看得到你的：暱稱、觀察員角色。城市與照片預設不公開，可到設定打開${st.age==="child"?"（打開要家長核准）":""}。明信片另外擋約見面、問住址的字眼與不雅字詞</div></div></div>`;
-    h+=`<div class="row"><div class="ic">📮</div><div><div class="lbl">郵差</div><div class="pick">${MATES.map(k=>`<button class="${st.courier===k?"on":""}" data-courier="${k}" title="${NAME[k]}">${art(k)}</button>`).join("")}</div>
+    h+=`<div class="row"><div class="ic">📮</div><div><div class="lbl">郵差</div><div class="pick">${MATES.map(k=>`<button class="${st.courier===k?"on":""}${busyC(k)?" busy":""}" data-courier="${k}" title="${NAME[k]}${busyC(k)?"（送信中）":""}" ${busyC(k)?"disabled":""}>${art(k)}</button>`).join("")}</div>
+      ${MATES.some(busyC)?`<div class="src">送信中：${MATES.filter(busyC).map(k=>NAME[k]).join("、")}（回到郵站後才能再派）</div>`:""}
       <div class="src">${t.intl?(t.need?"離島要先飛到本島郵站，只有會飛的郵差能送（滑翔的不行）":"國外的信走轉運，郵差只送到郵站，所有郵差都能送"):(t.need?"這條路線要跨海，只有會飛的郵差能送（滑翔的不行）":"陸路，所有郵差都能送")}${t.intl?"":`｜${ME_CITY} → ${esc(c.where)}，約 ${t.km.toLocaleString()} km`}｜預估 ${t.ok?fmtH(t.h):"—"}${t.up.tags.length?`｜⭐ ${t.up.tags.join("、")}`:""}</div></div></div>`;
     h+=`<div class="row"><div class="ic">🖼️</div><div><div class="lbl">明信片樣式</div><div class="pick">${FRONTS().map(k=>`<button class="${st.front===k?"on":""}" data-front="${k}" title="${nm(k)}${isSt(k)?"（駐站明信片）":OBSERVE_ONLY.includes(k)||FOREIGN_BY_ID[k]?"（特別明信片）":""}">${art(k)}</button>`).join("")}</div></div></div>`;
     if(t.intl){const l3=lastLeg().h,dst=c.kind==="drift"?"配對對象的國家":esc(c.where);
@@ -722,9 +727,9 @@ function renderPanel(){
   }
   document.getElementById("rows").innerHTML=h;
   /* 按鈕寫「派 郵差名字 寄出」（2026-11-11 使用者決定，原本固定寫「寄出」）：背面還沒寫字、或有其他問題時是灰色不能按；寫了字才變綠色可以按。原因寫在上方的提示列 */
-  const ok=allowed(c)&&t.ok&&!bad.length&&!!st.text.trim()&&pf.fee<=fl;
+  const ok=allowed(c)&&!busyC(st.courier)&&t.ok&&!bad.length&&!!st.text.trim()&&pf.fee<=fl;
   document.getElementById("go").disabled=!ok;
-  document.getElementById("goText").textContent=`派 ${NAME[st.courier]||"郵差"} 寄出`;
+  document.getElementById("goText").textContent=busyC(st.courier)?`${NAME[st.courier]||"郵差"}送信中`:`派 ${NAME[st.courier]||"郵差"} 寄出`;
   document.getElementById("bar").innerHTML=`<span>✉️ ${esc(ME)} → ${esc(c.name)}（${esc(c.where)}）</span><span class="sep"></span><span>${noFam()?"13 歲以下：家長設定家庭功能後開放寄信":st.minor?"未成年：只能寄給好友":!st.penOn?"筆友未開啟：只能寄給好友":"原型加速：一封信約 1～2 分鐘送達"}</span>`;
 }
 function tripSteps(o){const l3=o.l3||o.h*.1,b1=o.leg1,b2=o.h-l3,cur=o.el<b1?0:o.el<b2?1:2,seg=[[0,b1],[b1,b2],[b2,o.h]];
@@ -768,7 +773,8 @@ function applyView(){const S=document.getElementById("stage");if(S)S.classList.t
 function render(){
   /* 畫面更新時記住捲動位置再還原（v0.53.0）：有信在路上時每秒更新一次，收件人下拉清單與抽屜會被拉回最上面（「跳走」） */
   const SC=[".panel",".rcptlist","#rows","#contacts"].map(q=>{const e=document.querySelector(q);return e&&e.scrollTop?[q,e.scrollTop]:null}).filter(Boolean);
-  applyView();CONTACTS.find(c=>c.kind==="drift").where=condText();renderContacts();renderCard();renderPanel();saveBox();try{updateAchDot()}catch(e){}
+  if(busyC(st.courier)){const fr=MATES.find(k=>!busyC(k));if(fr)st.courier=fr;}   /* 選到送信中的郵差時，自動換成第一隻待命的（v0.58.2） */
+  BUSY_SIG=busySig();applyView();CONTACTS.find(c=>c.kind==="drift").where=condText();renderContacts();renderCard();renderPanel();saveBox();try{updateAchDot()}catch(e){}
   SC.forEach(([q,t])=>{const e=document.querySelector(q);if(e)e.scrollTop=t;});
 }
 
@@ -827,13 +833,14 @@ document.addEventListener("click",e=>{
   if(t.dataset.drop){st.inbox.filter(m=>m.from===t.dataset.drop).forEach(m=>m.decided="drop");render();return;}
   if(t.dataset.to){st.to=t.dataset.to;st.rcptOpen=false;}
   else if(t.dataset.front){st.front=t.dataset.front;st.flip=false;saveLast();}
-  else if(t.dataset.courier){st.courier=t.dataset.courier;restMsg="";saveLast();}
+  else if(t.dataset.courier){if(busyC(t.dataset.courier))return;st.courier=t.dataset.courier;restMsg="";saveLast();}
   else if(t.dataset.tab){st.tab=t.dataset.tab;if(st.tab==="match"&&!penLocked()&&penCount()<PEN_MAX)st.to="drift";}
   else if(t.id==="flip"){st.flip=!st.flip;}
   else if(t.dataset.report){st.inbox.push({sys:true,text:"已送出檢舉（原型示意），我們會審查這封信。"});st.tab="inbox";}
   else if(t.dataset.block){st.blocked.push(t.dataset.block);st.inbox=st.inbox.filter(m=>m.from!==t.dataset.block);if(st.to===t.dataset.block)st.to="f1";}
   else if(t.dataset.askfriend){if(friendFull())return;{const cc=CONTACTS.find(x=>x.id===t.dataset.askfriend);if(cc)cc.friendAsk=true;}st.inbox.filter(m=>m.from===t.dataset.askfriend).forEach(m=>m.friendAsk=true);st.inbox.push({sys:true,text:"已送出好友邀請，等對方回覆。雙方都同意後，才會看到對方自己填的城市與頭貼。（原型：幾秒後對方會同意）"});setTimeout(()=>acceptFriend(t.dataset.askfriend),4000);}
   else if(t.id==="go"){
+    if(busyC(st.courier))return;
     const c=C(st.to),tr=trip(),pf=postage(c);
     if(pf.fee>loadFlowers())return;
     const TH=tr.h+(tr.intl?lastLeg().h:0),TK=TH/Math.max(60,TH*10);   /* 原型加速（v0.45.1）：每封信至少 60 秒，長路線每 1 小時 = 10 秒；TK＝每秒走幾小時 */
