@@ -669,7 +669,7 @@ function render(){
     if(r.ok){
       if(OBSERVE_ONLY.includes(st.met))h+=row("📖",`${NAME[st.met]}・${STLBL[d.state]}・${obsTag(st.met)}`,`<div class="val sm">觀察紀錄 ${d.aff} 次</div><div class="src">${st.met==="dolphin"?"瀕危物種":"觀察限定的生物"}只觀察記錄，不會成為郵差</div>`,"good");
       if(OBSERVE_ONLY.includes(st.met)&&r.firstRecord)h+=row("🖼️","解鎖特別明信片",`<div class="val sm">可以用${NAME[st.met]}當明信片樣式寄給朋友${st.met==="dolphin"?"；並達成成就「岸邊的媽祖魚」":""}</div>`,"good");
-      else h+=row("📖",`${NAME[st.met]}・${STLBL[d.state]}`,`<div class="val sm">好感 +${r.gain}${r.pref?"（用對牠喜歡的方式）":""}</div>${OKTXT[r.act]?`<div class="src">${OKTXT[r.act]}</div>`:""}<div class="meter"><i style="width:${Math.min(100,d.aff/THRESH[st.met]*100)}%"></i></div><div class="src">好感 ${d.aff}／${THRESH[st.met]}${d.state==="courier"?"＋":""}</div>`,"good");
+      else h+=row("📖",`${NAME[st.met]}・${STLBL[d.state]}`,`<div class="val sm">${r.gain===0&&r.full?"好感已滿（10／10）":`好感 +${r.gain}${r.pref?"（用對牠喜歡的方式）":""}`}</div>${OKTXT[r.act]?`<div class="src">${OKTXT[r.act]}</div>`:""}<div class="meter"><i style="width:${Math.min(100,d.aff/THRESH[st.met]*100)}%"></i></div><div class="src">${d.aff>=10?"好感已滿（升級都已解鎖）":`好感 ${d.aff}／${THRESH[st.met]}${d.state==="courier"?"＋":""}`}</div>`,"good");
       if(r.became)h+=row("📮","成為郵差！",`<div class="val sm">${NAME[st.met]}願意幫你送信了。可以在「明信片」頁派牠寄信。</div>`,"good");
       if(r.note)h+=row("📝","新的觀察筆記",`<div class="val sm">${esc(r.note)}</div>`);
       if(r.firstRecord)h+=row("📗","圖鑑解鎖",`<div class="val sm">可以在圖鑑看到牠的介紹與生態資料了</div>`);
@@ -698,7 +698,7 @@ function showReward(r,d){
   const gains=[];
   if(r.firstRecord)gains.push(`📗 圖鑑 ${dexN}／${Object.keys(DEX).length}`);
   if(r.fl)gains.push(`🌸 小花 +${r.fl}`);
-  gains.push(obs?"📖 觀察 +1":`❤ 好感 +${r.gain}${r.pref?"（牠喜歡）":""}`);
+  gains.push(obs?"📖 觀察 +1":r.gain===0&&r.full?"❤ 好感已滿":`❤ 好感 +${r.gain}${r.pref?"（牠喜歡）":""}`);
   if(r.became)gains.push("📮 新的郵差");
   if(obs&&r.firstRecord)gains.push("🖼️ 特別明信片樣式");
   const box=document.createElement("div");box.className="rw";box.setAttribute("role","dialog");box.setAttribute("aria-label",eye);
@@ -718,9 +718,10 @@ function interact(a){
   if(ok){
     r.pref=PREF[k]===a;r.gain=1+(r.pref?1:0);           // 單獨出現的台灣犬沒有偏好加成
     r.firstRecord=d.state==="none"||d.state==="seen";
-    d.aff+=r.gain;
+    {const b0=d.aff||0,cap=OBSERVE_ONLY.includes(st.met)?Infinity:10;   /* 好感上限 10（v0.58.6）：好感 10 時速度、距離升級都拿完，再累積沒有作用；滿了不再加，改顯示「好感已滿」 */
+      r.before=b0;d.aff=b0>=cap?b0:Math.min(cap,b0+r.gain);r.gain=d.aff-b0;r.full=cap!==Infinity&&d.aff>=cap;}
     if(d.state!=="courier")d.state=(!OBSERVE_ONLY.includes(st.met)&&d.aff>=THRESH[st.met])?"courier":"recorded";
-    r.became=d.state==="courier"&&d.aff-r.gain<THRESH[st.met];
+    r.became=d.state==="courier"&&r.before<THRESH[st.met];
     addObsCard({k:st.met,name:NAME[st.met],where:P[st.at].name,slot:SLOT[st.slot],wx:WX[st.wx],t:Date.now()});r.card=true;   // 觀察紀錄卡：到郵站投稿換小花
     if(r.firstRecord){addFlowers(EARN.first);r.fl=EARN.first;}   // 第一次記錄新生物 +15
     const n=`在${SLOT[st.slot]}、${WX[st.wx]}天的${P[st.at].name}遇見牠`;
