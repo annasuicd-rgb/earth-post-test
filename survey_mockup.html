@@ -56,8 +56,8 @@ input:focus-visible,textarea:focus-visible,button:focus-visible{outline:3px soli
 <main>
   <header>
     <p class="brand">EARTH POST</p>
-    <h1>試玩問卷（題目 v0.11）</h1>
-    <p class="lead">謝謝你幫忙試玩！大約 6 分鐘。填完按最下面的「複製答案」，再用 LINE 或訊息傳給邀請你的人。這一頁不會自動送出任何資料。</p>
+    <h1>試玩問卷（題目 v0.12）</h1>
+    <p class="lead">謝謝你幫忙試玩！大約 9 分鐘。填完按最下面的「複製答案」，再用 LINE 或訊息傳給邀請你的人。這一頁不會自動送出任何資料。</p>
   </header>
 
   <section aria-labelledby="s1">
@@ -100,7 +100,7 @@ input:focus-visible,textarea:focus-visible,button:focus-visible{outline:3px soli
 </main>
 
 <div class="bar"><div class="in">
-  <span class="st" id="st">已回答 0／15 題</span>
+  <span class="st" id="st">已回答 0／19 題</span>
   <button class="go" id="copy" type="button">複製答案</button>
 </div></div>
 
@@ -121,14 +121,20 @@ const LIKERT=[
  "郵站的照顧委託（照顧駐站生物）很有趣",
  "我知道小花怎麼賺、可以拿來做什麼",
  "寄信要付郵資（每天免費 3 封，回信和第 1 封新信共用）可以接受",
- "新的生物（台灣藍鵲、五色鳥、台灣紫嘯鶇、莫氏樹蛙）讓我想再去探索"];
+ "遇到不同的生物（包含海邊、海裡的）讓我想再去探索",
+ "探索畫面一次看到的東西不會太多、太亂",
+ "遇到生物時，我看得懂該怎麼選互動方式",
+ "遇過的生物，畫面中間的提示讓我大概知道牠喜歡怎麼相處，但又不會直接告訴我答案",
+ "我知道哪些郵差正在送信、什麼時候能再派"];
 const OPEN=[
  "最喜歡的一刻是什麼？",
  "最困惑或最不喜歡的地方是什麼？",
  "你最想在遊戲裡遇到哪一種生物（不限台灣）？",
  "你會寄明信片給誰？為什麼？",
  "如果明天就能玩正式版，你最先會做什麼？",
- "畫面風格：你最喜歡哪裡？最不喜歡哪裡？（角色、生物、介面、地圖、顏色……都可以）"];
+ "畫面風格：你最喜歡哪裡？最不喜歡哪裡？（角色、生物、介面、地圖、顏色……都可以）",
+ "探索時，哪個畫面讓你覺得最亂或最看不懂？",
+ "精神用完時，你覺得哪裡不舒服？（沒遇到可以跳過）"];
 const KEY="survey-ep-v010";   // 不用 ep- 開頭：測試版「清除遊戲資料」不會清掉填到一半的問卷
 let S={nick:"",ver:"",device:"",games:"",lik:{},open:{}};
 try{Object.assign(S,JSON.parse(localStorage.getItem(KEY)||localStorage.getItem("ep-survey-v010")||"{}"));}catch(e){}   // 舊的存檔名也讀得到
@@ -168,7 +174,7 @@ document.addEventListener("input",e=>{
   save();
 });
 function text(){
-  const L=["【EARTH POST 試玩問卷｜題目 v0.11】",
+  const L=["【EARTH POST 試玩問卷｜題目 v0.12】",
     `稱呼：${S.nick.trim()||"（未填）"}`,`版本：${(S.ver||"").trim()||"（未填）"}`,`裝置：${S.device||"（未填）"}`,`平常玩手機遊戲：${S.games||"（未填）"}`,"",
     "— 1～5 分（1 非常不同意，5 非常同意）—"];
   LIKERT.forEach((t,i)=>L.push(`${i+1}. ${t}：${S.lik[i]??"跳過"}`));
