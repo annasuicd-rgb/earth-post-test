@@ -304,6 +304,7 @@ body:has(.stage.pt){padding:0;overflow:hidden;align-items:stretch}
 .reader .back .to .ln small{display:block;font-size:.85cqw;color:var(--ink-2);font-weight:700}
 .pick{display:flex;gap:.5cqw;flex-wrap:wrap;margin-top:.3cqw}
 .pick button{width:3.6cqw;height:3.6cqw;border-radius:50%;border:.22cqw solid var(--cream-line);background:var(--cream-2);padding:0;overflow:hidden;cursor:pointer;display:grid;place-items:center}
+.busyline{color:#b1392d;font-weight:700}
 .pick button.busy{opacity:.35;filter:grayscale(1);cursor:not-allowed}
 .pick button.on{border-color:var(--gold);box-shadow:0 0 0 .25cqw #fff3c2}
 .pick button:disabled{opacity:.35;cursor:not-allowed}
@@ -475,8 +476,9 @@ let STA={dog:100,cat:82,butterfly:100,macaque:65,heron:90,bluemagpie:100,barbet:
 let STA_T;({sta:STA,t:STA_T}=loadCourierSta(STA));   // 待命每 3 分鐘 +1%（player.js）
 const saveSta=()=>saveCourierSta(STA,STA_T);
 const busyC=k=>(STA_T[k]||0)>Date.now();   /* 送信中的郵差（v0.58.2）：同一隻送信中不能再派，回到郵站才能再派 */
+const bzSec=k=>Math.max(0,Math.ceil(((STA_T[k]||0)-Date.now())/1000));
 const busySig=()=>MATES.filter(busyC).join(",");let BUSY_SIG="";
-setInterval(()=>{if(busySig()!==BUSY_SIG){try{render()}catch(e){}}},1000);   /* 郵差回到郵站（或剛派出）時更新郵差列 */
+setInterval(()=>{if(busySig()!==BUSY_SIG){try{render()}catch(e){}}else document.querySelectorAll("[data-bz]").forEach(e=>{e.textContent=bzSec(e.dataset.bz)});},1000);   /* 郵差回到郵站（或剛派出）時更新郵差列 */
 let restMsg="";
 const FLY=["butterfly","heron","bluemagpie","barbet","thrush","eagle","babbler","yuhina","egret","reefheron","nheron","kingfisher","robin","liocichla","sparrow","munia","firefly","peacock"];   // 紅白大飛鼠是滑翔：不能跨海，所以不在這裡
 const SWIM=["rissos","anemonefish"];   // 會游（v0.51.0）：只走海路，只有「要跨海」的路線（離島）才能送；陸路不能送
@@ -680,7 +682,7 @@ function renderPanel(){
     else if(st.minor)h+=`<div class="row"><div class="ic">🛡️</div><div><div class="lbl">未成年保護</div><div class="val sm">只能寄給好友${st.age==="child"?"；加好友要經家長核准（家庭功能）":""}</div>
       <div class="src">好友看得到你的：暱稱、觀察員角色。城市與照片預設不公開，可到設定打開${st.age==="child"?"（打開要家長核准）":""}。明信片另外擋約見面、問住址的字眼與不雅字詞</div></div></div>`;
     h+=`<div class="row"><div class="ic">📮</div><div><div class="lbl">郵差</div><div class="pick">${MATES.map(k=>`<button class="${st.courier===k?"on":""}${busyC(k)?" busy":""}" data-courier="${k}" title="${NAME[k]}${busyC(k)?"（送信中）":""}" ${busyC(k)?"disabled":""}>${art(k)}</button>`).join("")}</div>
-      ${MATES.some(busyC)?`<div class="src">送信中：${MATES.filter(busyC).map(k=>NAME[k]).join("、")}（回到郵站後才能再派）</div>`:""}
+      ${MATES.some(busyC)?`<div class="src busyline">⏳ 送信中：${MATES.filter(busyC).map(k=>`${NAME[k]}（<span data-bz="${k}">${bzSec(k)}</span> 秒後回到郵站）`).join("、")}</div>`:""}
       <div class="src">${t.intl?(t.need?"離島要先飛到本島郵站，只有會飛的郵差能送（滑翔的不行）":"國外的信走轉運，郵差只送到郵站，所有郵差都能送"):(t.need?"這條路線要跨海，只有會飛的郵差能送（滑翔的不行）":"陸路，所有郵差都能送")}${t.intl?"":`｜${ME_CITY} → ${esc(c.where)}，約 ${t.km.toLocaleString()} km`}｜預估 ${t.ok?fmtH(t.h):"—"}${t.up.tags.length?`｜⭐ ${t.up.tags.join("、")}`:""}</div></div></div>`;
     h+=`<div class="row"><div class="ic">🖼️</div><div><div class="lbl">明信片樣式</div><div class="pick">${FRONTS().map(k=>`<button class="${st.front===k?"on":""}" data-front="${k}" title="${nm(k)}${isSt(k)?"（駐站明信片）":OBSERVE_ONLY.includes(k)||FOREIGN_BY_ID[k]?"（特別明信片）":""}">${art(k)}</button>`).join("")}</div></div></div>`;
     if(t.intl){const l3=lastLeg().h,dst=c.kind==="drift"?"配對對象的國家":esc(c.where);
