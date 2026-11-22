@@ -93,11 +93,11 @@ function nearestHub(city) {
 const STATIONS = { "台北": ["heron", "cat"], "台中": ["butterfly", "dog"], "高雄": ["heron", "butterfly"], "花蓮": ["macaque", "dog"] };
 /* 外國送信生物：示意名單，全部待查（T11）。先避開瀕危物種。 */
 const FOREIGN = {
-  "日本": [["jp_macaque", "日本獼猴", "🐒"], ["jp_pheasant", "日本綠雉", "🐦"]],
-  "韓國": [["kr_magpie", "東方喜鵲", "🐦"], ["kr_squirrel", "歐亞紅松鼠", "🐿️"]],
+  "日本": [["jp_macaque", "日本獼猴", "🐒"], ["jp_pheasant", "日本綠雉", "🐦"], ["jp_raccoondog", "日本貉", "🦝"], ["jp_warbler", "日本鶯", "🐦"], ["jp_sika", "日本梅花鹿", "🦌"]],
+  "韓國": [["kr_magpie", "東方喜鵲", "🐦"], ["kr_squirrel", "歐亞紅松鼠", "🐿️"], ["kr_chipmunk", "西伯利亞花栗鼠", "🐿️"], ["kr_mandarin", "鴛鴦", "🦆"], ["kr_roedeer", "狍", "🦌"]],
   "越南": [["vn_robin", "鵲鴝", "🐦"], ["vn_leopardcat", "豹貓", "🐈"]],
   "泰國": [["th_monitor", "水巨蜥", "🦎"], ["th_myna", "家八哥", "🐦"]],
-  "菲律賓": [["ph_sunbird", "黃腹花蜜鳥", "🐦"]],   // 原「黃腰太陽鳥」，2026-11-12 依 GPT 查證改（Cinnyris jugularis，中文名暫用）
+  "菲律賓": [["ph_sunbird", "黃腹花蜜鳥", "🐦"], ["ph_tarsier", "菲律賓眼鏡猴", "🐒"], ["ph_carabao", "菲律賓水牛", "🐃"]],   // 原「黃腰太陽鳥」，2026-11-12 依 GPT 查證改（Cinnyris jugularis，中文名暫用）
   "馬來西亞": [["my_tailorbird", "長尾縫葉鶯", "🐦"], ["my_mousedeer", "小鼷鹿", "🦌"]]   // 冠斑犀鳥 IUCN VU（2018）照設計稿 4.6 不當送信生物；2026-11-12 換成長尾縫葉鶯（GPT 查證，只分布於馬來半島）
 };
 /* 已退役的送信生物：不再送信，但留著資料，已收到的明信片照樣顯示 */
@@ -105,9 +105,13 @@ const FOREIGN_RETIRED = { "馬來西亞": [["my_hornbill", "冠斑犀鳥", "🐦
 /* 外國生物明信片正面：[小知識, 棲地背景]。
    小知識＝真實資料，依 GPT 查證（給GPT的指令/回報_2026-11-12_外國送信生物.md，部分查核、未寫入查證系統）。
    鵲鴝的小知識來源不足，先不顯示（null）。棲地背景是從 6 張台灣棲地圖裡選最接近的（遊戲美術選擇）。
+   新增 8 種學名：日本貉 Nyctereutes procyonoides viverrinus（或 N. viverrinus）｜日本鶯 Horornis diphone｜日本梅花鹿 Cervus nippon｜西伯利亞花栗鼠 Eutamias／Tamias sibiricus｜鴛鴦 Aix galericulata｜狍 Capreolus pygargus｜菲律賓眼鏡猴 Carlito syrichta｜菲律賓水牛（卡拉寶，家畜）Bubalus bubalis
    學名：日本獼猴 Macaca fuscata｜日本綠雉 Phasianus versicolor｜東方喜鵲 Pica serica｜歐亞紅松鼠 Sciurus vulgaris｜鵲鴝 Copsychus saularis｜
    豹貓 Prionailurus bengalensis｜水巨蜥 Varanus salvator｜家八哥 Acridotheres tristis｜黃腹花蜜鳥 Cinnyris jugularis｜冠斑犀鳥 Rhyticeros undulatus（已退役）｜小鼷鹿 Tragulus kanchil｜長尾縫葉鶯 Orthotomus sutorius（回報_2026-11-12_馬來西亞替代送信生物.md） */
 const FOREIGN_INFO = {
+  jp_raccoondog: ["日本貉的分類，學者還有不同看法。", "forest"], jp_warbler: ["春天常先聽見牠的鳴聲，才看見身影。", "forest"], jp_sika: ["雄鹿每年會脫落鹿角，再長出新角。", "forest"],
+  kr_chipmunk: ["牠會把食物藏進地底儲藏。", "forest"], kr_mandarin: ["雄鳥繁殖羽色彩鮮明，雌鳥較樸素。", "river"], kr_roedeer: ["雄性每年會長出並脫落一對短鹿角。", "forest"],
+  ph_tarsier: ["菲律賓特有，目前被列為近危。", "forest"], ph_carabao: ["是農村常見的家畜，會泡泥水幫身體散熱。", "farm"],   // 新增 8 種（v0.59.1）：小知識多數部分查核；眼鏡猴 IUCN 近危 NT（2020）；水牛是家畜、IUCN 不適用、不是法定國家動物；日本貉分類有「獨立種 N. viverrinus」與「亞種」兩說
   jp_macaque: ["臉和臀部裸露的皮膚是紅色的。", "forest"], jp_pheasant: ["日本特有種，也是日本的國鳥。", "farm"],
   kr_magpie: ["黑白羽色搭配長尾巴，很容易辨認。", "farm"], kr_squirrel: ["會把植物種子帶到別處，幫助種子散播。", "forest"],
   vn_robin: [null, "park"], vn_leopardcat: ["黃褐色的身體有醒目的黑色斑點。", "forest"],
@@ -118,7 +122,7 @@ const FOREIGN_INFO = {
 const FOREIGN_BY_ID = {};
 [FOREIGN, FOREIGN_RETIRED].forEach(src => Object.entries(src).forEach(([country, list]) => list.forEach(([id, name, icon]) => FOREIGN_BY_ID[id] = { id, name, icon, country })));
 /* 外國送信生物的 2D 美術（v0.48.0）：有圖的用圖，沒有的（已退役的冠斑犀鳥）仍用表情符號 */
-["jp_macaque","jp_pheasant","kr_magpie","kr_squirrel","vn_robin","vn_leopardcat","th_monitor","th_myna","ph_sunbird","my_tailorbird","my_mousedeer"].forEach(id => { if (FOREIGN_BY_ID[id]) FOREIGN_BY_ID[id].img = `art/${id}.webp`; });
+["jp_macaque","jp_pheasant","jp_raccoondog","jp_warbler","jp_sika","kr_chipmunk","kr_mandarin","kr_roedeer","ph_tarsier","ph_carabao","kr_magpie","kr_squirrel","vn_robin","vn_leopardcat","th_monitor","th_myna","ph_sunbird","my_tailorbird","my_mousedeer"].forEach(id => { if (FOREIGN_BY_ID[id]) FOREIGN_BY_ID[id].img = `art/${id}.webp`; });
 const foreignIconHTML = k => k.img ? `<img src="${k.img}" alt="${k.name}" style="width:100%;height:100%;object-fit:contain">` : k.icon;
 const pickForeign = country => { const l = FOREIGN[country] || []; const x = l[Math.floor(Math.random() * l.length)]; return x ? FOREIGN_BY_ID[x[0]] : null; };
 /* 明信片冊（T5）：收到筆友回信時，得到一張送信生物的明信片。不算進圖鑑進度。 */
@@ -492,7 +496,7 @@ function fullSweep() {
   } catch (e) {}
 }
 (function () { const go = () => { setTimeout(fullSweep, 1500); setInterval(fullSweep, 30000); }; if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", go); else go(); })();
-const BUILD = { name: "測試版", ver: "v0.59.0", date: "2026-11-15" };
+const BUILD = { name: "測試版", ver: "v0.59.1", date: "2026-11-15" };
 const BUILD_LABEL = `${BUILD.name} ${BUILD.ver}（${BUILD.date}）`;
 (function addBuildBadge() {
   const put = () => {
