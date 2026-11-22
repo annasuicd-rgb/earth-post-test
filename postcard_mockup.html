@@ -506,7 +506,7 @@ const kmTo=c=>c.kind==="friend"?distKm(CITIES[ME_CITY],CITIES[c.where]):c.kind==
 const island=city=>!!(CITIES[city]&&CITIES[city][2]);
 /* 字數上限（✅ 使用者決定）：好友 150 字；筆友與配對明信片 80 字 */
 const MAX_FRIEND=150,MAX_PEN=80;
-const maxLen=()=>{const c=C(st.to);return c&&c.kind==="friend"?MAX_FRIEND:MAX_PEN;};
+const maxLen=()=>{const c=C(st.to);return c&&(c.kind==="friend"||c.isFriend)?MAX_FRIEND:MAX_PEN;};   /* 筆友升成好友（isFriend）後也是 150 字（v0.58.12） */
 const FILTERS=[
  [/(\+?\d[\d\s-]{6,}\d)/,"電話號碼"],
  [/(https?:\/\/|www\.|\.(com|net|org|tw|jp)\b)/i,"網址"],

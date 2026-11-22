@@ -414,22 +414,23 @@ const SEEN_KEY = "ep-seen";
 function curSeenData() {
   let st = ["C", "R", "A"];   // 沒有存檔時，「我的」頁顯示的示範郵戳
   try { const s = JSON.parse(localStorage.getItem("ep-send") || "{}"); if (s.stamps && s.stamps.length) st = [...new Set(s.stamps)]; } catch (e) {}
-  return { mates: OWNED.slice(), stamps: st.concat(Object.keys(loadCountryStamps()).map(c => "c:" + c)), pcards: loadPCards().length };
+  return { mates: OWNED.slice(), stamps: st.concat(Object.keys(loadCountryStamps()).map(c => "c:" + c)), pcards: loadPCards().length, pkinds: pcardKinds().length };   // pkinds：不同生物的明信片種類數，紅點只看這個（v0.58.12）
 }
 function seenData() {
   let s = _lsj(SEEN_KEY, null);
   if (!s) { s = curSeenData(); try { localStorage.setItem(SEEN_KEY, JSON.stringify(s)); } catch (e) {} }
+  if (s.pkinds === undefined) { s.pkinds = curSeenData().pkinds; try { localStorage.setItem(SEEN_KEY, JSON.stringify(s)); } catch (e) {} }   // 舊存檔沒有種類數：以現在為基準，不憑空多紅點
   return s;
 }
 function newDots() {   // 每個分頁有幾個新的（還沒看過）
   const c = curSeenData(), s = seenData();
   return { mates: c.mates.filter(k => !(s.mates || []).includes(k)).length,
            stamps: c.stamps.filter(k => !(s.stamps || []).includes(k)).length,
-           pcards: Math.max(0, c.pcards - (+s.pcards || 0)) };
+           pcards: Math.max(0, c.pkinds - (+s.pkinds || 0)) };   // 收到同一種生物的重複明信片不亮紅點，只有新種類才亮
 }
 function markProfileSeen(tab) {   // 看過這個分頁，紅點消失
   if (!["mates", "stamps", "pcards"].includes(tab)) return;
-  const s = seenData(), c = curSeenData(); s[tab] = c[tab];
+  const s = seenData(), c = curSeenData(); s[tab] = c[tab]; if (tab === "pcards") s.pkinds = c.pkinds;
   try { localStorage.setItem(SEEN_KEY, JSON.stringify(s)); } catch (e) {}
   try { updateAchDot(); } catch (e) {}
 }
@@ -491,7 +492,7 @@ function fullSweep() {
   } catch (e) {}
 }
 (function () { const go = () => { setTimeout(fullSweep, 1500); setInterval(fullSweep, 30000); }; if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", go); else go(); })();
-const BUILD = { name: "測試版", ver: "v0.58.11", date: "2026-11-15" };
+const BUILD = { name: "測試版", ver: "v0.58.12", date: "2026-11-15" };
 const BUILD_LABEL = `${BUILD.name} ${BUILD.ver}（${BUILD.date}）`;
 (function addBuildBadge() {
   const put = () => {
