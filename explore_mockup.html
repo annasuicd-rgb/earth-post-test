@@ -346,7 +346,7 @@ body:has(.stage.pt){padding:0;overflow:hidden;align-items:stretch}
 .stage.pt .mapbtns button:disabled{opacity:.45}
 .stage:has(.map[hidden]) .mapbtns{display:none}
 .stage.pt .panel{left:0;right:auto;width:39cqw;top:auto;bottom:var(--tab);max-height:calc(34% - var(--tab));border-radius:2.4cqw 2.4cqw 0 0;border-width:.3cqw 0 0;
-  padding:1.1cqw 1.4cqw 6.8cqw;box-shadow:0 -.6cqw 1.6cqw rgba(0,0,0,.15);z-index:8}
+  padding:1.1cqw 1.4cqw 1.6cqw;box-shadow:0 -.6cqw 1.6cqw rgba(0,0,0,.15);z-index:8}
 .stage.pt .panel::before{content:"";display:block;width:4cqw;height:.5cqw;border-radius:99px;background:var(--cream-line);margin:0 auto .6cqw}
 .stage.pt .note{margin:0 0 .6cqw}
 /* 找生物時地圖至少佔 2/3 畫面（v0.54.0）：抽屜只有 1/3，展開詳細資訊或測試工具時才暫時變高 */
@@ -362,11 +362,13 @@ body:has(.stage.pt){padding:0;overflow:hidden;align-items:stretch}
 .stage.pt .rows{gap:.7cqw}
 .stage.pt .val{font-size:1.5cqw}.stage.pt .val.sm{font-size:1.35cqw}.stage.pt .lbl{font-size:1.2cqw}.stage.pt .src{font-size:1.15cqw}
 .stage.pt .chip{font-size:1.25cqw;padding:.45cqw 1cqw}
-.stage.pt .act{font-size:1.55cqw;padding:1cqw 1.2cqw;min-height:4.6cqw}.stage.pt .act small{font-size:1.2cqw}
+.stage.pt .act{font-size:1.55cqw;padding:.8cqw 1.2cqw;min-height:4cqw}.stage.pt .act small{font-size:1.2cqw}
 .stage.pt .stepline span{font-size:1.1cqw}
 .stage.pt .foot{font-size:1.05cqw}
-.stage.pt .go{left:1.4cqw;right:auto;width:36.2cqw;bottom:calc(var(--tab) + 1cqw);height:5cqw;font-size:1.8cqw;z-index:9}
-.stage.pt .go svg{width:3.6cqw}
+.stage.pt .noterow{display:flex;flex-wrap:wrap;align-items:center;gap:.6cqw}.stage.pt .noterow .note{flex:1 1 auto;min-width:0}
+.stage.pt .go{position:static;width:auto;height:auto;margin-left:auto;padding:.5cqw 1.8cqw;border:.2cqw solid #2f5a17;font-size:1.5cqw;letter-spacing:.1cqw;box-shadow:0 .3cqw 0 var(--grass-dd);flex:none}   /* 主要動作改成上方一列的小按鈕（v0.58.11）：探索／再探索一次／繼續探索＝綠色實心，離開＝空心 */
+.stage.pt .go.leave{background:#fffdf6;color:var(--grass-dd);border-color:var(--grass-dd);box-shadow:none}
+.stage.pt .go:disabled{box-shadow:0 .3cqw 0 #8f866f}
 .stage.pt .encscene{left:0;width:39cqw;top:calc(var(--st) + 4cqw);height:30cqw;gap:.6cqw;padding-bottom:0}
 .stage.pt .encscene .pl{width:10.5cqw;flex:none}.stage.pt .encscene .cr{width:var(--cs,17cqw);height:var(--cs,17cqw)}
 .stage.pt .encscene .owner{right:-1cqw;width:10cqw}
@@ -380,8 +382,13 @@ body:has(.stage.pt){padding:0;overflow:hidden;align-items:stretch}
 .encscene .cr.sea.gone{transform:translateY(-6cqw) translateX(4cqw)}
 .encscene .cr.sea::before{background:rgba(255,255,255,.55);box-shadow:0 0 0 .35cqw rgba(120,200,255,.55);bottom:-.4cqw}
 .stage.pt .place{left:1.2cqw;top:calc(var(--st) + 1cqw);font-size:1.4cqw;z-index:9}
-.stage.pt:has(.encscene:not([hidden])) .panel{max-height:calc(70% - var(--tab))}
-.stage.pt:has(.encscene:not([hidden])) .encscene{height:23cqw;top:calc(var(--st) + 3.6cqw)}
+.stage.pt{--sc:1}
+@media (max-height:780px){.stage.pt{--sc:.94}}
+@media (max-height:720px){.stage.pt{--sc:.88}}   /* 矮螢幕（iPhone Safari 有網址列／工具列，可用高度約 664）：場景縮小，避免被下方對話框蓋住（v0.58.10） */
+@media (max-height:600px){.stage.pt{--sc:.76}}
+@media (max-height:760px){.stage.pt .act small{display:none}.stage.pt .act{min-height:3.4cqw;padding:.7cqw 1.2cqw}.stage.pt .meter{display:none}}   /* 矮螢幕：互動選項只留標題，3 個選項都看得到、不必捲動 */
+.stage.pt:has(.encscene:not([hidden])) .panel{max-height:calc(100% - var(--st) - 3.6cqw - 23cqw*var(--sc) - var(--tab))}   /* 對話框最高只到場景下緣，內容太多就在框內捲動 */
+.stage.pt:has(.encscene:not([hidden])) .encscene{height:23cqw;top:calc(var(--st) + 3.6cqw);transform:scale(var(--sc));transform-origin:50% 0}
 .stage.pt .rw{right:61%}
 .stage.pt .rw-card{width:34cqw}
 
@@ -430,11 +437,10 @@ body:has(.stage.pt){padding:0;overflow:hidden;align-items:stretch}
   <section class="encscene" id="scene" hidden></section>
   <div class="place" id="place" hidden></div>
   <section class="panel">
-    <div class="note" id="note"></div>
+    <div class="noterow"><div class="note" id="note"></div><button class="go" id="go"><span id="goText">探索</span></button></div>
     <div class="rows" id="rows"></div>
   </section>
   <div class="bar" id="bar"></div>
-  <button class="go" id="go"><svg viewBox="0 0 72 56" aria-hidden="true"><use href="#env"/></svg><span id="goText">探索</span></button>
 </main>
 
 <script src="player.js"></script>
@@ -614,7 +620,7 @@ function render(){
   $("place").textContent=`${p.ic} ${p.name}・${SLOT[st.slot]}・${WX[st.wx]}`;
   let h="",go="探索",dis=false;
   const here=st.phase==="map"?inRange(st.pos):st.at;
-  const steps=(n)=>`<div class="stepline">${["靠近探索點","進入探索範圍","遇見生物"].map((t,i)=>`<span class="${i<n?"done":i===n?"on":""}">${i+1} ${t}</span>`).join("")}</div>`;
+  const steps=(n)=>`<div class="stepline">${["靠近","進入","遇見"].map((t,i)=>`<span class="${i<n?"done":i===n?"on":""}">${i+1} ${t}</span>`).join("")}</div>`;
   const fold=st.fold=st.fold||{};
   const toolBtn=()=>`<button class="small-btn toolbtn" data-fold="tools">測試工具 ${fold.tools?"▴":"▾"}</button>`;
   const toolsHTML=()=>fold.tools?`<div class="row tools"><div class="ic">🛠️</div><div style="min-width:0">
@@ -655,7 +661,7 @@ function render(){
     $("note").innerHTML=steps(2);
     $("scene").innerHTML=`<div class="pl">${playerSVG(PL.uniform)}</div><div class="keep${hint?" hint":""}">${hint||"⟵ 相隔幾步 ⟶"}</div><div class="cr${first?" sil":""}${SEA.includes(st.met)?" sea":""}"${crStyle(st.met)}>${art(st.met)}</div>${st.met==="dog"&&st.owner?`<div class="owner"><img src="art/owner_${st.ownerImg||"a"}.webp" alt="台灣犬的飼主"></div>`:""}`;
     if(st.newStamp)h+=stampRow(st.newStamp);
-    h+=row("✨",first?"✨ 新發現！沒見過的生物":"遇到了",`<div class="val">${first?"？？？":NAME[st.met]}${st.met==="dog"?(st.owner?"（有飼主陪同）":"（單獨出現）"):""}</div>${first?"":(OBSERVE_ONLY.includes(st.met)?`<div class="src">圖鑑：${STLBL[d.state]}（只觀察，不當郵差）</div>`:`<div class="meter"><i style="width:${Math.min(100,d.aff/THRESH[st.met]*100)}%"></i></div><div class="src">圖鑑：${STLBL[d.state]}・好感 ${d.aff}／${THRESH[st.met]}${d.state==="courier"?"＋":""}</div>`)}<div class="src">${st.met==="dog"&&!st.owner?"不熟悉的狗請保持距離，不要伸手或餵食":(["viper","badger","keelback"].includes(st.met)?"用觀察的方式認識牠，請看下方的安全提醒":OBS_SAFETY[st.met]||"不靠近、不觸碰、不餵食，用觀察的方式認識牠")}</div>`);
+    h+=row("✨",first?"✨ 新發現！沒見過的生物":"遇到了",`<div class="val">${first?"？？？":NAME[st.met]}${st.met==="dog"?(st.owner?"（有飼主陪同）":"（單獨出現）"):""}</div>${first?"":(OBSERVE_ONLY.includes(st.met)?`<div class="src">圖鑑：${STLBL[d.state]}（只觀察，不當郵差）</div>`:`<div class="meter"><i style="width:${Math.min(100,d.aff/THRESH[st.met]*100)}%"></i></div><div class="src">圖鑑：${STLBL[d.state]}・好感 ${d.aff}／${THRESH[st.met]}${d.state==="courier"?"＋":""}</div>`)}${st.met==="dog"&&!st.owner?`<div class="src">不熟悉的狗請保持距離，不要伸手或餵食</div>`:(["viper","badger","keelback"].includes(st.met)?`<div class="src">用觀察的方式認識牠，請看下方的安全提醒</div>`:OBS_SAFETY[st.met]?`<div class="src">${OBS_SAFETY[st.met]}</div>`:first?`<div class="src">不靠近、不觸碰、不餵食，用觀察的方式認識牠</div>`:"")}`);   /* 一般生物的提醒只在第一次遇到時顯示，對話框變矮（v0.58.10） */
     if(["viper","badger","keelback"].includes(st.met))h+=row("⚠️","安全提醒",`<div class="val sm">${OBS_SAFETY[st.met]}</div><div class="src">只能保持距離觀察</div>`,"warn");
     if(!st.offer)st.offer=pickActs(k);const acts=st.offer;
     h+=row("🤝","互動方式",`<div class="acts">${acts.map(a=>`<button class="act" data-act="${a}">${ACT[a][0]} ${st.met==="dog"&&a==="greet"?"向飼主打招呼":ACT[a][1]}<small>${st.met==="dog"&&a==="greet"?"先問飼主能不能互動":ACT[a][2]}</small></button>`).join("")}</div>`);
@@ -683,7 +689,7 @@ function render(){
     go="繼續探索";
   }
   const tired=(st.phase==="map"||st.phase==="empty")&&!SP.v;
-  $("go").style.display=(tired||go==="靠近探索點")?"none":"";
+  $("go").style.display=(tired||go==="靠近探索點")?"none":"";$("go").classList.toggle("leave",go==="離開");
   $("rows").innerHTML=h;$("goText").textContent=go;$("go").disabled=dis;
   document.querySelector(".stage").classList.toggle("fold-open",!!(fold.tools||fold.detail)&&st.phase==="map");
   placeBg();
