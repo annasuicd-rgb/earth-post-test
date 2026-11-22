@@ -593,7 +593,7 @@ const face=c=>c.kind==="friend"&&c.photo?playerSVG(c.uni,true):c.kind==="drift"?
 /* 未成年（M1′–M5′）：13 歲以下沒有家庭功能時不能寄明信片；未成年不開放筆友；滿 18 歲要自己打開筆友 */
 const noFam=()=>st.age==="childnofam";
 const penLocked=()=>st.minor||!st.penOn;
-const allowed=c=>!noFam()&&!(penLocked()&&c.kind!=="friend")&&!st.blocked.includes(c.id);
+const allowed=c=>!noFam()&&!(penLocked()&&!isFr(c))&&!st.blocked.includes(c.id);   /* 筆友鎖定（未成年／筆友未開啟）只擋「還不是好友的」；已升成好友的筆友（isFriend）照樣能寄（v0.59.4） */
 function issues(){
   const out=[];FILTERS.concat(st.minor?MINOR_FILTERS:[]).forEach(([re,n])=>{if(re.test(st.text))out.push(n)});
   if([...st.text].length>maxLen())out.push(`超過 ${maxLen()} 字`);return out;
@@ -862,7 +862,7 @@ document.getElementById("age").addEventListener("change",e=>{
   st.age=e.target.value;st.minor=["teen","child","childnofam"].includes(st.age);
   st.penOn=st.age==="adult";
   if(st.age==="adult18")st.inbox.push({sys:true,icon:"🎂",penBtn:true,text:"生日快樂！你已經滿 18 歲，現在可以開啟筆友功能，和其他國家的玩家通信。筆友不會自動開啟，想用的話到設定打開。（這封提醒只會寄一次）"});
-  if(penLocked()&&C(st.to).kind!=="friend")st.to="f1";render();});
+  if(penLocked()&&!isFr(C(st.to)))st.to="f1";render();});
 loadBox();
 /* 底部導覽「好友」「明信片」在本頁內切換檢視（?view=friends 從別的頁面過來） */
 if(new URLSearchParams(location.search).get("view")==="friends")st.view="friends";
