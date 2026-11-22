@@ -476,12 +476,12 @@ function render(){
       <div class="stampgrid">${CL.map(c=>`<div class="stampcell${CS[c]?"":" off"}">${countryStampSVG(c,!!CS[c],CS[c])}</div>`).join("")}</div>
       <div class="src" style="text-align:center">國家郵戳中央的地圖：日本已有，其他國家先顯示國名</div>`;
   }else if(tab==="pcards"){
-    const all=loadPCards(),kinds=Object.values(FOREIGN_BY_ID),got=new Set(all.map(c=>c.id));
+    const all=loadPCards(),got=new Set(all.map(c=>c.id)),RETIRED_IDS=new Set(Object.values(FOREIGN_RETIRED).flat().map(x=>x[0])),kinds=Object.values(FOREIGN_BY_ID).filter(k=>!RETIRED_IDS.has(k.id)||got.has(k.id));   /* 已退役的送信生物（冠斑犀鳥）不算進分母；曾經收過的仍會顯示（v0.59.2） */
     h=`<div class="lbl" style="margin:.2cqw .4cqw">收到 ${got.size}／${kinds.length} 種・不算進台灣圖鑑；可以當特別明信片樣式</div>
       <div class="pcgrid">${kinds.map(k=>{const mine=all.filter(c=>c.id===k.id),last=mine[mine.length-1];
         return got.has(k.id)?`<div class="pcc"><div class="pic">${foreignIconHTML(k)}</div><b>${k.name}</b><small>來自${k.country}・${mine.length} 張</small><small>最近：${last.from}（${last.date}）</small></div>`
           :`<div class="pcc off"><div class="pic">？</div><b>？？？</b><small>來自${k.country}</small></div>`;}).join("")}</div>
-      <div class="src" style="text-align:center">送信生物與小知識：部分查核（GPT 查證草稿），美術完成前先用圖示</div>`;
+      <div class="src" style="text-align:center">送信生物與小知識：部分查核（GPT 查證草稿）</div>`;
   }else{
     h=ACH.map(a=>{const d=a.p>=a.n;return `<div class="row"><div class="ic">${d?"🏅":"🔒"}</div><div class="ach"><div><div class="t">${a.t}</div><div class="c">${a.c}｜稱號「${a.title}」</div></div>
       <div style="display:flex;gap:.5cqw;align-items:center">${d&&!ACHC[a.t]?`<button class="ach badge2" data-claim="${a.t}" style="border:0;cursor:pointer;background:#f6d77a;color:#5b3a1e">領取 🌸 ${a.fl}</button>`:d?`<span class="badge2" style="color:var(--ink-2)">🌸 ${a.fl} 已領</span>`:`<span class="badge2" style="color:var(--ink-2)">🌸 ${a.fl}</span>`}${d?`<button class="ach badge2 done2" data-title="${a.title}" style="border:0;cursor:pointer">${title===a.title?"使用中":"設為稱號"}</button>`:`<span class="badge2 todo2">${a.p}／${a.n}</span>`}</div></div></div>`}).join("");
