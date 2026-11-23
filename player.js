@@ -90,7 +90,7 @@ function nearestHub(city) {
   return best;                                   // 離島也算到最近的本島郵站，要會飛的郵差（T8）
 }
 /* 駐站生物：遊戲安排，暫定（T10）。五種原型生物在台灣都廣泛分布，不代表只在那裡。 */
-const STATIONS = { "台北": ["heron", "cat"], "台中": ["butterfly", "dog"], "高雄": ["heron", "butterfly"], "花蓮": ["macaque", "dog"] };
+const STATIONS = { "台北": ["heron", "cat", "civet", "bluemagpie"], "台中": ["butterfly", "dog", "barbet", "hare"], "高雄": ["heron", "butterfly", "egret", "kingfisher"], "花蓮": ["macaque", "dog", "eagle", "thrush"] };   // 每站 4 隻（v0.60.0）：都是一般類、可當郵差的常見生物；允許少數重複
 /* 外國送信生物：示意名單，全部待查（T11）。先避開瀕危物種。 */
 const FOREIGN = {
   "日本": [["jp_macaque", "日本獼猴", "🐒"], ["jp_pheasant", "日本綠雉", "🐦"], ["jp_raccoondog", "日本貉", "🦝"], ["jp_warbler", "日本鶯", "🐦"], ["jp_sika", "日本梅花鹿", "🦌"]],
@@ -496,7 +496,7 @@ function fullSweep() {
   } catch (e) {}
 }
 (function () { const go = () => { setTimeout(fullSweep, 1500); setInterval(fullSweep, 30000); }; if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", go); else go(); })();
-const BUILD = { name: "測試版", ver: "v0.59.4", date: "2026-11-15" };
+const BUILD = { name: "測試版", ver: "v0.60.0", date: "2026-11-15" };
 const BUILD_LABEL = `${BUILD.name} ${BUILD.ver}（${BUILD.date}）`;
 (function addBuildBadge() {
   const put = () => {

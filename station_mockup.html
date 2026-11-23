@@ -420,7 +420,8 @@ body:has(.stage.pt){padding:0;overflow:hidden;align-items:stretch}
 <script>
 /* 郵站（測試版 v0.10.0）：只做最基本的小花——委託給小花、櫃台用小花買照顧道具。
    郵資、郵差補給、觀察紀錄投稿、認養棲地之後再加。規則依設計稿 7.5～7.6（暫定）。 */
-const NAME={dog:"台灣犬",cat:"野化家貓",butterfly:"淡紋青斑蝶",macaque:"台灣獼猴",heron:"黑冠麻鷺"};
+const NAME={dog:"台灣犬",cat:"野化家貓",butterfly:"淡紋青斑蝶",macaque:"台灣獼猴",heron:"黑冠麻鷺",civet:"白鼻心",bluemagpie:"台灣藍鵲",barbet:"五色鳥",hare:"台灣野兔",egret:"小白鷺",kingfisher:"翠鳥",eagle:"大冠鷲",thrush:"台灣紫嘯鶇"};
+const BIRDS=["heron","bluemagpie","barbet","egret","kingfisher","eagle","thrush"];   /* 鳥類的「梳毛」改成「整理羽毛」 */
 let ME_CITY="台北市",ME="小小觀察員";try{const s=JSON.parse(localStorage.getItem("ep-settings")||"{}");if(s.city&&CITIES[s.city])ME_CITY=s.city;if(s.name&&s.name.trim()&&!["島嶼郵差","島嶼觀察員"].includes(s.name))ME=s.name.trim();}catch(e){}
 const HUB=nearestHub(ME_CITY).hub, RES=STATIONS[HUB];
 /* 照顧道具（駐站生物一律不餵食）：用道具的委託報酬 10～12 朵、駐站好感 +2；不用道具 8 朵、+1 */
@@ -430,7 +431,8 @@ const S_AFF_MAX=15;   /* 駐站好感上限 15（v0.58.7）：15 時所有效果
 const itOf=o=>(SS.aff[o.k]||0)>=S_AFF_MAX?null:ITEMS[o.need];
 const addAff=(k,n)=>{const b=SS.aff[k]||0,nb=b>=S_AFF_MAX?b:Math.min(S_AFF_MAX,b+n);SS.aff[k]=nb;return nb-b;};
 /* 各駐站生物常出現的需求（暫定）；台灣獼猴不餵食、不梳毛 */
-const NEEDS={dog:["walk","bowl","cushion"],cat:["comb","cushion","bowl"],heron:["comb","bowl","tool"],butterfly:["tool","bowl"],macaque:["tool","cushion"]};
+const NEEDS={dog:["walk","bowl","cushion"],cat:["comb","cushion","bowl"],heron:["comb","bowl","tool"],butterfly:["tool","bowl"],macaque:["tool","cushion"],
+  civet:["comb","cushion","tool"],bluemagpie:["comb","bowl","tool"],barbet:["comb","bowl","tool"],hare:["walk","bowl","tool"],egret:["comb","bowl","tool"],kingfisher:["comb","bowl","tool"],eagle:["comb","tool","bowl"],thrush:["comb","bowl","tool"]};   /* v0.60.0 新增 8 種駐站生物的需求（暫定）*/
 const PERKS=[[5,"筆友回信最後一段快 20%；送信時 10% 機率附小禮物"],[10,"解鎖駐站明信片樣式；小禮物機率 20%"],[15,"筆友回信最後一段快 35%"]];
 
 const FKEY="ep-flowers",IKEY="ep-items",SKEY="ep-station";
@@ -441,11 +443,11 @@ let INV=loadJ(IKEY,{});
 let SS=loadJ(SKEY,{});SS.aff=SS.aff||{};
 let dayOffset=SS.dayOffset||0;
 const dayKey=()=>{const d=new Date(Date.now()+dayOffset*864e5);return d.toISOString().slice(0,10)};
-/* 每天 3 件委託：依日期與郵站固定產生 */
+/* 每天 4 件委託（v0.60.0 由 3 件增為 4 件，因為每站生物由 2 隻增為 4 隻）：依日期與郵站固定產生 */
 function rng(seed){let h=2166136261;for(const c of seed)h=Math.imul(h^c.charCodeAt(0),16777619);return()=>{h=Math.imul(h^(h>>>15),2246822507);h=Math.imul(h^(h>>>13),3266489909);return((h^=h>>>16)>>>0)/4294967296}}
 function todayReqs(){
   const r=rng(dayKey()+HUB),out=[];
-  for(let i=0;i<3;i++){const k=RES[Math.floor(r()*RES.length)],nd=NEEDS[k][Math.floor(r()*NEEDS[k].length)];
+  for(let i=0;i<4;i++){const k=RES[Math.floor(r()*RES.length)],nd=NEEDS[k][Math.floor(r()*NEEDS[k].length)];
     if(out.some(o=>o.k===k&&o.need===nd)){i--;if(out.length>8)break;continue;}out.push({k,need:nd});}
   return out;
 }
@@ -455,7 +457,7 @@ const save=()=>{saveJ(FKEY,FL);updateFlowerHud(FL);saveJ(IKEY,INV);SS.dayOffset=
 const ART={};RES.forEach(id=>{const im=new Image();im.onload=()=>{ART[id]=true;render()};im.src=`art/${id}.webp`;});
 const art=id=>ART[id]?`<img src="art/${id}.webp" alt="${NAME[id]}">`:`<span style="font-weight:900;font-size:.9cqw">${NAME[id]}</span>`;
 const fl=n=>`<span class="fl"><img src="art/flower.webp" alt="">${n}</span>`;
-const text=(o)=>{const n=NAME[o.k];return {walk:`陪${n}散步`,bowl:`${n}的水盆空了`,tool:`整理${n}的休息區`,cushion:`幫${n}換新軟墊`,comb:o.k==="heron"?`幫${n}整理羽毛`:`幫${n}梳毛`}[o.need]};
+const text=(o)=>{const n=NAME[o.k];return {walk:`陪${n}散步`,bowl:`${n}的水盆空了`,tool:`整理${n}的休息區`,cushion:`幫${n}換新軟墊`,comb:BIRDS.includes(o.k)?`幫${n}整理羽毛`:`幫${n}梳毛`}[o.need]};
 let tab="req",msg="";
 const QTY={};let toastT=0;function toast(t){let e=document.getElementById("toast");if(!e){e=document.createElement("div");e.id="toast";e.className="toast";e.setAttribute("role","status");document.querySelector(".stage").appendChild(e);}
   e.textContent=t;e.classList.remove("on");void e.offsetWidth;e.classList.add("on");clearTimeout(toastT);toastT=setTimeout(()=>e.classList.remove("on"),2200);}
@@ -482,7 +484,7 @@ function render(){
       return `<div class="row" style="grid-template-columns:1fr"><div class="req${done?" done":""}"><div class="face">${art(o.k)}</div><div>
         <div class="t">${text(o)}</div>
         <div class="s">${it?`需要：${it.ic} ${it.n}（你有 ${have} 個）`:"不用道具"}｜報酬 ${fl(it?it.r:NONE_R)}・駐站好感 +${it?2:1}</div></div>${btn}</div></div>`}).join("");
-    h+=`<div class="row"><div class="ic">ℹ️</div><div class="val sm">每天 3 件，依日期更新。用道具的照顧小花多一點、駐站好感 +2；不用道具也可以照顧（+1）。去過的其他郵站之後開放。</div></div>`;
+    h+=`<div class="row"><div class="ic">ℹ️</div><div class="val sm">每天 4 件，依日期更新。用道具的照顧小花多一點、駐站好感 +2；不用道具也可以照顧（+1）。去過的其他郵站之後開放。</div></div>`;
     h+=`<div class="btns" style="display:flex;justify-content:flex-end"><button class="btn sm" data-nextday="1">原型：換成明天的委託</button></div>`;
   }else if(tab==="shop"){
     document.getElementById("note").textContent="櫃台　小貓助手幫你拿道具（用小花買）";
