@@ -468,11 +468,27 @@ body:has(.stage.pt){padding:0;overflow:hidden;align-items:stretch}
 <script src="player.js"></script>
 <script>
 /* 規則依 drafts/social_letters_v0.1.md。好友、筆友、回信皆為假資料。送信時間為暫定。 */
-const NAME={dog:"台灣犬",cat:"野化家貓",butterfly:"淡紋青斑蝶",macaque:"台灣獼猴",heron:"黑冠麻鷺",dolphin:"台灣白海豚",bluemagpie:"台灣藍鵲",barbet:"五色鳥",thrush:"台灣紫嘯鶇",frog:"莫氏樹蛙",eagle:"大冠鷲",bpartridge:"台灣竹雞",hare:"台灣野兔",civet:"白鼻心",mikado:"帝雉",swinhoe:"藍腹鷴",tpartridge:"台灣山鷓鴣",warbler:"冠羽柳鶯",viper:"赤尾青竹絲",badger:"台灣鼬獾",babbler:"小彎嘴",yuhina:"冠羽畫眉",keelback:"斯文豪氏遊蛇",shrew:"台灣長尾麝鼩",flyingsq:"台灣紅白大飛鼠",squirrel:"台灣條紋松鼠",egret:"小白鷺",reefheron:"岩鷺",nheron:"夜鷺",kingfisher:"翠鳥",robin:"粟背林鴝",liocichla:"藪鳥",sparrow:"麻雀",munia:"斑文鳥",grassfrog:"澤蛙",firefly:"黃緣螢",peacock:"巴黎翠鳳蝶",ghostcrab:"角眼沙蟹",rissos:"花紋海豚",anemonefish:"克氏海葵魚",bottlenose:"瓶鼻海豚",gull:"黑尾鷗",serow:"台灣長鬃山羊"};
-const SPD={dog:10,cat:6,butterfly:5,macaque:7,heron:8,bluemagpie:9,barbet:6,thrush:8,frog:3,eagle:12,bpartridge:6,hare:12,civet:7,babbler:7,yuhina:9,shrew:4,flyingsq:10,squirrel:8,egret:9,reefheron:9,nheron:8,kingfisher:12,robin:7,liocichla:6,sparrow:8,munia:8,grassfrog:3,firefly:4,peacock:6,ghostcrab:9,rissos:12,anemonefish:4,bottlenose:11,gull:10};
-const RANGE={dog:20,cat:5,butterfly:40,macaque:10,heron:14,bluemagpie:18,barbet:8,thrush:12,frog:4,eagle:30,bpartridge:8,hare:10,civet:10,babbler:10,yuhina:15,shrew:3,flyingsq:6,squirrel:8,egret:15,reefheron:16,nheron:14,kingfisher:6,robin:8,liocichla:8,sparrow:10,munia:12,grassfrog:4,firefly:3,peacock:30,ghostcrab:4,rissos:40,anemonefish:5,bottlenose:40,gull:20};
+/*SP:BEGIN postcard_parts:NAME*/const NAME={"dog":"台灣犬","cat":"野化家貓","butterfly":"淡紋青斑蝶","macaque":"台灣獼猴","heron":"黑冠麻鷺","bluemagpie":"台灣藍鵲",
+ "barbet":"五色鳥","thrush":"台灣紫嘯鶇","frog":"莫氏樹蛙","eagle":"大冠鷲","bpartridge":"台灣竹雞","hare":"台灣野兔",
+ "civet":"白鼻心","babbler":"小彎嘴","yuhina":"冠羽畫眉","shrew":"台灣長尾麝鼩","flyingsq":"台灣紅白大飛鼠","squirrel":"台灣條紋松鼠",
+ "egret":"小白鷺","reefheron":"岩鷺","nheron":"夜鷺","kingfisher":"翠鳥","robin":"粟背林鴝","liocichla":"藪鳥",
+ "sparrow":"麻雀","munia":"斑文鳥","grassfrog":"澤蛙","firefly":"黃緣螢","peacock":"巴黎翠鳳蝶","ghostcrab":"角眼沙蟹",
+ "rissos":"花紋海豚","anemonefish":"克氏海葵魚","bottlenose":"瓶鼻海豚","gull":"黑尾鷗","serow":"台灣長鬃山羊","dolphin":"台灣白海豚",
+ "mikado":"帝雉","swinhoe":"藍腹鷴","tpartridge":"台灣山鷓鴣","warbler":"冠羽柳鶯","viper":"赤尾青竹絲","keelback":"斯文豪氏遊蛇",
+ "badger":"台灣鼬獾"};/*SP:END postcard_parts:NAME*/
+/*SP:BEGIN postcard_parts:SPD*/const SPD={"dog":10,"cat":6,"butterfly":5,"macaque":7,"heron":8,"bluemagpie":9,"barbet":6,"thrush":8,"frog":3,"eagle":12,
+ "bpartridge":6,"hare":12,"civet":7,"babbler":7,"yuhina":9,"shrew":4,"flyingsq":10,"squirrel":8,"egret":9,"reefheron":9,
+ "nheron":8,"kingfisher":12,"robin":7,"liocichla":6,"sparrow":8,"munia":8,"grassfrog":3,"firefly":4,"peacock":6,"ghostcrab":9,
+ "rissos":12,"anemonefish":4,"bottlenose":11,"gull":10};/*SP:END postcard_parts:SPD*/
+/*SP:BEGIN postcard_parts:RANGE*/const RANGE={"dog":20,"cat":5,"butterfly":40,"macaque":10,"heron":14,"bluemagpie":18,"barbet":8,"thrush":12,"frog":4,"eagle":30,
+ "bpartridge":8,"hare":10,"civet":10,"babbler":10,"yuhina":15,"shrew":3,"flyingsq":6,"squirrel":8,"egret":15,"reefheron":16,
+ "nheron":14,"kingfisher":6,"robin":8,"liocichla":8,"sparrow":10,"munia":12,"grassfrog":4,"firefly":3,"peacock":30,"ghostcrab":4,
+ "rissos":40,"anemonefish":5,"bottlenose":40,"gull":20};/*SP:END postcard_parts:RANGE*/
 // ✅ 明信片也消耗體力（暫定公式）：距離 ÷ 40 ×（14 ÷ 郵差單次距離），上限 100%；體力不夠時途中休息，每分鐘 +2%
-let STA={dog:100,cat:82,butterfly:100,macaque:65,heron:90,bluemagpie:100,barbet:100,thrush:100,frog:100,eagle:100,bpartridge:100,hare:100,civet:100,babbler:100,yuhina:100,shrew:100,flyingsq:100,squirrel:100,egret:100,reefheron:100,nheron:100,kingfisher:100,robin:100,liocichla:100,sparrow:100,munia:100,grassfrog:100,firefly:100,peacock:100,ghostcrab:100,rissos:100,anemonefish:100,bottlenose:100,gull:100};
+/*SP:BEGIN postcard_parts:STA*/let STA={"dog":100,"cat":82,"butterfly":100,"macaque":65,"heron":90,"bluemagpie":100,"barbet":100,"thrush":100,"frog":100,"eagle":100,
+ "bpartridge":100,"hare":100,"civet":100,"babbler":100,"yuhina":100,"shrew":100,"flyingsq":100,"squirrel":100,"egret":100,"reefheron":100,
+ "nheron":100,"kingfisher":100,"robin":100,"liocichla":100,"sparrow":100,"munia":100,"grassfrog":100,"firefly":100,"peacock":100,"ghostcrab":100,
+ "rissos":100,"anemonefish":100,"bottlenose":100,"gull":100};/*SP:END postcard_parts:STA*/
 let STA_T;({sta:STA,t:STA_T}=loadCourierSta(STA));   // 待命每 3 分鐘 +1%（player.js）
 const saveSta=()=>saveCourierSta(STA,STA_T);
 const busyC=k=>(STA_T[k]||0)>Date.now();   /* 送信中的郵差（v0.58.2）：同一隻送信中不能再派，回到郵站才能再派 */
@@ -480,8 +496,8 @@ const bzSec=k=>Math.max(0,Math.ceil(((STA_T[k]||0)-Date.now())/1000));
 const busySig=()=>MATES.filter(busyC).join(",");let BUSY_SIG="";
 setInterval(()=>{if(busySig()!==BUSY_SIG){try{render()}catch(e){}}else document.querySelectorAll("[data-bz]").forEach(e=>{e.textContent=bzSec(e.dataset.bz)});},1000);   /* 郵差回到郵站（或剛派出）時更新郵差列 */
 let restMsg="";
-const FLY=["butterfly","heron","bluemagpie","barbet","thrush","eagle","babbler","yuhina","egret","reefheron","nheron","kingfisher","robin","liocichla","sparrow","munia","firefly","peacock","gull"];   // 紅白大飛鼠是滑翔：不能跨海，所以不在這裡
-const SWIM=["rissos","anemonefish","bottlenose"];   // 會游（v0.51.0）：只走海路，只有「要跨海」的路線（離島）才能送；陸路不能送
+/*SP:BEGIN postcard_parts:FLY*/const FLY=["butterfly","heron","bluemagpie","barbet","thrush","eagle","babbler","yuhina","egret","reefheron","nheron","kingfisher","robin","liocichla","sparrow","munia","firefly","peacock","gull"];/*SP:END postcard_parts:FLY*/   // 紅白大飛鼠是滑翔：不能跨海，所以不在這裡
+/*SP:BEGIN postcard_parts:SWIM*/const SWIM=["rissos","anemonefish","bottlenose"];/*SP:END postcard_parts:SWIM*/   // 會游（v0.51.0）：只走海路，只有「要跨海」的路線（離島）才能送；陸路不能送
 const canCarry=(need,k)=>SWIM.includes(k)?need:(!need||FLY.includes(k));
 /* 明信片正面：自己的郵差，加上已觀察記錄的台灣白海豚（海邊專屬的特別明信片） */
 /* 駐站明信片：最近郵站的駐站生物，駐站好感 10 解鎖（id 寫成 st_黑冠麻鷺的代號） */

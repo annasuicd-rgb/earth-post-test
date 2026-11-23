@@ -420,8 +420,10 @@ body:has(.stage.pt){padding:0;overflow:hidden;align-items:stretch}
 <script>
 /* 郵站（測試版 v0.10.0）：只做最基本的小花——委託給小花、櫃台用小花買照顧道具。
    郵資、郵差補給、觀察紀錄投稿、認養棲地之後再加。規則依設計稿 7.5～7.6（暫定）。 */
-const NAME={dog:"台灣犬",cat:"野化家貓",butterfly:"淡紋青斑蝶",macaque:"台灣獼猴",heron:"黑冠麻鷺",civet:"白鼻心",bluemagpie:"台灣藍鵲",barbet:"五色鳥",hare:"台灣野兔",egret:"小白鷺",kingfisher:"翠鳥",eagle:"大冠鷲",thrush:"台灣紫嘯鶇"};
-const BIRDS=["heron","bluemagpie","barbet","egret","kingfisher","eagle","thrush"];   /* 鳥類的「梳毛」改成「整理羽毛」 */
+/*SP:BEGIN station_parts:NAME*/const NAME={"dog":"台灣犬","cat":"野化家貓","butterfly":"淡紋青斑蝶","macaque":"台灣獼猴","heron":"黑冠麻鷺","bluemagpie":"台灣藍鵲",
+ "barbet":"五色鳥","thrush":"台灣紫嘯鶇","eagle":"大冠鷲","hare":"台灣野兔","civet":"白鼻心","egret":"小白鷺",
+ "kingfisher":"翠鳥"};/*SP:END station_parts:NAME*/
+/*SP:BEGIN station_parts:BIRDS*/const BIRDS=["heron","bluemagpie","barbet","thrush","eagle","egret","kingfisher"];/*SP:END station_parts:BIRDS*/   /* 鳥類的「梳毛」改成「整理羽毛」 */
 let ME_CITY="台北市",ME="小小觀察員";try{const s=JSON.parse(localStorage.getItem("ep-settings")||"{}");if(s.city&&CITIES[s.city])ME_CITY=s.city;if(s.name&&s.name.trim()&&!["島嶼郵差","島嶼觀察員"].includes(s.name))ME=s.name.trim();}catch(e){}
 const HUB=nearestHub(ME_CITY).hub, RES=STATIONS[HUB];
 /* 照顧道具（駐站生物一律不餵食）：用道具的委託報酬 10～12 朵、駐站好感 +2；不用道具 8 朵、+1 */
@@ -431,8 +433,10 @@ const S_AFF_MAX=15;   /* 駐站好感上限 15（v0.58.7）：15 時所有效果
 const itOf=o=>(SS.aff[o.k]||0)>=S_AFF_MAX?null:ITEMS[o.need];
 const addAff=(k,n)=>{const b=SS.aff[k]||0,nb=b>=S_AFF_MAX?b:Math.min(S_AFF_MAX,b+n);SS.aff[k]=nb;return nb-b;};
 /* 各駐站生物常出現的需求（暫定）；台灣獼猴不餵食、不梳毛 */
-const NEEDS={dog:["walk","bowl","cushion"],cat:["comb","cushion","bowl"],heron:["comb","bowl","tool"],butterfly:["tool","bowl"],macaque:["tool","cushion"],
-  civet:["comb","cushion","tool"],bluemagpie:["comb","bowl","tool"],barbet:["comb","bowl","tool"],hare:["walk","bowl","tool"],egret:["comb","bowl","tool"],kingfisher:["comb","bowl","tool"],eagle:["comb","tool","bowl"],thrush:["comb","bowl","tool"]};   /* v0.60.0 新增 8 種駐站生物的需求（暫定）*/
+/*SP:BEGIN station_parts:NEEDS*/const NEEDS={"dog":["walk","bowl","cushion"],"cat":["comb","cushion","bowl"],"butterfly":["tool","bowl"],"macaque":["tool","cushion"],
+ "heron":["comb","bowl","tool"],"bluemagpie":["comb","bowl","tool"],"barbet":["comb","bowl","tool"],"thrush":["comb","bowl","tool"],
+ "eagle":["comb","tool","bowl"],"hare":["walk","bowl","tool"],"civet":["comb","cushion","tool"],"egret":["comb","bowl","tool"],
+ "kingfisher":["comb","bowl","tool"]};/*SP:END station_parts:NEEDS*/   /* v0.60.0 新增 8 種駐站生物的需求（暫定）*/
 const PERKS=[[5,"筆友回信最後一段快 20%；送信時 10% 機率附小禮物"],[10,"解鎖駐站明信片樣式；小禮物機率 20%"],[15,"筆友回信最後一段快 35%"]];
 
 const FKEY="ep-flowers",IKEY="ep-items",SKEY="ep-station";

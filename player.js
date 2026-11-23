@@ -140,40 +140,69 @@ const pcardKinds = () => [...new Set(loadPCards().map(c => c.id))];   // 可當�
    送信、明信片、「我的」都以這份名單為準。 */
 /* 圖鑑進度（原型存在裝置上）。state：none 未發現／seen 目擊／recorded 已記錄／courier 郵差 */
 const DEX_KEY = "ep-dex";
-const THRESH = { butterfly: 2, dog: 3, cat: 3, heron: 3, macaque: 4, dolphin: Infinity,
-  bluemagpie: 4, barbet: 3, thrush: 3, frog: 3,     // 第一批新生物（v0.10.0，門檻為遊戲規則・暫定）
-  eagle: 4, bpartridge: 3, hare: 3, civet: 3,       // 第二批一般生物（v0.11.0）
-  mikado: Infinity, swinhoe: Infinity, tpartridge: Infinity, warbler: Infinity, viper: Infinity, badger: Infinity,
-  babbler: 3, yuhina: 3, shrew: 4, flyingsq: 5, squirrel: 3, keelback: Infinity,
-  egret: 3, reefheron: 4, nheron: 3, kingfisher: 3, robin: 4, liocichla: 3, sparrow: 3, munia: 3, grassfrog: 3, firefly: 3, peacock: 3, ghostcrab: 4, rissos: 4, anemonefish: 3, bottlenose: 4, gull: 3, serow: Infinity };   // 海洋生物（v0.51.0，遊戲規則・暫定）  // 認養地在地生物（v0.27.0，遊戲規則・暫定）   // 第三批（v0.21.0，草稿 new_species_batch3_v0.1.md）
+/*SP:BEGIN player:THRESH*/const THRESH = {"dog": 3, "cat": 3, "butterfly": 2, "heron": 3, "macaque": 4, "dolphin": Infinity, "bluemagpie": 4, "barbet": 3, "thrush": 3, "frog": 3, "eagle": 4, "bpartridge": 3, "hare": 3, "civet": 3, "mikado": Infinity, "swinhoe": Infinity, "tpartridge": Infinity, "warbler": Infinity, "viper": Infinity, "badger": Infinity, "babbler": 3, "yuhina": 3, "keelback": Infinity, "shrew": 4, "flyingsq": 5, "squirrel": 3, "egret": 3, "reefheron": 4, "nheron": 3, "kingfisher": 3, "robin": 4, "liocichla": 3, "sparrow": 3, "munia": 3, "grassfrog": 3, "firefly": 3, "peacock": 3, "ghostcrab": 4, "rissos": 4, "bottlenose": 4, "gull": 3, "serow": Infinity, "anemonefish": 3 };/*SP:END player:THRESH*/   // 海洋生物（v0.51.0，遊戲規則・暫定）  // 認養地在地生物（v0.27.0，遊戲規則・暫定）   // 第三批（v0.21.0，草稿 new_species_batch3_v0.1.md）
 /* 觀察限定：只觀察記錄、不能成為郵差（瀕危物種，以及 v0.11.0 加入的稀有、高海拔、要保持距離的生物）。
    觀察記錄成功後，解鎖特別明信片樣式。 */
-const OBSERVE_ONLY = ["dolphin", "mikado", "swinhoe", "tpartridge", "warbler", "viper", "badger", "keelback", "serow"];
-const OBS_TAG = { dolphin: "瀕危", viper: "保持距離", badger: "保持距離", keelback: "保持距離" };   // 其他：觀察限定
+/*SP:BEGIN player:OBSERVE_ONLY*/const OBSERVE_ONLY = ["dolphin","mikado","swinhoe","tpartridge","warbler","viper","badger","keelback","serow"];/*SP:END player:OBSERVE_ONLY*/
+/*SP:BEGIN player:OBS_TAG*/const OBS_TAG = {"dolphin": "瀕危", "viper": "保持距離", "badger": "保持距離", "keelback": "保持距離" };   // 其他：觀察限定/*SP:END player:OBS_TAG*/   // 其他：觀察限定
 const obsTag = k => OBS_TAG[k] || "觀察限定";
 const MOUNTAIN_SAFE = "高海拔山區：注意天候與裝備、走在步道上，不要為了找牠冒險";
-const OBS_SAFETY = {
-  dolphin: "瀕危保育類：只在岸上遠遠觀察，不乘船追逐、不靠近、不餵食",
-  viper: "毒蛇：請保持距離，不要靠近、觸碰或驚擾牠；看到就慢慢退開",
-  badger: "請保持距離，不要觸碰或撿拾；台灣鼬獾曾是狂犬病病毒的宿主",
-  mikado: MOUNTAIN_SAFE, swinhoe: MOUNTAIN_SAFE, tpartridge: MOUNTAIN_SAFE, serow: MOUNTAIN_SAFE,
-  warbler: "稀有過境鳥：安靜遠觀，不要追逐或播放鳥音引誘",
-  keelback: "請保持距離，不要觸碰或撿拾；看到蛇時，慢慢繞開並告訴身邊的大人"
-};
-const DEX_DEMO = {
-  dog: { state: "courier", aff: 4, notes: [] }, cat: { state: "courier", aff: 3, notes: [] },
-  butterfly: { state: "courier", aff: 2, notes: [] }, heron: { state: "courier", aff: 5, notes: [] },
-  macaque: { state: "recorded", aff: 1, notes: [] },
-  dolphin: { state: "none", aff: 0, notes: [] },
-  bluemagpie: { state: "none", aff: 0, notes: [] }, barbet: { state: "none", aff: 0, notes: [] },
-  thrush: { state: "none", aff: 0, notes: [] }, frog: { state: "none", aff: 0, notes: [] },
-  eagle: { state: "none", aff: 0, notes: [] }, bpartridge: { state: "none", aff: 0, notes: [] }, hare: { state: "none", aff: 0, notes: [] }, civet: { state: "none", aff: 0, notes: [] },
-  mikado: { state: "none", aff: 0, notes: [] }, swinhoe: { state: "none", aff: 0, notes: [] }, tpartridge: { state: "none", aff: 0, notes: [] },
-  warbler: { state: "none", aff: 0, notes: [] }, viper: { state: "none", aff: 0, notes: [] }, badger: { state: "none", aff: 0, notes: [] },
-  babbler: { state: "none", aff: 0, notes: [] }, yuhina: { state: "none", aff: 0, notes: [] }, keelback: { state: "none", aff: 0, notes: [] },
-  shrew: { state: "none", aff: 0, notes: [] }, flyingsq: { state: "none", aff: 0, notes: [] }, squirrel: { state: "none", aff: 0, notes: [] },
-  egret: { state: "none", aff: 0, notes: [] }, reefheron: { state: "none", aff: 0, notes: [] }, nheron: { state: "none", aff: 0, notes: [] }, kingfisher: { state: "none", aff: 0, notes: [] }, robin: { state: "none", aff: 0, notes: [] }, liocichla: { state: "none", aff: 0, notes: [] }, sparrow: { state: "none", aff: 0, notes: [] }, munia: { state: "none", aff: 0, notes: [] }, grassfrog: { state: "none", aff: 0, notes: [] }, firefly: { state: "none", aff: 0, notes: [] }, peacock: { state: "none", aff: 0, notes: [] }, ghostcrab: { state: "none", aff: 0, notes: [] }, rissos: { state: "none", aff: 0, notes: [] }, bottlenose: { state: "none", aff: 0, notes: [] }, gull: { state: "none", aff: 0, notes: [] }, serow: { state: "none", aff: 0, notes: [] }, anemonefish: { state: "none", aff: 0, notes: [] }
-};
+/*SP:BEGIN player:OBS_SAFETY*/const OBS_SAFETY = {
+  "dolphin": "瀕危保育類：只在岸上遠遠觀察，不乘船追逐、不靠近、不餵食",
+  "mikado": MOUNTAIN_SAFE,
+  "swinhoe": MOUNTAIN_SAFE,
+  "tpartridge": MOUNTAIN_SAFE,
+  "warbler": "稀有過境鳥：安靜遠觀，不要追逐或播放鳥音引誘",
+  "viper": "毒蛇：請保持距離，不要靠近、觸碰或驚擾牠；看到就慢慢退開",
+  "badger": "請保持距離，不要觸碰或撿拾；台灣鼬獾曾是狂犬病病毒的宿主",
+  "keelback": "請保持距離，不要觸碰或撿拾；看到蛇時，慢慢繞開並告訴身邊的大人",
+  "serow": MOUNTAIN_SAFE
+};/*SP:END player:OBS_SAFETY*/
+/*SP:BEGIN player:DEX_DEMO*/const DEX_DEMO = {
+  "dog": { state: "courier", aff: 4, notes: [] },
+  "cat": { state: "courier", aff: 3, notes: [] },
+  "butterfly": { state: "courier", aff: 2, notes: [] },
+  "heron": { state: "courier", aff: 5, notes: [] },
+  "macaque": { state: "recorded", aff: 1, notes: [] },
+  "dolphin": { state: "none", aff: 0, notes: [] },
+  "bluemagpie": { state: "none", aff: 0, notes: [] },
+  "barbet": { state: "none", aff: 0, notes: [] },
+  "thrush": { state: "none", aff: 0, notes: [] },
+  "frog": { state: "none", aff: 0, notes: [] },
+  "eagle": { state: "none", aff: 0, notes: [] },
+  "bpartridge": { state: "none", aff: 0, notes: [] },
+  "hare": { state: "none", aff: 0, notes: [] },
+  "civet": { state: "none", aff: 0, notes: [] },
+  "mikado": { state: "none", aff: 0, notes: [] },
+  "swinhoe": { state: "none", aff: 0, notes: [] },
+  "tpartridge": { state: "none", aff: 0, notes: [] },
+  "warbler": { state: "none", aff: 0, notes: [] },
+  "viper": { state: "none", aff: 0, notes: [] },
+  "badger": { state: "none", aff: 0, notes: [] },
+  "babbler": { state: "none", aff: 0, notes: [] },
+  "yuhina": { state: "none", aff: 0, notes: [] },
+  "keelback": { state: "none", aff: 0, notes: [] },
+  "shrew": { state: "none", aff: 0, notes: [] },
+  "flyingsq": { state: "none", aff: 0, notes: [] },
+  "squirrel": { state: "none", aff: 0, notes: [] },
+  "egret": { state: "none", aff: 0, notes: [] },
+  "reefheron": { state: "none", aff: 0, notes: [] },
+  "nheron": { state: "none", aff: 0, notes: [] },
+  "kingfisher": { state: "none", aff: 0, notes: [] },
+  "robin": { state: "none", aff: 0, notes: [] },
+  "liocichla": { state: "none", aff: 0, notes: [] },
+  "sparrow": { state: "none", aff: 0, notes: [] },
+  "munia": { state: "none", aff: 0, notes: [] },
+  "grassfrog": { state: "none", aff: 0, notes: [] },
+  "firefly": { state: "none", aff: 0, notes: [] },
+  "peacock": { state: "none", aff: 0, notes: [] },
+  "ghostcrab": { state: "none", aff: 0, notes: [] },
+  "rissos": { state: "none", aff: 0, notes: [] },
+  "bottlenose": { state: "none", aff: 0, notes: [] },
+  "gull": { state: "none", aff: 0, notes: [] },
+  "serow": { state: "none", aff: 0, notes: [] },
+  "anemonefish": { state: "none", aff: 0, notes: [] }
+};/*SP:END player:DEX_DEMO*/
 function loadDex() {
   let d = null;
   try { d = JSON.parse(localStorage.getItem(DEX_KEY) || "null"); } catch (e) {}
@@ -326,14 +355,8 @@ const EV_ITEMS = {
   cloak: { n: "防雨斗篷", ic: "🌂", p: 5, d: "擋掉「躲雨」的插曲" },
   lamp:  { n: "小夜燈",   ic: "🏮", p: 5, d: "擋掉「夜間」的插曲" }
 };
-const EV_INSECT = ["butterfly", "peacock", "firefly"], EV_HERP = ["frog", "grassfrog", "keelback", "viper"], EV_SEA = ["rissos", "anemonefish", "bottlenose"];
-function evGroup(id) {
-  if (EV_SEA.includes(id)) return "sea";
-  if (EV_INSECT.includes(id)) return "insect";
-  if (EV_HERP.includes(id)) return "herp";
-  const BIRD = ["heron", "bluemagpie", "barbet", "thrush", "eagle", "bpartridge", "babbler", "yuhina", "egret", "reefheron", "nheron", "kingfisher", "robin", "liocichla", "sparrow", "munia", "mikado", "swinhoe", "tpartridge", "warbler", "gull"];
-  return BIRD.includes(id) ? "bird" : "mammal";
-}
+/*SP:BEGIN player:EV_GROUP*/const EV_GROUP = {"dog":"mammal","cat":"mammal","butterfly":"insect","macaque":"mammal","heron":"bird","bluemagpie":"bird","barbet":"bird","thrush":"bird","frog":"herp","eagle":"bird","bpartridge":"bird","hare":"mammal","civet":"mammal","babbler":"bird","yuhina":"bird","shrew":"mammal","flyingsq":"mammal","squirrel":"mammal","egret":"bird","reefheron":"bird","nheron":"bird","kingfisher":"bird","robin":"bird","liocichla":"bird","sparrow":"bird","munia":"bird","grassfrog":"herp","firefly":"insect","peacock":"insect","ghostcrab":"mammal","rissos":"sea","anemonefish":"sea","bottlenose":"sea","gull":"bird","serow":"mammal","dolphin":"mammal","mikado":"bird","swinhoe":"bird","tpartridge":"bird","warbler":"bird","viper":"herp","keelback":"herp","badger":"mammal"};/*SP:END player:EV_GROUP*/   // 由 species_data/species.json 產生（下面標記之間）
+function evGroup(id) { return EV_GROUP[id] || "mammal"; }
 /* 說法：{名}＝郵差名字。delay 延誤、rain 躲雨（斗篷可擋）、night 夜間（小夜燈可擋）、mishap 輕微事故、tail 順風、gift 驚喜（小花） */
 const EV_TEXT = {
   all:    { tail: ["{名}遇上一陣順風，比預計早到。"], gift: ["{名}在路邊發現一朵小花，順手帶著走。"] },
@@ -658,7 +681,7 @@ function fullSweep() {
   } catch (e) {}
 }
 (function () { const go = () => { setTimeout(fullSweep, 1500); setInterval(fullSweep, 30000); }; if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", go); else go(); })();
-const BUILD = { name: "測試版", ver: "v0.62.1", date: "2026-11-15" };
+const BUILD = { name: "測試版", ver: "v0.63.0", date: "2026-11-15" };
 const BUILD_LABEL = `${BUILD.name} ${BUILD.ver}（${BUILD.date}）`;
 (function addBuildBadge() {
   const put = () => {
