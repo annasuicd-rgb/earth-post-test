@@ -323,7 +323,7 @@ function useRestkit(id, sta) {
    寄信時抽一次（約 15%）：延誤／驚喜／順風／輕微事故／保育小任務；不遺失信、不傷害生物。
    防雨斗篷擋「躲雨」、小夜燈擋「夜間」；道具只在真的擋掉插曲時才用掉。結果存在送信資料 o.ev，送達時彈卡片補一句。 */
 const EV_ITEMS = {
-  cloak: { n: "防雨斗篷", ic: "🧥", p: 5, d: "擋掉「躲雨」的插曲" },
+  cloak: { n: "防雨斗篷", ic: "🌂", p: 5, d: "擋掉「躲雨」的插曲" },
   lamp:  { n: "小夜燈",   ic: "🏮", p: 5, d: "擋掉「夜間」的插曲" }
 };
 const EV_INSECT = ["butterfly", "peacock", "firefly"], EV_HERP = ["frog", "grassfrog", "keelback", "viper"], EV_SEA = ["rissos", "anemonefish", "bottlenose"];
@@ -559,7 +559,7 @@ function epDeliverySweep() {
     b.out.forEach(o => {
       if (!o.nd && o.h > 0 && advanceTrip(o, Math.max(0, (now - (o.savedAt || now)) / 1000)) >= o.h) {
         o.nd = 1; ch = true; const evT = evArrive(o);
-        if (set.nArrive !== false) epNotify(`${o.cn ? o.cn + "把" : ""}信送到${o.tn ? o.tn + "手上" : "對方那裡"}了！到「明信片」看看有沒有回信。${evT ? "\n" + evT : ""}`, { icon: "✉️", go: "postcard_mockup.html", level: evT ? "card" : "toast" });
+        if (set.nArrive !== false) epNotify(`${o.cn ? o.cn + "把" : ""}信送到${o.tn ? o.tn + "手上" : "對方那裡"}了！到「明信片」看看有沒有回信。${evT ? "\n" + evT : ""}`, { icon: evT ? "🧳" : "✉️", go: "postcard_mockup.html", level: evT ? "card" : "toast" });
       }
     });
     if (ch) localStorage.setItem("ep-box", JSON.stringify(b));
@@ -658,7 +658,7 @@ function fullSweep() {
   } catch (e) {}
 }
 (function () { const go = () => { setTimeout(fullSweep, 1500); setInterval(fullSweep, 30000); }; if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", go); else go(); })();
-const BUILD = { name: "測試版", ver: "v0.62.0", date: "2026-11-15" };
+const BUILD = { name: "測試版", ver: "v0.62.1", date: "2026-11-15" };
 const BUILD_LABEL = `${BUILD.name} ${BUILD.ver}（${BUILD.date}）`;
 (function addBuildBadge() {
   const put = () => {
@@ -773,7 +773,8 @@ const EMOJI_ICON = (() => {
   put(["✅", "✓", "✔"], "ui/y_check.png"); put(["⚙"], "ui/y_gear.png"); put(["✏"], "ui/y_pencil.png"); put(["🥣"], "ui/y_bowl.png");
   put(["🧹"], "ui/y_broom.png"); put(["🛏"], "ui/y_cushion.png"); put(["🪮"], "ui/y_comb.png"); put(["🦉"], "ui/y_owl.png");
   put(["🎂"], "ui/y_cake.png"); put(["🔁"], "ui/y_loop.png"); put(["💧"], "ui/y_drop.png"); put(["🌙"], "ui/y_moon.png");
-  put(["🧬"], "ui/ic_all.png"); put(["🍂"], "ui/nav_dawn.png"); put(["🍃"], "ui/ic_habitat.png");
+  put(["🧬"], "ui/ic_all.png"); put(["🌂"], "ui/x_cloak.png"); put(["🏮"], "ui/x_lamp.png"); put(["🌧"], "ui/x_weather.png"); put(["🧳"], "ui/x_trip.png");   // v0.62.1：防雨斗篷、小夜燈、天氣、送信插曲（GPT 畫，2026-11-23）
+  put(["🍂"], "ui/nav_dawn.png"); put(["🍃"], "ui/ic_habitat.png");
   return m;
 })();
 function iconizeEmoji(root) {
