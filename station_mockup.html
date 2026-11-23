@@ -495,7 +495,8 @@ function render(){
       <div class="buyrow"><div>${fl(it.p*q)}</div><div class="qty"><button data-qty="${k}:-1" aria-label="減少數量" ${q<=1?"disabled":""}>−</button><b>${q}</b><button data-qty="${k}:1" aria-label="增加數量" ${q>=mx||FL<it.p?"disabled":""}>＋</button></div><button class="btn sm pri" data-buy="${k}" ${FL<it.p?"disabled":""}>買 ${q} 個</button></div></div></div>`;};
     h+=Object.entries(ITEMS).map(([k,it])=>shopRow(k,it,it.ic,`你有 ${INV[k]||0} 個｜用在「${{bowl:"補充飲水",tool:"整理休息區",cushion:"換新軟墊",comb:"梳毛／整理羽毛"}[k]}」的委託`)).join("");
     h+=shopRow("restkit",RESTKIT,`<img src="${RESTKIT.img}" alt="" style="width:4.2cqw;height:auto">`,`你有 ${INV.restkit||0} 個｜給自己的郵差用（明信片頁）：體力 +${RESTKIT.sta}%；每位郵差每天第一次用，好感 +1`);
-    h+=`<div class="row"><div class="ic">🕒</div><div class="val sm">之後櫃台還會有：郵資、郵差補給（輕便郵袋、防雨斗篷、小夜燈）、認養棲地。</div></div>`;
+    h+=Object.entries(EV_ITEMS).map(([k,it])=>shopRow(k,it,it.ic,`你有 ${INV[k]||0} 個｜寫信頁「路上的小狀況」可帶上：${it.d}；真的擋掉時才用掉`)).join("");
+    h+=`<div class="row"><div class="ic">🕒</div><div class="val sm">之後櫃台還會有：郵資、輕便郵袋、認養棲地。</div></div>`;
   }else if(tab==="adopt"){
     document.getElementById("note").textContent="認養棲地　花小花認養台灣知名地點的環境改善（遊戲裡的改善）";
     const AD=loadAdopt(),today=new Date().toISOString().slice(0,10),ab=adoptExploreBonus();
@@ -584,7 +585,7 @@ document.addEventListener("click",e=>{
   if(t.dataset.tab){tab=t.dataset.tab;msg="";}
   else if(t.dataset.care){doCare(+t.dataset.care);return;}
   else if(t.dataset.qty){const [k,d]=t.dataset.qty.split(":");QTY[k]=Math.max(1,(QTY[k]||1)+ +d);}
-  else if(t.dataset.buy){const k=t.dataset.buy,it=k==="restkit"?RESTKIT:ITEMS[k],n=Math.min(QTY[k]||1,Math.floor(FL/it.p));if(n>=1){FL-=it.p*n;INV[k]=(INV[k]||0)+n;save();QTY[k]=1;msg=`${it.n}買好了，小貓助手幫你放進包包。`;toast(`✔ 買了 ${n} 個${it.n}（現有 ${INV[k]} 個）`);}}
+  else if(t.dataset.buy){const k=t.dataset.buy,it=k==="restkit"?RESTKIT:EV_ITEMS[k]||ITEMS[k],n=Math.min(QTY[k]||1,Math.floor(FL/it.p));if(n>=1){FL-=it.p*n;INV[k]=(INV[k]||0)+n;save();QTY[k]=1;msg=`${it.n}買好了，小貓助手幫你放進包包。`;toast(`✔ 買了 ${n} 個${it.n}（現有 ${INV[k]} 個）`);}}
   else if(t.dataset.goshop){tab="shop";msg="";}
   else if(t.dataset.nextday){dayOffset++;SS.day=dayKey();SS.done=[];save();msg="（原型）已換成明天的委託。";tab="req";}
   else if(t.id==="go"){const n=REQ().findIndex((_,i)=>!SS.done.includes(i));if(n>=0){tab="req";doCare(n);return;}}

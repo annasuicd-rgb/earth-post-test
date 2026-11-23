@@ -319,6 +319,90 @@ function useRestkit(id, sta) {
   return { first, left: inv.restkit };
 }
 
+/* ===== 送信途中的插曲（v0.62.0）=====
+   寄信時抽一次（約 15%）：延誤／驚喜／順風／輕微事故／保育小任務；不遺失信、不傷害生物。
+   防雨斗篷擋「躲雨」、小夜燈擋「夜間」；道具只在真的擋掉插曲時才用掉。結果存在送信資料 o.ev，送達時彈卡片補一句。 */
+const EV_ITEMS = {
+  cloak: { n: "防雨斗篷", ic: "🧥", p: 5, d: "擋掉「躲雨」的插曲" },
+  lamp:  { n: "小夜燈",   ic: "🏮", p: 5, d: "擋掉「夜間」的插曲" }
+};
+const EV_INSECT = ["butterfly", "peacock", "firefly"], EV_HERP = ["frog", "grassfrog", "keelback", "viper"], EV_SEA = ["rissos", "anemonefish", "bottlenose"];
+function evGroup(id) {
+  if (EV_SEA.includes(id)) return "sea";
+  if (EV_INSECT.includes(id)) return "insect";
+  if (EV_HERP.includes(id)) return "herp";
+  const BIRD = ["heron", "bluemagpie", "barbet", "thrush", "eagle", "bpartridge", "babbler", "yuhina", "egret", "reefheron", "nheron", "kingfisher", "robin", "liocichla", "sparrow", "munia", "mikado", "swinhoe", "tpartridge", "warbler", "gull"];
+  return BIRD.includes(id) ? "bird" : "mammal";
+}
+/* 說法：{名}＝郵差名字。delay 延誤、rain 躲雨（斗篷可擋）、night 夜間（小夜燈可擋）、mishap 輕微事故、tail 順風、gift 驚喜（小花） */
+const EV_TEXT = {
+  all:    { tail: ["{名}遇上一陣順風，比預計早到。"], gift: ["{名}在路邊發現一朵小花，順手帶著走。"] },
+  bird:   { delay: ["{名}停在電線上，被一群鳥邀去聊天。"], rain: ["下起大雨，{名}躲進樹叢等雨停。"], night: ["天色太暗，{名}先在樹上休息，等月亮升高。"],
+            gift: ["{名}在樹枝上找到一顆鮮紅的果子，分你一朵小花。"], tail: ["高空氣流很順，{名}幾乎沒拍翅膀就滑到了。"], mishap: ["{名}被一片大葉子蓋住視線，繞了一小圈才找回路。"] },
+  mammal: { delay: ["{名}在溫暖的石頭上曬太陽，捨不得離開。", "路邊有野果，{名}被吸引過去，吃完才想起要送信。"], rain: ["下起大雨，{名}躲到大樹下等雨停。"], night: ["夜裡路不好認，{名}先停下來聞聞方向。"],
+            gift: ["{名}遇到一隻迷路的小動物，帶牠回家時收到小花。"], tail: ["{名}找到一條近路，省下不少時間。"], mishap: ["{名}踩進水窪，甩乾毛才繼續走。"] },
+  insect: { delay: ["{名}被一片花田迷住，停下來喝了好久的花蜜。"], rain: ["下起雨來，{名}躲在葉子下面等雨停。"], night: ["天黑了，{名}先停在葉子上休息。"],
+            gift: ["{名}翅膀沾了花粉，抖落時變成一朵小花。"], tail: ["風從背後吹來，{名}輕輕飄到了目的地。"], mishap: ["一陣強風把{名}吹偏了方向，牠慢慢飛回正路。"] },
+  herp:   { delay: ["{名}停在石頭上曬太陽，體溫夠了才出發。", "{名}在水邊多玩了一會兒。"], rain: ["下起大雨，{名}躲進草叢等雨停。"], night: ["夜裡看不清路，{名}先停下來等天亮一點。"],
+            gift: ["{名}在草叢裡撿到一朵被雨淋濕的小花。"], tail: ["{名}順著水流滑了一段，比預計早到。"], mishap: ["{名}鑽進一個小洞，繞了一圈才找到出口。"] },
+  sea:    { delay: ["{名}被一群小魚圍著玩，晚了一點才出發。"], rain: ["海面下起大雨，{名}潛到水下等雨停。"], night: ["夜裡的海很暗，{名}先停下來等月光。"],
+            gift: ["{名}在浪花裡找到一個漂亮的貝殼，換成小花。"], tail: ["洋流剛好朝目的地流，{名}被推著走。"], mishap: ["海面起霧，{名}慢慢游，等霧散開。"] }
+};
+/* 保育小任務：g＝適合的類群（all＝全部）；k＝小知識 */
+const EV_CONSERVE = [
+  { g: ["sea", "all"],            a: "看見路邊有塑膠袋，先停下來收好，再繼續趕路", k: "海龜常把漂浮的塑膠袋誤認成水母，吃下去會生病。" },
+  { g: ["sea", "bird"],           a: "發現一段被丟掉的釣魚線，小心地把它收起來", k: "被丟掉的釣魚線和漁網，會纏住鳥和海洋生物。" },
+  { g: ["mammal"],                a: "看見有人把吃剩的食物放在路邊，趕緊把它收起來", k: "人吃的食物不適合野生動物，餵食還會讓牠們不再自己找食物。" },
+  { g: ["bird", "sea"],           a: "看見一盞太亮的夜燈，請人把它關掉", k: "太亮的夜間燈光，會讓候鳥和剛出生的小海龜迷路。" },
+  { g: ["bird"],                  a: "在窗戶上貼了一張小圖案，讓鳥看得見玻璃", k: "鳥看不見透明玻璃，窗上貼圖案可以減少撞傷。" },
+  { g: ["mammal", "herp"],        a: "遇到一條山路，提醒來往的人放慢腳步", k: "山區道路慢慢開，動物才有時間通過。" },
+  { g: ["all"],                   a: "看見有人想靠近野生動物，輕輕提醒要保持距離", k: "看到野生動物時保持距離，牠們才能安心吃飯、育幼。" },
+  { g: ["bird", "mammal", "insect"], a: "看見路邊的野果，沒有摘，留給別的動物", k: "野外的果子是動物的食物，看看就好，留給牠們。" },
+  { g: ["herp", "all"],           a: "遇見有人想放生動物，勸他不要隨便放", k: "隨便放生不是本地的動物，可能會傷害原本住在那裡的生物。" },
+  { g: ["herp", "insect"],        a: "在水塘邊整理了一下，讓小動物的家保持完整", k: "小水塘和草叢，是蛙類與昆蟲的家，不要隨意填平。" }
+];
+const evPick = a => a[Math.floor(Math.random() * a.length)];
+function evCount(k) { try { return (_lsj("ep-items", {})[k]) || 0; } catch (e) { return 0; } }
+function evSpend(k) { try { const inv = _lsj("ep-items", {}); if (!(inv[k] > 0)) return false; inv[k]--; localStorage.setItem("ep-items", JSON.stringify(inv)); return true; } catch (e) { return false; } }
+/* 天氣：原型用日期＋時段算出來的假天氣（每 6 小時換一次），之後可換成真的天氣 */
+function evWeather(t) {
+  const d = new Date(t || Date.now()), s = d.getFullYear() * 1000 + d.getMonth() * 50 + d.getDate() * 3 + Math.floor(d.getHours() / 6);
+  const r = ((Math.sin(s * 12.9898) * 43758.5453) % 1 + 1) % 1;
+  return r < .55 ? "sunny" : r < .8 ? "cloudy" : "rain";
+}
+const EV_WX = { sunny: "晴", cloudy: "陰", rain: "雨" };
+const evIsNight = t => { const h = new Date(t || Date.now()).getHours(); return h >= 19 || h < 5; };
+/* 機率：基本 15%；距離越遠（courier 負責的小時數）、天氣越差越高；上限 35% */
+function evChance(hours, wx) { return Math.min(.35, .15 + Math.min(.1, (hours || 0) / 100) + (wx === "rain" ? .08 : wx === "cloudy" ? .03 : 0)); }
+/* 寄信時抽籤：回傳 { ev:{kind,line,paid?,fl?,speed}, saved:"cloak"|"lamp"|null }；speed＝郵差負責那段時間的倍率 */
+function evRoll(courier, name, hours, opts) {
+  opts = opts || {}; const wx = evWeather(), night = evIsNight(), g = evGroup(courier), T = EV_TEXT[g], A = EV_TEXT.all;
+  if (Math.random() >= evChance(hours, wx)) return null;
+  const fix = s => s.replace(/\{名\}/g, name || "郵差");
+  /* 先決定種類；下雨、夜間時，延誤類改成躲雨／夜間（可被道具擋掉） */
+  const r = Math.random(); let kind = r < .3 ? "delay" : r < .5 ? "gift" : r < .7 ? "tail" : r < .85 ? "mishap" : "conserve";
+  if (kind === "delay") { if (wx === "rain") kind = "rain"; else if (night) kind = "night"; }
+  if (kind === "rain" || kind === "night") {
+    const item = kind === "rain" ? "cloak" : "lamp";
+    if (opts[item] && evCount(item) > 0 && evSpend(item))
+      return { ev: { kind: "saved", item, line: fix(kind === "rain" ? `下起雨來，但${EV_ITEMS.cloak.n}幫了大忙，{名}一路沒被淋濕。` : `天色變暗，但${EV_ITEMS.lamp.n}照亮了路，{名}沒有被耽誤。`), speed: 1 } };
+    return { ev: { kind, line: fix(evPick(T[kind])), speed: 1.3 } };
+  }
+  if (kind === "delay") return { ev: { kind, line: fix(evPick(T.delay)), speed: 1.3 } };
+  if (kind === "mishap") return { ev: { kind, line: fix(evPick(T.mishap)), speed: 1.2 } };
+  if (kind === "tail") return { ev: { kind, line: fix(evPick([].concat(T.tail, A.tail))), speed: .8 } };
+  if (kind === "gift") return { ev: { kind, line: fix(evPick([].concat(T.gift, A.gift))), fl: 1 + Math.floor(Math.random() * 2), speed: 1 } };
+  const pool = EV_CONSERVE.filter(x => x.g.includes(g)), c = evPick(pool.length ? pool : EV_CONSERVE);
+  return { ev: { kind: "conserve", line: fix(`{名}${c.a}。`), tip: c.k, fl: 1, speed: 1 } };
+}
+/* 送達時：發小花（只發一次），回傳要補在通知後面的一句；沒有插曲回傳 "" */
+function evArrive(o) {
+  const e = o && o.ev; if (!e || e.done) return ""; e.done = 1;
+  if (e.fl) { try { addFlowers(e.fl); } catch (er) {} }
+  const tail = { delay: "雖然晚了一點，信平安送到。", rain: "雖然晚了一點，信平安送到。", night: "雖然晚了一點，信平安送到。", mishap: "雖然晚了一點，信平安送到。", tail: "比預計早到！", saved: "", gift: `（小花 +${e.fl || 0}）`, conserve: `小知識：${e.tip || ""}（小花 +${e.fl || 0}）` }[e.kind] || "";
+  return `${e.line}${tail}`;
+}
+
 /* 駐站生物好感效果（設計稿 7.6「駐站生物好感」表，數值暫定）：
    5＝筆友回信最後一段快 20%、送信時 10% 機率附小禮物；10＝解鎖駐站明信片樣式、小禮物 20%；15＝最後一段快 35%。
    好感存在 ep-station.aff（郵站頁照顧時累積）。 */
@@ -474,8 +558,8 @@ function epDeliverySweep() {
     const set = _lsj("ep-settings", {}), now = Date.now(); let ch = false;
     b.out.forEach(o => {
       if (!o.nd && o.h > 0 && advanceTrip(o, Math.max(0, (now - (o.savedAt || now)) / 1000)) >= o.h) {
-        o.nd = 1; ch = true;
-        if (set.nArrive !== false) epNotify(`${o.cn ? o.cn + "把" : ""}信送到${o.tn ? o.tn + "手上" : "對方那裡"}了！到「明信片」看看有沒有回信。`, { icon: "✉️", go: "postcard_mockup.html" });
+        o.nd = 1; ch = true; const evT = evArrive(o);
+        if (set.nArrive !== false) epNotify(`${o.cn ? o.cn + "把" : ""}信送到${o.tn ? o.tn + "手上" : "對方那裡"}了！到「明信片」看看有沒有回信。${evT ? "\n" + evT : ""}`, { icon: "✉️", go: "postcard_mockup.html", level: evT ? "card" : "toast" });
       }
     });
     if (ch) localStorage.setItem("ep-box", JSON.stringify(b));
@@ -574,7 +658,7 @@ function fullSweep() {
   } catch (e) {}
 }
 (function () { const go = () => { setTimeout(fullSweep, 1500); setInterval(fullSweep, 30000); }; if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", go); else go(); })();
-const BUILD = { name: "測試版", ver: "v0.61.0", date: "2026-11-15" };
+const BUILD = { name: "測試版", ver: "v0.62.0", date: "2026-11-15" };
 const BUILD_LABEL = `${BUILD.name} ${BUILD.ver}（${BUILD.date}）`;
 (function addBuildBadge() {
   const put = () => {

@@ -690,6 +690,10 @@ function renderPanel(){
       h+=`<div class="row"><div class="ic">🛫</div><div><div class="lbl">轉運路線（分三段送）</div><div class="tsteps">${stp(1,`${NAME[st.courier]}送到${t.hub}郵站`,`約 ${t.hubKm.toLocaleString()} km・約 ${fmtH(t.leg1)}（郵差只跑這一段）`)}${stp(2,`國際轉運到${dst}`,`約 ${t.ikm.toLocaleString()} km${t.est?"（估算）":""}・約 ${fmtH(t.leg2)}`)}${stp(3,"當地生物送到對方手上",`約 ${fmtH(l3)}`)}</div><div class="src">寄件人只知道對方的國家。</div></div></div>`;}
     if(t.intl){const L=lastLeg();h+=`<div class="row"><div class="ic">🏤</div><div><div class="lbl">回信最後一段</div><div class="val sm">${MYHUB}郵站的${NAME[L.sk]}送到你手上，約 ${fmtH(L.h)}${L.speed?`（駐站好感 ${L.a}：快 ${Math.round(L.speed*100)}%，原本 ${fmtH(L.base)}）`:""}</div><div class="src">${L.gift?`送回信時有 ${Math.round(L.gift*100)}% 機率附小禮物（郵差休息包或 5 朵小花）`:"到「郵站」照顧駐站生物，好感 5 起回信更快、偶爾附小禮物"}</div></div></div>`;}
     h+=`<div class="row"><div class="ic">🔋</div><div><div class="lbl">${NAME[st.courier]}的體力</div><div class="val sm">${STA[st.courier]}% → ${t.ok?t.after:STA[st.courier]}%（消耗 ${t.cost}%）</div><div class="src">待命時每 3 分鐘 +1%｜現在${staFullText(STA[st.courier],STA_T[st.courier])}</div><div class="btns" style="display:flex;align-items:center;gap:.6cqw;margin-top:.35cqw"><button class="btn sm" data-restkit="1" ${restkitCount()&&STA[st.courier]<100?"":"disabled"}>${restkitImg()} 用休息包（+${RESTKIT.sta}%）</button><span class="src">你有 ${restkitCount()} 個｜郵站櫃台 ${RESTKIT.p} 朵小花｜每位郵差每天第一次用好感 +1</span></div>${restMsg?`<div class="src"><b>${restMsg}</b></div>`:""}${t.rest&&t.ok?`<div class="src">體力不夠，途中休息約 ${fmtH(t.rest)}（已算進預估時間）</div>`:""}</div></div>`;
+    {const wx=evWeather(),nc=evCount("cloak"),nl=evCount("lamp"),nt=evIsNight();   /* 送信插曲（v0.62.0）：天氣與可帶的道具 */
+      h+=`<div class="row"><div class="ic">🌦️</div><div><div class="lbl">路上的小狀況　現在${EV_WX[wx]}天${nt?"・夜間":""}</div><div class="src">送信途中偶爾會遇到小插曲（延誤、驚喜、順風…），不會遺失信。${wx==="rain"?"下雨時比較容易躲雨。":nt?"夜間比較容易停下來休息。":""}道具只有在真的擋掉插曲時才會用掉。</div>
+      <div class="btns" style="display:flex;align-items:center;gap:.6cqw;flex-wrap:wrap;margin-top:.35cqw"><button class="btn sm${st.evCloak&&nc?" pri":""}" data-evuse="cloak" ${nc?"":"disabled"}>${EV_ITEMS.cloak.ic} 帶防雨斗篷${st.evCloak&&nc?" ✔":""}（${nc}）</button><button class="btn sm${st.evLamp&&nl?" pri":""}" data-evuse="lamp" ${nl?"":"disabled"}>${EV_ITEMS.lamp.ic} 帶小夜燈${st.evLamp&&nl?" ✔":""}（${nl}）</button></div>
+      ${nc||nl?"":`<div class="src">郵站櫃台可以買：防雨斗篷、小夜燈各 ${EV_ITEMS.cloak.p} 朵小花</div>`}</div></div>`;}
     if(!t.ok)h+=`<div class="row warn"><div class="ic">⚠️</div><div class="val sm">${SWIM.includes(st.courier)?`${NAME[st.courier]}會游，只能走海路（送到離島）；這條是陸路，請改派別的郵差`:`${NAME[st.courier]}不能跨海${t.intl?"飛到本島郵站":""}，請改派會飛或會游的郵差`}</div></div>`;
     h+=`<div class="row${pf.fee>fl?" warn":""}"><div class="ic">🌸</div><div><div class="lbl">郵資</div><div class="val sm">${pf.fee?`${pf.fee} 朵小花（你有 ${fl} 朵）`:`免費（${pf.why}，原價 ${pf.base} 朵）`}</div><div class="src">${pf.fee>fl?"小花不夠：到「郵站」做委託可以賺小花":"寄好友 5 朵、寄國外 10 朵；每天免費 3 封（回信、第 1 封新信共用）"}</div></div></div>`;
     if(bad.length)h+=`<div class="row warn"><div class="ic">⚠️</div><div class="val sm">明信片不能包含：${bad.join("、")}</div></div>`;
@@ -716,6 +720,7 @@ function renderPanel(){
       const who=!o.intl?`${NAME[o.courier]}送信中`:[NAME[o.courier]+"送往"+o.hub+"郵站","國際轉運中","當地生物送到對方手上"][stage];
       return `<div class="row"><div class="ic">🚚</div><div style="min-width:0"><div class="lbl">寄給 ${esc(C(o.to).name)}・${who}</div><div class="prog"><i style="width:${Math.min(100,o.el/o.h*100)}%"></i></div>
       <div class="src">${o.intl?"全程":""}剩約 ${fmtH(Math.max(0,o.h-o.el))}｜🌸 ${o.fee?`已付郵資 ${o.fee} 朵`:`郵資免費（${o.feeWhy}）`}</div>
+      ${o.ev&&o.el/o.h>=.3?`<div class="src">🐾 路上：${esc(o.ev.line)}</div>`:""}
       ${o.intl?`<div class="btns" style="display:flex;margin-top:.3cqw"><button class="btn sm" data-oout="${oi}">${o.open?"收起三步進度 ▴":"看三步進度 ▾"}</button></div>${o.open?`<div class="tsteps">${tripSteps(o)}</div>`:""}`:""}</div></div>`;}).join("");
     h+=st.inbox.map((m,j)=>[m,j]).reverse().filter(([m])=>isMail(m)).map(([m,j])=>{const R=(()=>{if(m.cstamp)return `<div class="row good"><div class="ic">📮</div><div class="arrive"><div class="stampcell">${countryStampSVG(m.cstamp,true,loadCountryStamps()[m.cstamp])}</div><div><div class="lbl">新的國家郵戳：${esc(m.cstamp)}</div><div class="val sm">你的明信片第一次寄到${esc(m.cstamp)}！</div><div class="src">🌸 小花 +${EARN.stamp}</div></div></div></div>`;if(m.sys)return `<div class="row"><div class="ic">${m.icon||"🔁"}</div><div><div class="val sm">${esc(m.text)}</div>${m.penBtn&&!st.penOn?`<div class="btns" style="display:flex;margin-top:.4cqw"><button class="btn sm pri" data-penon="1">前往設定：開啟筆友</button></div>`:""}</div></div>`;if(m.pcard){const f=FOREIGN_BY_ID[m.pcard];return `<div class="row good"><div class="ic">🖼️</div><div><div class="lbl">${m.isNew?"新的明信片":"又收到一張明信片"}：${esc(f.name)}（來自${esc(f.country)}）</div><div class="val sm">已收進「我的 → 明信片冊」；寫明信片時可以選為特別明信片樣式</div><div class="src">送信生物與小知識：部分查核（GPT 查證草稿）</div></div></div>`;}const c2=C(m.from);return `<div class="row${m.read?"":" unread"}" style="grid-template-columns:1fr"><div class="mailitem"><span class="fc">${face(c2)}</span><div>
       <div class="lbl">${m.read?"":`<span class="udot"></span>`}${esc(m.name)}・${esc(c2.where)}${m.read?"":`<span class="badge" style="margin-left:.5cqw;background:#b1392d;color:#fff">未讀</span>`}${m.fl?`<span class="badge b-g" style="margin-left:.5cqw">🌸 +${m.fl}</span>`:""}</div><div class="val sm">${esc(m.text.length>16?m.text.slice(0,16)+"…":m.text)}</div>
@@ -744,7 +749,9 @@ function tripRate(o){if(!o.intl||!o.l3)return o.k||2;
 function startTrip(o){const c=C(o.to);if(!c)return;
   const iv=setInterval(()=>{o.el+=tripRate(o);
       if(o.el>=o.h){clearInterval(iv);st.out=st.out.filter(x=>x!==o);
-        if(!o.nd&&c.kind!=="drift"&&ARR_ON()){o.nd=1;epNotify(c.kind==="friend"?`${NAME[o.courier]||"郵差"}把信送到${c.name}手上了，${c.name}回信了！`:`信送到${c.where}了，${c.name}回信了！`,{icon:"✉️",go:"postcard_mockup.html"});}
+        const evT=evArrive(o);   /* 送信插曲（v0.62.0）：發小花、補一句 */
+        if(!o.nd&&c.kind!=="drift"&&ARR_ON()){o.nd=1;epNotify((c.kind==="friend"?`${NAME[o.courier]||"郵差"}把信送到${c.name}手上了，${c.name}回信了！`:`信送到${c.where}了，${c.name}回信了！`)+(evT?"\n"+evT:""),{icon:"✉️",go:"postcard_mockup.html",level:evT?"card":"toast"});}
+        else if(evT&&c.kind==="drift")epNotify(evT,{icon:"🐾",level:"card"});
         if(c.kind==="drift"){
           const free=CANDIDATES.filter(x=>!CONTACTS.some(y=>y.id===x.id)&&!st.inbox.some(m=>m.from===x.id));
           const fit=free.filter(x=>o.cond.mode==="interest"?x.interest===o.cond.interest:o.cond.mode==="region"?x.where===o.cond.region:true);
@@ -802,7 +809,8 @@ document.addEventListener("click",e=>{
 });
 document.addEventListener("keydown",e=>{if(e.key==="Escape"&&RD)closeLetter();});
 document.addEventListener("click",e=>{
-  const t=e.target.closest("#rcpt,[data-endpen],[data-writeto],[data-delfriend],[data-del],[data-clearnotes],[data-to],[data-front],[data-courier],[data-tab],#flip,#go,[data-report],[data-block],[data-keep],[data-drop],[data-askfriend],[data-mmode],[data-mint],[data-mreg],[data-godrift],[data-penon],[data-restkit],[data-boxv],[data-oout]");if(!t)return;
+  const t=e.target.closest("#rcpt,[data-endpen],[data-writeto],[data-delfriend],[data-del],[data-clearnotes],[data-to],[data-front],[data-courier],[data-tab],#flip,#go,[data-report],[data-block],[data-keep],[data-drop],[data-askfriend],[data-mmode],[data-mint],[data-mreg],[data-godrift],[data-penon],[data-restkit],[data-evuse],[data-boxv],[data-oout]");if(!t)return;
+  if(t.dataset.evuse){const k=t.dataset.evuse==="cloak"?"evCloak":"evLamp";st[k]=!st[k];render();return;}
   if(t.dataset.restkit){const r=useRestkit(st.courier,STA);if(r){saveSta();restMsg=`${NAME[st.courier]}休息了一下，體力 +${RESTKIT.sta}%${r.first?"，好感 +1":"（今天已經加過好感）"}`;}render();return;}
   if(t.id==="rcpt"){st.rcptOpen=!st.rcptOpen;render();return;}
   if(t.dataset.endpen){const id=t.dataset.endpen;if(st.frArm!==id){st.frArm=id;render();return;}
@@ -844,12 +852,15 @@ document.addEventListener("click",e=>{
     if(busyC(st.courier))return;
     const c=C(st.to),tr=trip(),pf=postage(c);
     if(pf.fee>loadFlowers())return;
+    /* 送信插曲（v0.62.0）：抽一次；延誤／順風只影響郵差負責的那段時間 */
+    const evr=evRoll(st.courier,NAME[st.courier],tr.intl?tr.leg1:tr.h,{cloak:st.evCloak,lamp:st.evLamp}),evx=evr&&evr.ev;
+    if(evx&&evx.speed!==1){const base=tr.intl?tr.leg1:tr.h,add=base*(evx.speed-1);tr.h+=add;if(tr.intl)tr.leg1+=add;}
     const TH=tr.h+(tr.intl?lastLeg().h:0),TK=TH/Math.max(60,TH*10);   /* 原型加速（v0.45.1）：每封信至少 60 秒，長路線每 1 小時 = 10 秒；TK＝每秒走幾小時 */
     STA[st.courier]=tr.after;STA_T[st.courier]=Date.now()+(tr.intl?Math.max(10,tr.leg1*10):tr.h/TK)*1000;saveSta();   // 送信途中不回復
     if(pf.fee){const n=loadFlowers()-pf.fee;try{localStorage.setItem(FLOWER_KEY,JSON.stringify(n))}catch(e){}updateFlowerHud(n);}
     {const ps=postState();if(!pf.reply)ps.sent++;if(!pf.fee)ps.free++;try{localStorage.setItem(POST_KEY,JSON.stringify(ps))}catch(e){}}
     st.inbox.filter(m=>m.from===c.id).forEach(m=>m.replied=true);
-    const o={to:c.id,tn:c.name,cn:NAME[st.courier],courier:st.courier,h:tr.h+(tr.intl?lastLeg().h:0),el:0,cond:{...mt},intl:tr.intl,hub:tr.hub,leg1:tr.leg1,hubKm:tr.hubKm,ikm:tr.ikm,est:tr.est,l3:tr.intl?lastLeg().h:0,fee:pf.fee,feeWhy:pf.why};o.k=TK;st.out.push(o);window.EPSFX&&EPSFX.play("send");st.text="";st.flip=false;st.tab="inbox";
+    const o={to:c.id,tn:c.name,cn:NAME[st.courier],courier:st.courier,h:tr.h+(tr.intl?lastLeg().h:0),el:0,cond:{...mt},intl:tr.intl,hub:tr.hub,leg1:tr.leg1,hubKm:tr.hubKm,ikm:tr.ikm,est:tr.est,l3:tr.intl?lastLeg().h:0,fee:pf.fee,feeWhy:pf.why};if(evx)o.ev=evx;o.k=TK;st.out.push(o);window.EPSFX&&EPSFX.play("send");st.text="";st.flip=false;st.tab="inbox";
     startTrip(o);
   }
   render();
