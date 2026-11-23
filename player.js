@@ -403,7 +403,87 @@ function adoptAch() {
     { t: "棲地老朋友", fl: 25, c: "同一個地點累積認養 3 次", title: "棲地老朋友", p: Math.min(3, MX), n: 3 }];
 }
 function _lsj(k, d) { try { return JSON.parse(localStorage.getItem(k) || "null") || d; } catch (e) { return d; } }
-function achPushNote(icon, text) { try { const b = _lsj("ep-box", {}); b.inbox = b.inbox || []; b.inbox.push({ sys: true, icon, text }); localStorage.setItem("ep-box", JSON.stringify(b)); } catch (e) {} }
+/* ===== 通知系統（v0.61.0）：收件匣只放「信」，其餘通知改成彈出。
+   例行的用小橫幅（3 秒自動消失，點一下可以跳到相關頁面）；重要的用卡片（按「知道了」）；
+   一次有 3 則以上、或離線期間發生的事，開啟遊戲後合併成一張卡。最近 20 則存在 ep-nhist（設定 → 通知 → 最近通知）。
+   用法：epNotify(文字, { icon, level: "toast"|"card", hist: true|false, go: "頁面.html", action: { label, fn, go } }) ===== */
+const EPN_HIST_KEY = "ep-nhist";
+let EPN_Q = [], EPN_T = 0, EPN_SHOW = [], EPN_CUR = false;
+function epnCss() {
+  if (document.getElementById("epn-css")) return;
+  const s = document.createElement("style"); s.id = "epn-css";
+  s.textContent = `#epn-toast{position:fixed;left:50%;top:calc(env(safe-area-inset-top,0px) + 56px);transform:translate(-50%,-14px);opacity:0;pointer-events:none;z-index:2147483000;width:max-content;max-width:min(92vw,360px);background:#fff8e7;color:#3d2a17;border:2px solid #5b3a1e;border-radius:14px;padding:9px 14px;font:700 14px/1.5 "Noto Sans TC",system-ui,sans-serif;box-shadow:0 5px 0 rgba(91,58,30,.25),0 10px 24px rgba(0,0,0,.2);transition:opacity .25s,transform .25s;cursor:pointer}
+#epn-toast.on{opacity:1;transform:translate(-50%,0);pointer-events:auto}#epn-toast i{font-style:normal;margin-right:6px}
+#epn-mask{position:fixed;inset:0;z-index:2147483001;background:rgba(40,28,14,.45);display:flex;align-items:center;justify-content:center;padding:20px}
+#epn-card{width:min(92vw,360px);max-height:80vh;overflow:auto;background:#fff8e7;color:#3d2a17;border:3px solid #5b3a1e;border-radius:22px;padding:18px 18px 16px;box-shadow:0 8px 0 #c9a46a,0 18px 40px rgba(0,0,0,.3);font:500 15px/1.6 "Noto Sans TC",system-ui,sans-serif}
+#epn-card h3{margin:0 0 8px;font-size:17px;font-weight:900}#epn-card .ln{display:flex;gap:8px;padding:6px 0;border-top:1px dashed #e4d3a8}#epn-card .ln:first-of-type{border-top:0}#epn-card .ln small{color:#7a6248;margin-left:auto;white-space:nowrap;padding-left:8px}
+#epn-card .btns{display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-end;margin-top:12px}#epn-card button{font:inherit;font-weight:900;font-size:15px;border:2px solid #386b1f;border-radius:99px;padding:8px 18px;cursor:pointer;background:#fffdf6;color:#386b1f}#epn-card button.pri{background:linear-gradient(#7fc04a,#4f8a2b);color:#fff}`;
+  document.head.appendChild(s);
+}
+function epnShow(it) { EPN_SHOW.push(it); if (!EPN_CUR) epnNext(); }
+function epnNext() {
+  const it = EPN_SHOW.shift(); if (!it) { EPN_CUR = false; return; }
+  EPN_CUR = true; epnCss();
+  if (it.type === "toast") {
+    let t = document.getElementById("epn-toast");
+    if (!t) { t = document.createElement("div"); t.id = "epn-toast"; t.setAttribute("role", "status"); document.body.appendChild(t); }
+    t.textContent = ""; const ic = document.createElement("i"); ic.textContent = it.icon || "🔔"; t.appendChild(ic); t.appendChild(document.createTextNode(it.text));
+    let done = false; const fin = () => { if (done) return; done = true; t.classList.remove("on"); setTimeout(epnNext, 300); };
+    t.onclick = () => { if (it.go) goTo(it.go); fin(); };
+    void t.offsetWidth; t.classList.add("on"); setTimeout(fin, 3400);
+  } else {
+    const m = document.createElement("div"); m.id = "epn-mask"; m.setAttribute("role", "dialog"); m.setAttribute("aria-modal", "true");
+    const c = document.createElement("div"); c.id = "epn-card"; m.appendChild(c);
+    if (it.title) { const h = document.createElement("h3"); h.textContent = it.title; c.appendChild(h); }
+    (it.lines || []).forEach(l => { const d = document.createElement("div"); d.className = "ln"; const i = document.createElement("span"); i.textContent = l.icon || "🔔"; const s = document.createElement("span"); s.textContent = l.text; d.append(i, s); if (l.when) { const w = document.createElement("small"); w.textContent = l.when; d.appendChild(w); } c.appendChild(d); });
+    const bt = document.createElement("div"); bt.className = "btns"; c.appendChild(bt);
+    const close = () => { document.removeEventListener("keydown", esc); m.remove(); setTimeout(epnNext, 150); };
+    const esc = e => { if (e.key === "Escape") close(); };
+    (it.actions || []).forEach(a => { const b = document.createElement("button"); b.className = "pri"; b.textContent = a.label; b.onclick = () => { close(); try { a.fn && a.fn(); } catch (e) {} if (a.go) goTo(a.go); }; bt.appendChild(b); });
+    const ok = document.createElement("button"); ok.textContent = "知道了"; ok.onclick = close; bt.appendChild(ok);
+    m.addEventListener("click", e => { if (e.target === m) close(); }); document.addEventListener("keydown", esc);
+    document.body.appendChild(m); try { ok.focus(); } catch (e) {}
+  }
+}
+function epNotify(text, o) {
+  o = o || {};
+  EPN_Q.push({ icon: o.icon || "🔔", text: String(text), level: o.level || "toast", hist: o.hist !== false, go: o.go || "", action: o.action || null, at: Date.now() });
+  clearTimeout(EPN_T); EPN_T = setTimeout(epnFlush, 700);   // 0.7 秒內發生的合併處理（開啟遊戲時一次掃出好幾件事）
+}
+function epnFlush() {
+  const items = EPN_Q.splice(0); if (!items.length) return;
+  const hs = items.filter(x => x.hist);
+  if (hs.length) { try { const h = _lsj(EPN_HIST_KEY, []).concat(hs.map(x => ({ icon: x.icon, text: x.text, at: x.at }))); localStorage.setItem(EPN_HIST_KEY, JSON.stringify(h.slice(-20))); } catch (e) {} }
+  if (items.length >= 3) {
+    const early = (typeof performance !== "undefined" ? performance.now() : 99999) < 6000;
+    epnShow({ type: "card", title: early ? "你不在的時候" : "剛剛發生的事", lines: items.map(x => ({ icon: x.icon, text: x.text })), actions: items.filter(x => x.action).map(x => x.action) });
+    return;
+  }
+  items.forEach(x => x.level === "card" ? epnShow({ type: "card", lines: [{ icon: x.icon, text: x.text }], actions: x.action ? [x.action] : [] }) : epnShow({ type: "toast", icon: x.icon, text: x.text, go: x.go }));
+}
+function epShowHistory() {   // 設定 → 通知 → 最近通知
+  const h = _lsj(EPN_HIST_KEY, []).slice().reverse(), now = new Date();
+  const fmt = t => { const d = new Date(t), hh = String(d.getHours()).padStart(2, "0") + ":" + String(d.getMinutes()).padStart(2, "0"); return d.toDateString() === now.toDateString() ? hh : (d.getMonth() + 1) + "/" + d.getDate() + " " + hh; };
+  epnShow({ type: "card", title: "最近通知（最多 20 則）", lines: h.length ? h.map(x => ({ icon: x.icon, text: x.text, when: fmt(x.at) })) : [{ icon: "🔔", text: "還沒有通知。" }], actions: [] });
+}
+/* 離線期間送達的信：在「不是明信片頁」的頁面，開啟時掃一次，彈出「信送到了」；明信片頁自己在送達時彈（兩邊用 o.nd 避免重複） */
+function epDeliverySweep() {
+  try {
+    if (typeof startTrip !== "undefined") return;
+    const b = _lsj("ep-box", null); if (!b || !Array.isArray(b.out)) return;
+    const set = _lsj("ep-settings", {}), now = Date.now(); let ch = false;
+    b.out.forEach(o => {
+      if (!o.nd && o.h > 0 && advanceTrip(o, Math.max(0, (now - (o.savedAt || now)) / 1000)) >= o.h) {
+        o.nd = 1; ch = true;
+        if (set.nArrive !== false) epNotify(`${o.cn ? o.cn + "把" : ""}信送到${o.tn ? o.tn + "手上" : "對方那裡"}了！到「明信片」看看有沒有回信。`, { icon: "✉️", go: "postcard_mockup.html" });
+      }
+    });
+    if (ch) localStorage.setItem("ep-box", JSON.stringify(b));
+  } catch (e) {}
+}
+(function () { const go = () => setTimeout(epDeliverySweep, 800); if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", go); else go(); })();
+
+function achPushNote(icon, text) { try { epNotify(text, { icon, level: "card" }); } catch (e) {} }   // 成就等重要通知：彈出卡片（v0.61.0，不再塞進收件匣）
 function achSync(list) {   // 新達成的成就：收件匣送一則通知（每個成就只通知一次）
   const done = _lsj("ep-ach-notified", []), claimed = _lsj("ep-ach", {});
   list.forEach(a => { if (a.p >= a.n && !claimed[a.t] && !done.includes(a.t)) { done.push(a.t); achPushNote("🏅", `達成成就「${a.t}」！到「我的 → 成就」領取 ${a.fl} 朵小花和稱號。`); } });
@@ -460,9 +540,8 @@ function mailDotCount() {
   if (!b) return 0;
   const inbox = b.inbox || [], now = Date.now();
   const unread = inbox.filter(m => m.from && !m.read).length;
-  const newNotes = Math.max(0, inbox.filter(m => !m.from).length - (+localStorage.getItem("ep-box-seen") || 0));
   const arrived = (b.out || []).filter(o => o.h > 0 && advanceTrip(o, Math.max(0, (now - (o.savedAt || now)) / 1000)) >= o.h).length;
-  return unread + newNotes + arrived;
+  return unread + arrived;   // v0.61.0：通知改成彈出，紅點只看「未讀的信」與「剛送達、還沒處理的信」
 }
 function updateAchDot() {   // 底部導覽的紅點：「我的」（成就與新東西）與「明信片」（信與通知）
   if (!document.getElementById("achdot-css")) { const st = document.createElement("style"); st.id = "achdot-css"; st.textContent = ".modes a{position:relative}.achdot{position:absolute;top:.6cqw;left:calc(50% + 1.2cqw);width:1.6cqw;height:1.6cqw;border-radius:50%;background:#d93c2b;border:.25cqw solid #fff8e7;pointer-events:none}"; document.head.appendChild(st); }
@@ -487,8 +566,7 @@ function fullSweep() {
       if (sta[k] >= 100) {
         if (!notified.includes(k)) { notified.push(k); ch = true; if (!first) {
           const nm = (typeof NAME !== "undefined" && NAME[k]) || k, text = `${nm}休息好了，體力回滿，可以出發寄信了！`;
-          if (typeof st !== "undefined" && st && Array.isArray(st.inbox) && typeof render === "function") { st.inbox.push({ sys: true, icon: "🔋", text }); render(); }   // 明信片頁開著：直接加進畫面上的收件匣，避免被存檔蓋掉
-          else achPushNote("🔋", text);
+          epNotify(text, { icon: "🔋" });   // v0.61.0：改成彈出小橫幅，不再塞進收件匣
         } }
       } else if (notified.includes(k)) { notified.splice(notified.indexOf(k), 1); ch = true; }
     }
@@ -496,7 +574,7 @@ function fullSweep() {
   } catch (e) {}
 }
 (function () { const go = () => { setTimeout(fullSweep, 1500); setInterval(fullSweep, 30000); }; if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", go); else go(); })();
-const BUILD = { name: "測試版", ver: "v0.60.0", date: "2026-11-15" };
+const BUILD = { name: "測試版", ver: "v0.61.0", date: "2026-11-15" };
 const BUILD_LABEL = `${BUILD.name} ${BUILD.ver}（${BUILD.date}）`;
 (function addBuildBadge() {
   const put = () => {

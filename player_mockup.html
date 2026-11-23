@@ -473,7 +473,7 @@ function settings(){
      ${T("guard","移動中保護","時速超過 20 km（例如在車上）時暫停探索")}
      ${S("src","時段與天氣",{auto:"自動",manual:"手動（原型）"},"自動＝現實時鐘與真實天氣")}</div>
     <div class="sgroup"><h3>個人資料</h3><div class="srow"><div><div class="k">城市（必填）</div><div class="d">好友看得到；筆友只看到國家</div></div><select class="field" id="cityS" style="width:12cqw;font-size:1.1cqw;padding:.3cqw .6cqw">${cityOptions(SET.city)}</select></div></div>
-    <div class="sgroup"><h3>通知</h3>${T("nArrive","信件送達")}${T("nFull","郵差體力回滿")}${T("nNear","附近有可探索的地點")}</div>
+    <div class="sgroup"><h3>通知</h3>${T("nArrive","信件送達")}${T("nFull","郵差體力回滿")}${T("nNear","附近有可探索的地點")}${A("最近通知","nhist","送信完成、小禮物、成就等最近 20 則通知（通知會彈出，不再放進收件匣）")}</div>
     <div class="sgroup"><h3>聲音</h3>${V("music","音樂")}${V("sfx","音效")}${T("mute","靜音")}</div>
     <div class="sgroup"><h3>語言</h3>${S("lang","介面語言",{"zh-Hant":"繁體中文"},"其他語言隨地區擴展加入")}</div>
     <div class="sgroup"><h3>安全</h3>${A("重看安全提醒","safety")}${A("重看教學","tutorial")}</div>
@@ -493,6 +493,7 @@ document.addEventListener("click",e=>{
     if(t.dataset.act2==="tutorial"||t.dataset.act2==="safety"){location.href=`player_mockup.html${t.dataset.act2==="safety"?"?step=1":""}`;}
     if(t.dataset.act2==="clear"){if(!SET._arm){SET._arm=true;render();return;}try{Object.keys(localStorage).filter(k=>k.startsWith("ep-")).forEach(k=>localStorage.removeItem(k))}catch(_){}location.href="player_mockup.html";return;}
     if(t.dataset.act2==="demo"){resetDex(false);try{const x=JSON.parse(localStorage.getItem("ep-send")||"{}");delete x.sta;delete x.staT;delete x.staTk;localStorage.setItem("ep-send",JSON.stringify(x));}catch(_){}try{if(!localStorage.getItem("ep-onboarded"))localStorage.setItem("ep-onboarded",new Date().toISOString().slice(0,10));}catch(_){}SET._demo=true;render();return;}
+    if(t.dataset.act2==="nhist"){epShowHistory();return;}
     if(t.dataset.act2==="about"){SET._about=!SET._about;render();return;}
     if(t.closest("#go2"))location.href="profile_mockup.html";
     return;

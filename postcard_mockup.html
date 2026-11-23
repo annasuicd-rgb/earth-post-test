@@ -567,21 +567,21 @@ const mt={mode:"random",interest:"黑冠麻鷺",region:"日本"};
 const NO_REPLY=.35,REASSIGN_DAYS=3,REASSIGN_MAX=3;
 function deliverMatch(o,pool,tries=0,skip=[]){
   const left=pool.filter(x=>!skip.includes(x.id));
-  if(!left.length){st.inbox.push({sys:true,text:"目前沒有其他符合條件的玩家，明信片會繼續等待配對。"});render();return;}
+  if(!left.length){epNotify("目前沒有其他符合條件的玩家，明信片會繼續等待配對。",{icon:"🔁",hist:false});render();return;}
   const src=left[Math.floor(Math.random()*left.length)];
   if((st.forceNoReply||Math.random()<NO_REPLY)&&tries<REASSIGN_MAX){
     st.forceNoReply=false;
-    st.inbox.push({sys:true,text:`配對明信片已送到一位玩家手上，但對方 ${REASSIGN_DAYS} 天沒有回信，已改配給另一位（第 ${tries+1} 次改配）。`});render();
+    epNotify(`配對明信片已送到一位玩家手上，但對方 ${REASSIGN_DAYS} 天沒有回信，已改配給另一位（第 ${tries+1} 次改配）。`,{icon:"🔁"});render();
     setTimeout(()=>deliverMatch(o,pool,tries+1,skip.concat(src.id)),3000);return;}
   const r=replyVia(src.where,o);
-  st.inbox.push({fl:replyFlowers(),at:Date.now(),from:src.id,name:`${src.name}（配對到你的明信片）`,text:src.reply,tr:src.tr,match:true,via:r.via,front:r.card?r.card.id:null});addReplyCard(r.card,src.where,src.name,src.reply);if(addCountryStamp(src.where))st.inbox.push({cstamp:src.where});render();
+  st.inbox.push({fl:replyFlowers(),at:Date.now(),from:src.id,name:`${src.name}（配對到你的明信片）`,text:src.reply,tr:src.tr,match:true,via:r.via,front:r.card?r.card.id:null});addReplyCard(r.card,src.where,src.name,src.reply);if(addCountryStamp(src.where))epNotify(`新的國家郵戳：${src.where}！你的明信片第一次寄到${src.where}（小花 +${EARN.stamp}）`,{icon:"📮",level:"card"});if(ARR_ON())epNotify("配對明信片收到回信了！到收件匣看看。",{icon:"✉️"});render();
 }
 /* 回信抵達：記下送信生物與駐站生物，得到那種生物的明信片（T4、T5、T9、T10） */
 function replyVia(country,o){
   const f=pickForeign(country),hub=o.hub||nearestHub(ME_CITY).hub,sk=stationCourier(hub),station=NAME[sk],a=stationAff()[sk]||0,sp=stationPerk(a).speed;
   return f?{via:{country,out:f.name,hub,station,aff:a,speed:sp},card:f}:{via:null,card:null};
 }
-function addReplyCard(card,country,from,text){if(!card)return;const isNew=addPCard({id:card.id,country,from,text});st.inbox.push({pcard:card.id,isNew});}
+function addReplyCard(card,country,from,text){if(!card)return;const isNew=addPCard({id:card.id,country,from,text});if(isNew)epNotify(`明信片冊新增：${(FOREIGN_BY_ID[card.id]||{}).name||"新的送信生物"}（來自${country}）`,{icon:"🖼️"});}
 const condText=()=>mt.mode==="interest"?`興趣：${mt.interest}`:mt.mode==="region"?`地區：${mt.region}`:"隨機配對";
 /* 好友上限（v0.39.20，使用者決定）：起始 6 位，每 5 級 +2；滿了不能再加，可刪除好友後再加 */
 const isFr=c=>c.kind==="friend"||c.isFriend;
@@ -624,9 +624,9 @@ function lastLeg(){const hub=nearestHub(ME_CITY),sk=stationCourier(hub.hub),a=st
   const base=Math.max(5,hub.km)/100*8/(SPD[sk]||7);return {sk,a,speed:p.speed,base,h:base*(1-p.speed),gift:p.gift};}
 function stationGift(){const L=lastLeg();if(!L.gift||Math.random()>=L.gift)return;
   if(Math.random()<.5){try{const inv=JSON.parse(localStorage.getItem("ep-items")||"{}");inv.restkit=(inv.restkit||0)+1;localStorage.setItem("ep-items",JSON.stringify(inv));}catch(e){}
-    st.inbox.push({sys:true,icon:"🎒",text:`${MYHUB}郵站的${NAME[L.sk]}送回信時，順便帶來小禮物：郵差休息包 ×1（駐站好感 ${L.a}）`});}
+    epNotify(`${MYHUB}郵站的${NAME[L.sk]}送回信時，順便帶來小禮物：郵差休息包 ×1（駐站好感 ${L.a}）`,{icon:"🎒"});}
   else{const n=loadFlowers()+5;try{localStorage.setItem(FLOWER_KEY,JSON.stringify(n))}catch(e){}updateFlowerHud(n);
-    st.inbox.push({sys:true,icon:"🌸",text:`${MYHUB}郵站的${NAME[L.sk]}送回信時，順便帶來小禮物：小花 ×5（駐站好感 ${L.a}）`});}}
+    epNotify(`${MYHUB}郵站的${NAME[L.sk]}送回信時，順便帶來小禮物：小花 ×5（駐站好感 ${L.a}）`,{icon:"🌸"});}}
 const fmtH=h=>h>=1?`${Math.floor(h)} 小時${Math.round((h%1)*60)?` ${Math.round((h%1)*60)} 分`:""}`:`${Math.round(h*60)} 分鐘`;
 
 function renderContacts(){
@@ -710,22 +710,19 @@ function renderPanel(){
   }else{
     document.getElementById("note").textContent="收件匣　送達與回信（假資料）";
     /* 收件匣分成「信件」和「通知」兩類（v0.24.6，使用者回報：通知和明信片混在一起很亂） */
-    const isMail=m=>!!m.from,mailN=st.inbox.filter(isMail).length,unreadN=st.inbox.filter(m=>m.from&&!m.read).length,noteN=st.inbox.length-mailN,noteNew=Math.max(0,noteN-boxSeen());
-    if(st.boxView==="note")markSeen(noteN);
-    h+=`<div class="rowsel" style="display:flex;gap:.6cqw;margin:0 0 .6cqw"><button class="chip${st.boxView!=="note"?" on":""}" data-boxv="mail">✉️ 信件（${mailN+st.out.length}）${unreadN?`<b style="color:#b1392d;margin-left:.3cqw">未讀 ${unreadN}</b>`:""}</button><button class="chip${st.boxView==="note"?" on":""}" data-boxv="note">🔔 通知（${noteN}）${noteNew&&st.boxView!=="note"?`<b style="color:#b1392d;margin-left:.3cqw">新 ${noteNew}</b>`:""}</button></div>`;
-    if(st.boxView==="note"&&noteN>1)h+=`<div style="display:flex;justify-content:flex-end;margin:0 0 .5cqw"><button class="btn sm" data-clearnotes="1">全部清除通知</button></div>`;
-    if(st.boxView!=="note")h+=st.out.map((o,oi)=>{const stage=!o.intl?0:o.el<o.leg1?0:o.el<o.h-(o.l3||o.h*.1)?1:2;
+    const isMail=m=>!!m.from,mailN=st.inbox.filter(isMail).length,unreadN=st.inbox.filter(m=>m.from&&!m.read).length;
+    h+=`<div class="rowsel" style="display:flex;gap:.6cqw;margin:0 0 .6cqw"><span class="chip on" style="cursor:default">✉️ 信件（${mailN+st.out.length}）${unreadN?`<b style="color:#b1392d;margin-left:.3cqw">未讀 ${unreadN}</b>`:""}</span></div>`;
+    h+=st.out.map((o,oi)=>{const stage=!o.intl?0:o.el<o.leg1?0:o.el<o.h-(o.l3||o.h*.1)?1:2;
       const who=!o.intl?`${NAME[o.courier]}送信中`:[NAME[o.courier]+"送往"+o.hub+"郵站","國際轉運中","當地生物送到對方手上"][stage];
       return `<div class="row"><div class="ic">🚚</div><div style="min-width:0"><div class="lbl">寄給 ${esc(C(o.to).name)}・${who}</div><div class="prog"><i style="width:${Math.min(100,o.el/o.h*100)}%"></i></div>
       <div class="src">${o.intl?"全程":""}剩約 ${fmtH(Math.max(0,o.h-o.el))}｜🌸 ${o.fee?`已付郵資 ${o.fee} 朵`:`郵資免費（${o.feeWhy}）`}</div>
       ${o.intl?`<div class="btns" style="display:flex;margin-top:.3cqw"><button class="btn sm" data-oout="${oi}">${o.open?"收起三步進度 ▴":"看三步進度 ▾"}</button></div>${o.open?`<div class="tsteps">${tripSteps(o)}</div>`:""}`:""}</div></div>`;}).join("");
-    h+=st.inbox.map((m,j)=>[m,j]).reverse().filter(([m])=>st.boxView==="note"?!isMail(m):isMail(m)).map(([m,j])=>{const R=(()=>{if(m.cstamp)return `<div class="row good"><div class="ic">📮</div><div class="arrive"><div class="stampcell">${countryStampSVG(m.cstamp,true,loadCountryStamps()[m.cstamp])}</div><div><div class="lbl">新的國家郵戳：${esc(m.cstamp)}</div><div class="val sm">你的明信片第一次寄到${esc(m.cstamp)}！</div><div class="src">🌸 小花 +${EARN.stamp}</div></div></div></div>`;if(m.sys)return `<div class="row"><div class="ic">${m.icon||"🔁"}</div><div><div class="val sm">${esc(m.text)}</div>${m.penBtn&&!st.penOn?`<div class="btns" style="display:flex;margin-top:.4cqw"><button class="btn sm pri" data-penon="1">前往設定：開啟筆友</button></div>`:""}</div></div>`;if(m.pcard){const f=FOREIGN_BY_ID[m.pcard];return `<div class="row good"><div class="ic">🖼️</div><div><div class="lbl">${m.isNew?"新的明信片":"又收到一張明信片"}：${esc(f.name)}（來自${esc(f.country)}）</div><div class="val sm">已收進「我的 → 明信片冊」；寫明信片時可以選為特別明信片樣式</div><div class="src">送信生物與小知識：部分查核（GPT 查證草稿）</div></div></div>`;}const c2=C(m.from);return `<div class="row${m.read?"":" unread"}" style="grid-template-columns:1fr"><div class="mailitem"><span class="fc">${face(c2)}</span><div>
+    h+=st.inbox.map((m,j)=>[m,j]).reverse().filter(([m])=>isMail(m)).map(([m,j])=>{const R=(()=>{if(m.cstamp)return `<div class="row good"><div class="ic">📮</div><div class="arrive"><div class="stampcell">${countryStampSVG(m.cstamp,true,loadCountryStamps()[m.cstamp])}</div><div><div class="lbl">新的國家郵戳：${esc(m.cstamp)}</div><div class="val sm">你的明信片第一次寄到${esc(m.cstamp)}！</div><div class="src">🌸 小花 +${EARN.stamp}</div></div></div></div>`;if(m.sys)return `<div class="row"><div class="ic">${m.icon||"🔁"}</div><div><div class="val sm">${esc(m.text)}</div>${m.penBtn&&!st.penOn?`<div class="btns" style="display:flex;margin-top:.4cqw"><button class="btn sm pri" data-penon="1">前往設定：開啟筆友</button></div>`:""}</div></div>`;if(m.pcard){const f=FOREIGN_BY_ID[m.pcard];return `<div class="row good"><div class="ic">🖼️</div><div><div class="lbl">${m.isNew?"新的明信片":"又收到一張明信片"}：${esc(f.name)}（來自${esc(f.country)}）</div><div class="val sm">已收進「我的 → 明信片冊」；寫明信片時可以選為特別明信片樣式</div><div class="src">送信生物與小知識：部分查核（GPT 查證草稿）</div></div></div>`;}const c2=C(m.from);return `<div class="row${m.read?"":" unread"}" style="grid-template-columns:1fr"><div class="mailitem"><span class="fc">${face(c2)}</span><div>
       <div class="lbl">${m.read?"":`<span class="udot"></span>`}${esc(m.name)}・${esc(c2.where)}${m.read?"":`<span class="badge" style="margin-left:.5cqw;background:#b1392d;color:#fff">未讀</span>`}${m.fl?`<span class="badge b-g" style="margin-left:.5cqw">🌸 +${m.fl}</span>`:""}</div><div class="val sm">${esc(m.text.length>16?m.text.slice(0,16)+"…":m.text)}</div>
       ${(()=>{const t=[m.match&&m.decided&&!(m.decided==="keep"&&c2.isFriend)?(m.decided==="keep"?"已成為筆友":"已結束這段配對"):"",c2.kind==="pen"?(c2.isFriend?"已是好友":""):""].filter(Boolean);return t.length?`<div class="src" style="margin-top:.2cqw">${t.join("・")}</div>`:""})()}
       <div class="btns mailbtns" style="margin-top:.3cqw;display:flex;flex-wrap:wrap;align-items:center;gap:.4cqw"><button class="btn sm pri" data-open="${j}">打開</button>${m.match&&!m.decided?`<button class="btn sm pri" data-keep="${m.from}" ${penCount()>=PEN_MAX?"disabled":""}>繼續通信（成為筆友）</button><button class="btn sm" data-drop="${m.from}">不繼續</button>`:""}<button class="btn sm" data-report="${m.from}">檢舉</button><button class="btn sm" data-block="${m.from}">封鎖</button></div>
     </div></div></div>`})();return addDel(R,j,m)}).join("");
-    if(st.boxView==="note"&&!noteN)h+=`<div class="row"><div class="ic">🔔</div><div class="val sm">還沒有通知。新郵戳、新明信片、小禮物會出現在這裡。</div></div>`;
-    if(st.boxView!=="note"&&!mailN&&!st.out.length)h+=`<div class="row"><div class="ic">📭</div><div class="val sm">還沒有信。寄一張明信片試試看！</div></div>`;
+    if(!mailN&&!st.out.length)h+=`<div class="row"><div class="ic">📭</div><div class="val sm">還沒有信。寄一張明信片試試看！</div></div>`;
   }
   document.getElementById("rows").innerHTML=h;
   /* 按鈕寫「派 郵差名字 寄出」（2026-11-11 使用者決定，原本固定寫「寄出」）：背面還沒寫字、或有其他問題時是灰色不能按；寫了字才變綠色可以按。原因寫在上方的提示列 */
@@ -747,27 +744,29 @@ function tripRate(o){if(!o.intl||!o.l3)return o.k||2;
 function startTrip(o){const c=C(o.to);if(!c)return;
   const iv=setInterval(()=>{o.el+=tripRate(o);
       if(o.el>=o.h){clearInterval(iv);st.out=st.out.filter(x=>x!==o);
+        if(!o.nd&&c.kind!=="drift"&&ARR_ON()){o.nd=1;epNotify(c.kind==="friend"?`${NAME[o.courier]||"郵差"}把信送到${c.name}手上了，${c.name}回信了！`:`信送到${c.where}了，${c.name}回信了！`,{icon:"✉️",go:"postcard_mockup.html"});}
         if(c.kind==="drift"){
           const free=CANDIDATES.filter(x=>!CONTACTS.some(y=>y.id===x.id)&&!st.inbox.some(m=>m.from===x.id));
           const fit=free.filter(x=>o.cond.mode==="interest"?x.interest===o.cond.interest:o.cond.mode==="region"?x.where===o.cond.region:true);
           const pool=fit.length?fit:free;
           deliverMatch(o,pool);stationGift();
-        }else if(c.kind==="friend"){st.inbox.push({fl:replyFlowers(),at:Date.now(),from:c.id,name:c.name,text:c.reply,tr:c.tr,front:FRIEND_FRONTS[Math.floor(Math.random()*FRIEND_FRONTS.length)]});}else{const r=replyVia(c.where,o);st.inbox.push({fl:replyFlowers(),at:Date.now(),from:c.id,name:c.name,text:c.reply,tr:c.tr,via:r.via,front:r.card?r.card.id:null});addReplyCard(r.card,c.where,c.name,c.reply);if(c.kind==="pen"&&addCountryStamp(c.where))st.inbox.push({cstamp:c.where});stationGift();}}
+        }else if(c.kind==="friend"){st.inbox.push({fl:replyFlowers(),at:Date.now(),from:c.id,name:c.name,text:c.reply,tr:c.tr,front:FRIEND_FRONTS[Math.floor(Math.random()*FRIEND_FRONTS.length)]});}else{const r=replyVia(c.where,o);st.inbox.push({fl:replyFlowers(),at:Date.now(),from:c.id,name:c.name,text:c.reply,tr:c.tr,via:r.via,front:r.card?r.card.id:null});addReplyCard(r.card,c.where,c.name,c.reply);if(c.kind==="pen"&&addCountryStamp(c.where))epNotify(`新的國家郵戳：${c.where}！你的明信片第一次寄到${c.where}（小花 +${EARN.stamp}）`,{icon:"📮",level:"card"});stationGift();}}
       render();},1000);
 }
 /* 收件匣保存（v0.23.1）：收到的信、送信中的明信片、封鎖名單、留下來的筆友存在 ep-box；關掉再開會接著算 */
 const BOX_KEY="ep-box";let RM_FR=[];
+const ARR_ON=()=>{try{return JSON.parse(localStorage.getItem("ep-settings")||"{}").nArrive!==false}catch(e){return true}};   /* 設定 → 通知 → 信件送達 */
 const boxSeen=()=>{try{return +localStorage.getItem("ep-box-seen")||0}catch(e){return 0}};
 const markSeen=n=>{try{localStorage.setItem("ep-box-seen",String(n))}catch(e){}};
 /* 好友邀請（v0.34.0）：筆友是假資料，邀請送出幾秒後對方「同意」，筆友轉到「好友」名單（寄信規則仍照筆友＝國外）。 */
-function acceptFriend(id){const c=CONTACTS.find(x=>x.id===id);if(!c||c.isFriend)return;if(friendFull()){delete c.friendAsk;st.inbox.filter(m=>m.from===id).forEach(m=>{delete m.friendAsk});st.inbox.push({sys:true,icon:"🤝",text:`${c.name}想成為好友，但你的好友已滿（${friendCount()}／${friendMax()}）。刪除一位好友或升級後再邀請一次。`});render();return;}c.isFriend=true;
-  st.inbox.push({sys:true,icon:"🤝",text:`${c.name}同意了你的好友邀請！現在 ${c.name} 在「好友」名單裡，你也看得到對方填的城市與頭貼。`});render();}
+function acceptFriend(id){const c=CONTACTS.find(x=>x.id===id);if(!c||c.isFriend)return;if(friendFull()){delete c.friendAsk;st.inbox.filter(m=>m.from===id).forEach(m=>{delete m.friendAsk});epNotify(`${c.name}想成為好友，但你的好友已滿（${friendCount()}／${friendMax()}）。刪除一位好友或升級後再邀請一次。`,{icon:"🤝",level:"card"});render();return;}c.isFriend=true;
+  epNotify(`${c.name}同意了你的好友邀請！現在 ${c.name} 在「好友」名單裡，你也看得到對方填的城市與頭貼。`,{icon:"🤝",level:"card"});render();}
 function saveBox(){try{localStorage.setItem(BOX_KEY,JSON.stringify({inbox:st.inbox,blocked:st.blocked,out:st.out.map(o=>({...o,savedAt:Date.now()})),kept:CONTACTS.filter(c=>c.kept),friends:CONTACTS.filter(c=>c.isFriend).map(c=>c.id),rmFr:RM_FR}));}catch(e){}}
 function loadBox(){let b;try{b=JSON.parse(localStorage.getItem(BOX_KEY)||"null");}catch(e){}if(!b)return;
   (b.kept||[]).forEach(k=>{if(!CONTACTS.some(c=>c.id===k.id))CONTACTS.splice(CONTACTS.findIndex(x=>x.kind==="drift"),0,k);});
   (b.rmFr||[]).forEach(id=>{const i=CONTACTS.findIndex(x=>x.id===id);if(i>=0)CONTACTS.splice(i,1);RM_FR.push(id);});
   (b.friends||[]).forEach(id=>{const c=CONTACTS.find(x=>x.id===id);if(c)c.isFriend=true;});
-  st.inbox=b.inbox||[];st.blocked=b.blocked||[];
+  st.inbox=(b.inbox||[]).filter(m=>!!m.from);st.blocked=b.blocked||[];   /* v0.61.0：收件匣只放信，舊的通知不再顯示 */
   st.inbox.filter(m=>m.friendAsk&&m.from).forEach(m=>{const c=CONTACTS.find(x=>x.id===m.from);if(c&&!c.isFriend)setTimeout(()=>acceptFriend(m.from),3000);});   // 重新整理時還在等的邀請，繼續等
   (b.out||[]).forEach(o=>{o.el=(o.el||0)+Math.max(0,(Date.now()-(o.savedAt||Date.now()))/1000*(o.k||2));delete o.savedAt;st.out.push(o);startTrip(o);});}
 function addDel(R,j,m){const arm=m.from&&st.delArm===j,b=`<button class="xdel${arm?" arm":""}" data-del="${j}" aria-label="${arm?"確定刪除這封信":"刪除"}">${arm?"確定刪除？":"✕"}</button>`;return R.replace(/^(\s*<div class="row[^>]*>)/,"$1"+b);}
@@ -809,13 +808,13 @@ document.addEventListener("click",e=>{
   if(t.dataset.endpen){const id=t.dataset.endpen;if(st.frArm!==id){st.frArm=id;render();return;}
     const c=CONTACTS.find(x=>x.id===id);st.frArm=null;
     if(c){CONTACTS.splice(CONTACTS.indexOf(c),1);RM_FR.push(id);if(st.to===id)st.to="f1";
-      st.inbox.push({sys:true,icon:"✉️",text:`已結束與「${c.name}」的通信。筆友名額 ${penCount()}／${PEN_MAX}，可以再配對新的筆友了。`});}
+      epNotify(`已結束與「${c.name}」的通信。筆友名額 ${penCount()}／${PEN_MAX}，可以再配對新的筆友了。`,{icon:"✉️",hist:false});}
     render();return;}
   if(t.dataset.writeto){const c=C(t.dataset.writeto);if(!allowed(c))return;st.to=c.id;st.tab="write";st.view="";st.flip=true;st.rcptOpen=false;render();return;}
   if(t.dataset.delfriend){const id=t.dataset.delfriend;if(st.frArm!==id){st.frArm=id;render();return;}
     const c=CONTACTS.find(x=>x.id===id);st.frArm=null;
     if(c){if(c.kind==="friend"){CONTACTS.splice(CONTACTS.indexOf(c),1);RM_FR.push(id);}else{c.isFriend=false;delete c.friendAsk;st.inbox.filter(m=>m.from===id).forEach(m=>{delete m.friendAsk});}
-      st.inbox.push({sys:true,icon:"🤝",text:`已刪除好友「${c.name}」。好友名額 ${friendCount()}／${friendMax()}。`});
+      epNotify(`已刪除好友「${c.name}」。好友名額 ${friendCount()}／${friendMax()}。`,{icon:"🤝",hist:false});
       st.to=(CONTACTS.find(isFr)||CONTACTS[0]).id;}
     render();return;}
   if(t.dataset.del!==undefined){const j=+t.dataset.del,m=st.inbox[j];if(!m)return;
@@ -824,7 +823,7 @@ document.addEventListener("click",e=>{
   if(t.dataset.clearnotes){st.inbox=st.inbox.filter(m=>!!m.from);st.delArm=null;render();return;}
   if(t.dataset.oout!==undefined){const o=st.out[+t.dataset.oout];if(o){o.open=!o.open;saveBox();render();}return;}
   if(t.dataset.boxv){st.delArm=null;st.boxView=t.dataset.boxv;render();return;}
-  if(t.dataset.penon){st.penOn=true;st.inbox.push({sys:true,icon:"⚙️",text:"已在設定開啟筆友功能，可以到「找筆友」寄配對明信片了。"});render();return;}
+  if(t.dataset.penon){st.penOn=true;epNotify("已在設定開啟筆友功能，可以到「找筆友」寄配對明信片了。",{icon:"⚙️",hist:false});render();return;}
   if(t.dataset.mmode){mt.mode=t.dataset.mmode;render();return;}
   if(t.dataset.mint){mt.interest=t.dataset.mint;render();return;}
   if(t.dataset.mreg){mt.region=t.dataset.mreg;render();return;}
@@ -838,9 +837,9 @@ document.addEventListener("click",e=>{
   else if(t.dataset.courier){if(busyC(t.dataset.courier))return;st.courier=t.dataset.courier;restMsg="";saveLast();}
   else if(t.dataset.tab){st.tab=t.dataset.tab;if(st.tab==="match"&&!penLocked()&&penCount()<PEN_MAX)st.to="drift";}
   else if(t.id==="flip"){st.flip=!st.flip;}
-  else if(t.dataset.report){st.inbox.push({sys:true,text:"已送出檢舉（原型示意），我們會審查這封信。"});st.tab="inbox";}
+  else if(t.dataset.report){epNotify("已送出檢舉（原型示意），我們會審查這封信。",{icon:"🚩",hist:false});st.tab="inbox";}
   else if(t.dataset.block){st.blocked.push(t.dataset.block);st.inbox=st.inbox.filter(m=>m.from!==t.dataset.block);if(st.to===t.dataset.block)st.to="f1";}
-  else if(t.dataset.askfriend){if(friendFull())return;{const cc=CONTACTS.find(x=>x.id===t.dataset.askfriend);if(cc)cc.friendAsk=true;}st.inbox.filter(m=>m.from===t.dataset.askfriend).forEach(m=>m.friendAsk=true);st.inbox.push({sys:true,text:"已送出好友邀請，等對方回覆。雙方都同意後，才會看到對方自己填的城市與頭貼。（原型：幾秒後對方會同意）"});setTimeout(()=>acceptFriend(t.dataset.askfriend),4000);}
+  else if(t.dataset.askfriend){if(friendFull())return;{const cc=CONTACTS.find(x=>x.id===t.dataset.askfriend);if(cc)cc.friendAsk=true;}st.inbox.filter(m=>m.from===t.dataset.askfriend).forEach(m=>m.friendAsk=true);epNotify("已送出好友邀請，等對方回覆。雙方都同意後，才會看到對方自己填的城市與頭貼。（原型：幾秒後對方會同意）",{icon:"🤝",hist:false});setTimeout(()=>acceptFriend(t.dataset.askfriend),4000);}
   else if(t.id==="go"){
     if(busyC(st.courier))return;
     const c=C(st.to),tr=trip(),pf=postage(c);
@@ -850,7 +849,7 @@ document.addEventListener("click",e=>{
     if(pf.fee){const n=loadFlowers()-pf.fee;try{localStorage.setItem(FLOWER_KEY,JSON.stringify(n))}catch(e){}updateFlowerHud(n);}
     {const ps=postState();if(!pf.reply)ps.sent++;if(!pf.fee)ps.free++;try{localStorage.setItem(POST_KEY,JSON.stringify(ps))}catch(e){}}
     st.inbox.filter(m=>m.from===c.id).forEach(m=>m.replied=true);
-    const o={to:c.id,courier:st.courier,h:tr.h+(tr.intl?lastLeg().h:0),el:0,cond:{...mt},intl:tr.intl,hub:tr.hub,leg1:tr.leg1,hubKm:tr.hubKm,ikm:tr.ikm,est:tr.est,l3:tr.intl?lastLeg().h:0,fee:pf.fee,feeWhy:pf.why};o.k=TK;st.out.push(o);window.EPSFX&&EPSFX.play("send");st.text="";st.flip=false;st.tab="inbox";
+    const o={to:c.id,tn:c.name,cn:NAME[st.courier],courier:st.courier,h:tr.h+(tr.intl?lastLeg().h:0),el:0,cond:{...mt},intl:tr.intl,hub:tr.hub,leg1:tr.leg1,hubKm:tr.hubKm,ikm:tr.ikm,est:tr.est,l3:tr.intl?lastLeg().h:0,fee:pf.fee,feeWhy:pf.why};o.k=TK;st.out.push(o);window.EPSFX&&EPSFX.play("send");st.text="";st.flip=false;st.tab="inbox";
     startTrip(o);
   }
   render();
@@ -861,7 +860,7 @@ document.addEventListener("input",e=>{
 document.getElementById("age").addEventListener("change",e=>{
   st.age=e.target.value;st.minor=["teen","child","childnofam"].includes(st.age);
   st.penOn=st.age==="adult";
-  if(st.age==="adult18")st.inbox.push({sys:true,icon:"🎂",penBtn:true,text:"生日快樂！你已經滿 18 歲，現在可以開啟筆友功能，和其他國家的玩家通信。筆友不會自動開啟，想用的話到設定打開。（這封提醒只會寄一次）"});
+  if(st.age==="adult18")epNotify("生日快樂！你已經滿 18 歲，現在可以開啟筆友功能，和其他國家的玩家通信。筆友不會自動開啟，想用的話可以現在開啟。",{icon:"🎂",level:"card",action:{label:"開啟筆友功能",fn:()=>{st.penOn=true;epNotify("已開啟筆友功能，可以到「找筆友」寄配對明信片了。",{icon:"⚙️",hist:false});render();}}});
   if(penLocked()&&!isFr(C(st.to)))st.to="f1";render();});
 loadBox();
 /* 底部導覽「好友」「明信片」在本頁內切換檢視（?view=friends 從別的頁面過來） */
