@@ -302,6 +302,25 @@ body:has(.stage.pt){padding:0;overflow:hidden;align-items:stretch}
 .reader .back .msg .txt{font-size:1.45cqw;line-height:2.7cqw;color:var(--ink);white-space:pre-wrap;overflow:auto;flex:1;min-height:0}
 .reader .back .msg .trn{font-size:1.05cqw;line-height:1.6;color:var(--ink-2);margin-top:.4cqw;flex-shrink:0;max-height:45%;overflow:auto;border-top:.15cqw dashed #e2d3b0;padding-top:.3cqw}   /* 翻譯固定在下方，不被原文擠出明信片（v0.24.10） */
 .reader .back .to .ln small{display:block;font-size:.85cqw;color:var(--ink-2);font-weight:700}
+.sty{display:flex;align-items:center;gap:1cqw;margin-top:.3cqw}
+.sty .th{width:5.4cqw;height:5.4cqw;border-radius:50%;border:.25cqw solid var(--gold);background:var(--cream-2);overflow:hidden;display:grid;place-items:center;flex:none}
+.sty .th img{width:86%;height:86%;object-fit:contain}.sty .th .fx{font-size:2.6cqw}
+.sty .nm{flex:1;min-width:0}.sty .nm b{display:block;font-size:1.3cqw;line-height:1.3}.sty .nm small{display:block;font-size:1cqw;color:var(--ink-2);font-weight:700}
+.fpick{position:absolute;top:0;bottom:0;left:0;width:39cqw;z-index:60;background:rgba(40,28,10,.45);display:flex;align-items:flex-end}
+.fpick[hidden]{display:none}
+.fsheet{width:100%;height:78%;background:var(--cream);border-radius:3cqw 3cqw 0 0;border-top:.3cqw solid var(--cream-line);display:flex;flex-direction:column;padding:1.4cqw 1.6cqw calc(1.6cqw + var(--sb,0px));gap:.9cqw;box-shadow:0 -.8cqw 2cqw rgba(0,0,0,.2)}
+.fsheet .fhd{display:flex;align-items:center;justify-content:space-between;gap:1cqw}.fsheet .fhd b{font-size:1.6cqw;font-weight:900}
+.fsheet .fauto{align-self:flex-start;font-size:1.2cqw;padding:.4cqw 1.1cqw}.fsheet .fauto.on{background:#e4f3d2;border-color:#8bc34a;color:#386b1f}
+.ftabs{display:flex;gap:.5cqw;flex:none}.ftabs button{flex:1;font:inherit;font-weight:900;font-size:1.3cqw;padding:.7cqw 0;border:.2cqw solid var(--cream-line);background:var(--cream-2);color:var(--ink-2);border-radius:99px;cursor:pointer}
+.ftabs button.on{background:linear-gradient(#8bc34a,#5f9e34);color:#fff;border-color:#5f9e34}.ftabs button:disabled{opacity:.4;cursor:default}
+.fsearch{flex:none;width:100%;font:inherit;font-size:max(16px,1.5cqw);padding:.7cqw 1.4cqw;border:.2cqw solid var(--cream-line);border-radius:99px;background:#fffdf6;color:var(--ink)}
+.fgrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.8cqw .6cqw;overflow-y:auto;flex:1;min-height:0;align-content:start;-webkit-overflow-scrolling:touch}
+.fgrid .fi{border:0;background:transparent;display:flex;flex-direction:column;align-items:center;gap:.3cqw;font:inherit;cursor:pointer;padding:.3cqw 0;color:var(--ink)}
+.fgrid .fi .c{width:100%;max-width:8.6cqw;aspect-ratio:1;border-radius:50%;border:.25cqw solid var(--cream-line);background:var(--cream-2);overflow:hidden;display:grid;place-items:center}
+.fgrid .fi .c img{width:86%;height:86%;object-fit:contain}.fgrid .fi .c .fx{font-size:4.4cqw}
+.fgrid .fi.on .c{border-color:var(--gold);box-shadow:0 0 0 .35cqw #fff3c2}
+.fgrid .fi small{font-size:1.1cqw;font-weight:700;line-height:1.25;text-align:center;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.fgrid .none{grid-column:1/-1;text-align:center;color:var(--ink-2);font-size:1.3cqw;padding:3cqw 0}
 .pick{display:flex;gap:.5cqw;flex-wrap:wrap;margin-top:.3cqw}
 .pick button{width:3.6cqw;height:3.6cqw;border-radius:50%;border:.22cqw solid var(--cream-line);background:var(--cream-2);padding:0;overflow:hidden;cursor:pointer;display:grid;place-items:center}
 .busyline{color:#b1392d;font-weight:700}
@@ -463,6 +482,7 @@ body:has(.stage.pt){padding:0;overflow:hidden;align-items:stretch}
   </section>
   <div class="bar" id="bar"></div>
   <button class="go" id="go"><svg viewBox="0 0 72 56" aria-hidden="true"><use href="#env"/></svg><span id="goText">寄出明信片</span></button>
+  <div class="fpick" id="fpick" hidden></div>
 </main>
 
 <script src="player.js"></script>
@@ -550,21 +570,56 @@ const FRIEND_FRONTS=["heron","dog","butterfly","cat","bluemagpie","barbet","thru
 const ART={};[...new Set(MATES.concat(Object.keys(NAME)))].forEach(id=>{const im=new Image();im.onload=()=>{ART[id]=true;render()};im.src=`art/${id}.webp`;});
 function frontHTML(f){const info=PC_INFO[baseOf(f)]||FOREIGN_INFO[f];
   return `<div class="pcbg"${info?` style="background-image:url(art/ui/hab_${info[1]}.jpg)"`:""}></div><div class="reg">${fromOf(f)==="台灣"?"TAIWAN":(COUNTRY_EN[fromOf(f)]||"").toUpperCase()}</div><div class="cr${info&&info[0]?" left":""}">${art(f)}</div><div class="cap${info&&info[0]?" withfact":""}">${isSt(f)?`${NAME[baseOf(f)]}｜駐站明信片`:`${nm(f)}｜來自${fromOf(f)}`}</div>${isSt(f)?`<div class="stbadge">${MYHUB}郵站</div>`:""}${info&&info[0]?`<div class="fact"><b>小知識</b>${info[0]}</div>`:""}`;}
-/* 明信片正面：小知識（圖鑑「一句簡介」，真實資料）＋棲地背景，組裝時從 card_mockup.html 讀出 */
+/* 明信片正面：小知識（圖鑑「一句簡介」，真實資料）＋棲地背景，組裝時從 species.json 讀出 */
 const PC_INFO={"dolphin": ["只生活在台灣西海岸淺水區的白海豚，俗稱「媽祖魚」；出生時深灰，長大後變成粉白色。", "coast"], "heron": ["常在林下慢慢覓食的留鳥，以蚯蚓為主要食物；受驚時會伸頸靜止。", "park"], "dog": ["台灣原產的中型犬，三角形頭、杏仁眼、直立薄耳、鐮刀狀尾；FCI 於 2015 年正式承認。", "farm"], "cat": ["生活在人類聚落周邊、沒有固定飼主的家貓，多在清晨與黃昏活動。", "river"], "butterfly": ["台灣原生的斑蝶，幼蟲以夾竹桃科藤本植物為食。別名「青斑蝶」，和「東方淡紋青斑蝶」是不同種。", "park"], "macaque": ["日行、群居的猴子，在森林與岩地間活動，以植物性食物為主。", "forest"], "bluemagpie": ["台灣特有的鴉科鳥類，常成群活動，群飛時排成一列。", "forest"], "barbet": ["台灣特有種，頭部有藍、黃、紅、黑色塊；會在樹幹或枯木上挖洞築巢。", "park"], "thrush": ["全身深藍紫色、帶金屬光澤的特有鳥，常在溪邊岩石上活動。", "river"], "frog": ["台灣特有的綠色樹蛙，平時躲在樹上，繁殖時在水邊比較活躍。", "forest"], "eagle": ["中低海拔常見的猛禽，常利用熱氣流在天空緩慢盤旋。", "mountain"], "bpartridge": ["圓胖的地棲鳥，常在草叢和灌叢底下活動。", "farm"], "hare": ["在低丘陵、河岸草地常見的野兔，夜間和晨昏比較活躍。", "farm"], "civet": ["臉中央有一條白線的夜行動物，會爬樹，也會到果園找果實。", "farm"], "mikado": ["中高海拔森林的特有雉類，機警隱密，常在地面行走覓食。", "mountain"], "swinhoe": ["台灣特有的森林雉類，雄鳥有白色頭冠、白色背部和藍色身體。", "mountain"], "tpartridge": ["只分布在台灣山區森林的地棲鳥，臉部黑白分明，俗稱深山竹雞。", "mountain"], "warbler": ["在東亞北部繁殖的小型柳鶯，遷徙時偶爾經過台灣。", "park"], "viper": ["全身翠綠、尾端磚紅色的毒蛇，常在潮濕的溪溝、水池旁的樹枝上靜靜伏著。", "forest"], "badger": ["臉上有白色斑紋的夜行動物，白天躲在洞裡休息，黃昏後出來找蚯蚓。", "forest"], "babbler": ["台灣特有的留鳥，有向下彎的長嘴和白色眉線，喜歡在竹籬、灌叢底下活動。", "forest"], "yuhina": ["台灣特有的小鳥，頭上有栗褐色冠羽，常成群在中高海拔的樹冠活動。", "mountain"], "shrew": ["台灣原生的小型哺乳類，鼻子尖長、尾巴細長，住在中海拔的森林、竹林和灌叢。", "forest"], "flyingsq": ["台灣特有亞種的大型鼯鼠，夜晚出來活動，張開翼膜在樹與樹之間滑翔。", "mountain"], "squirrel": ["背上有三條深色縱紋的小松鼠，白天在森林的樹枝間活動，晚上睡在樹洞裡。", "mountain"], "keelback": ["台灣特有的蛇，白天活動，常在潮濕的林緣、灌叢和溪流附近，會吃蛙和蚯蚓。", "river"], "egret": ["全身白色的鷺鳥，黑嘴黑腳，腳趾卻是黃色，會在淺水裡慢慢找小魚。", "river"], "reefheron": ["海岸礁石邊的鷺鳥，有白色和深色兩種羽色，常在礁石附近覓食。", "coast"], "nheron": ["紅眼睛、黑頭頂的矮胖鷺鳥，白天常縮著脖子休息，黃昏才活躍。", "river"], "kingfisher": ["橘色肚子、藍色背的小鳥，會先停在枝頭，再俯衝下去抓魚。", "river"], "robin": ["白眉毛、橘紅色胸部的小鳥，常站在明顯的枝頭上抖動尾巴，不太怕人。", "mountain"], "liocichla": ["灰色頭頂、臉上有黃色斑塊的小鳥，是阿里山步道上常見的鳥。", "mountain"], "sparrow": ["栗色頭頂、白臉頰上有一塊黑斑，田間和聚落都很常見，會在屋簷縫隙築巢。", "farm"], "munia": ["巧克力色的小鳥，胸腹有鱗片狀的花紋，常成群吃草籽。", "farm"], "grassfrog": ["常在水田、溝渠邊活動的褐色青蛙，背上有深色斑，嘴唇有深色橫紋。", "farm"], "firefly": ["橙黃色前胸、黑色翅鞘的螢火蟲，幼蟲住在水裡，會吃小螺。", "river"], "peacock": ["黑色翅膀上有一大塊藍綠色，會隨著角度閃閃發光的鳳蝶。", "forest"], "ghostcrab": ["眼柄頂端有尖角的沙灘螃蟹，跑得很快，會在沙裡挖洞。", "coast"], "rissos": ["身上有很多白色抓痕的圓頭海豚（官方名稱叫瑞氏海豚），疤痕會隨年齡越來越多。", "forest"], "bottlenose": ["灰色身體、嘴短短的、看起來像在微笑的海豚（官方名稱叫真瓶鼻海豚），和印太瓶鼻海豚是不同的種。", "forest"], "gull": ["白色身體、深灰色背和翅膀的沿岸海鳥，白尾巴末端有一條黑色橫帶，黃色的嘴尖有紅點。", "coast"], "serow": ["住在山地森林和岩坡的野生山羊，頭上有兩支短短往後彎的角，頸背有一撮深色鬃毛（官方名稱叫臺灣野山羊）。", "mountain"], "anemonefish": ["深色身體配兩條白帶的小魚，和海葵住在一起（臺灣魚類資料庫的正式中文名是「克氏雙鋸魚」）。", "coast"]};
 const nm=id=>isSt(id)?`${MYHUB}郵站的${NAME[baseOf(id)]}`:NAME[id]||(FOREIGN_BY_ID[id]&&FOREIGN_BY_ID[id].name)||id;
 const fromOf=id=>FOREIGN_BY_ID[id]?FOREIGN_BY_ID[id].country:"台灣";
 /* 外國送信生物還沒有美術，先用圖示代替 */
 const art=id=>isSt(id)?art(baseOf(id)):FOREIGN_BY_ID[id]?(FOREIGN_BY_ID[id].img?`<img src="${FOREIGN_BY_ID[id].img}" alt="${nm(id)}">`:`<span class="fx" role="img" aria-label="${nm(id)}">${FOREIGN_BY_ID[id].icon}</span>`):ART[id]?`<img src="art/${id}.webp" alt="${NAME[id]}">`:`<span style="font-size:.8cqw;font-weight:900">${NAME[id]}</span>`;
+/* 明信片樣式選擇（v0.65.0）：寫信頁一行，點「換樣式」拉出底部抽屜（分頁＋搜尋＋四欄格子）。
+   抽屜放在 render() 重建的區域外面，搜尋框才不會被每秒更新弄得失焦；render() 只會順便更新格子。 */
+const frontKind=k=>isSt(k)?"station":OBSERVE_ONLY.includes(k)?"special":FOREIGN_BY_ID[k]?"foreign":"courier";
+const frontName=k=>isSt(k)?`${NAME[baseOf(k)]}（${MYHUB}郵站）`:nm(k);
+const frontTag=k=>({station:"駐站明信片",special:"特別明信片（觀察記錄）",foreign:"特別明信片（外國生物）",courier:k===st.courier&&st.auto?"跟著郵差":"郵差"})[frontKind(k)];
+const FP_TABS=[["recent","最近"],["courier","郵差"],["special","特別"],["station","駐站"],["foreign","外國"]];
+const FP={tab:"recent",q:""};
+const recentFronts=()=>{try{return (JSON.parse(localStorage.getItem("ep-send")||"{}").recent||[]).filter(k=>FRONTS().includes(k))}catch(e){return []}};
+const pushRecent=k=>{try{const s=JSON.parse(localStorage.getItem("ep-send")||"{}");s.recent=[k].concat((s.recent||[]).filter(x=>x!==k)).slice(0,8);localStorage.setItem("ep-send",JSON.stringify(s));}catch(e){}};
+const fpList=(tab,q)=>{const all=FRONTS();q=(q||"").trim();if(q)return all.filter(k=>frontName(k).includes(q)||nm(k).includes(q));return tab==="recent"?recentFronts():all.filter(k=>frontKind(k)===tab);};
+function fpRefresh(){const el=document.getElementById("fpick");if(!el||el.hidden)return;
+  const tb=document.getElementById("fptabs"),gr=document.getElementById("fpgrid");if(!tb||!gr)return;
+  tb.innerHTML=FP_TABS.map(([k,t])=>{const n=fpList(k,"").length;return `<button type="button" class="${FP.tab===k&&!FP.q?"on":""}" data-fptab="${k}" ${n?"":"disabled"}>${t} ${n}</button>`}).join("");
+  const L=fpList(FP.tab,FP.q);
+  gr.innerHTML=L.length?L.map(k=>`<button type="button" class="fi${st.front===k?" on":""}" data-fpick="${k}" title="${esc(frontName(k))}"><span class="c">${art(k)}</span><small>${esc(isSt(k)?NAME[baseOf(k)]:nm(k))}</small></button>`).join(""):`<div class="none">${FP.q?"找不到這個名字":"這裡還沒有樣式"}</div>`;
+  const au=document.getElementById("fpauto");if(au){au.classList.toggle("on",st.auto);au.textContent=st.auto?"✔ 跟著郵差換圖案":"跟著郵差換圖案";}}
+function fpOpen(){const el=document.getElementById("fpick");FP.q="";FP.tab=recentFronts().length?"recent":"courier";
+  el.innerHTML=`<div class="fsheet" role="dialog" aria-label="選擇明信片樣式"><div class="fhd"><b>選擇明信片樣式</b><button class="btn sm" id="fpclose" type="button">關閉</button></div>
+    <button class="btn sm fauto" id="fpauto" type="button"></button>
+    <div class="ftabs" id="fptabs"></div><input class="fsearch" id="fpq" type="search" placeholder="搜尋名字" autocomplete="off" aria-label="搜尋明信片樣式"><div class="fgrid" id="fpgrid"></div></div>`;
+  el.hidden=false;fpRefresh();}
+const fpClose=()=>{const el=document.getElementById("fpick");if(el)el.hidden=true;};
+document.addEventListener("click",e=>{
+  if(e.target.closest("#fpopen")){fpOpen();return;}
+  const el=document.getElementById("fpick");if(!el||el.hidden)return;
+  if(e.target===el||e.target.closest("#fpclose")){fpClose();return;}
+  const tb=e.target.closest("[data-fptab]");if(tb){FP.tab=tb.dataset.fptab;FP.q="";const q=document.getElementById("fpq");if(q)q.value="";fpRefresh();return;}
+  if(e.target.closest("#fpauto")){st.auto=true;st.front=st.courier;st.flip=false;saveLast();fpClose();render();return;}
+  const it=e.target.closest("[data-fpick]");
+  if(it){const k=it.dataset.fpick;st.front=k;st.auto=(k===st.courier);st.flip=false;if(!st.auto)pushRecent(k);saveLast();fpClose();render();}
+});
+document.addEventListener("input",e=>{if(e.target.id==="fpq"){FP.q=e.target.value;fpRefresh();}});
+document.addEventListener("keydown",e=>{if(e.key==="Escape")fpClose();});
 const PL=loadPlayer();let ME="小小觀察員";try{const s=JSON.parse(localStorage.getItem("ep-settings")||"{}");if(s.name&&!["島嶼郵差","島嶼觀察員"].includes(s.name))ME=s.name;}catch(e){}
 const esc=t=>String(t).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const QC=new URLSearchParams(location.search).get("courier");
 /* 記住上次的明信片樣式和郵差（2026-11-11 使用者決定）；從圖鑑「派牠寄明信片」進來時，郵差以圖鑑選的為準 */
 const LAST=(()=>{try{return JSON.parse(localStorage.getItem("ep-send")||"{}").last||{}}catch(e){return {}}})();
-const saveLast=()=>{try{const s=JSON.parse(localStorage.getItem("ep-send")||"{}");s.last={front:st.front,courier:st.courier};localStorage.setItem("ep-send",JSON.stringify(s));}catch(e){}};
+const saveLast=()=>{try{const s=JSON.parse(localStorage.getItem("ep-send")||"{}");s.last={front:st.front,courier:st.courier,auto:st.auto};localStorage.setItem("ep-send",JSON.stringify(s));}catch(e){}};
 const st={to:"f1",front:"heron",courier:(QC&&OWNED.includes(QC))?QC:(OWNED.includes("heron")?"heron":(OWNED[0]||"heron")),text:"",flip:false,tab:"write",minor:false,age:"adult",penOn:true,inbox:[],out:[],blocked:[]};
-if(LAST.front&&FRONTS().includes(LAST.front))st.front=LAST.front;
+st.auto=!(LAST.auto===false&&LAST.front&&FRONTS().includes(LAST.front));   /* v0.65.0：預設樣式＝所選郵差本人；自己換過樣式才記住（auto:false） */
+if(!st.auto)st.front=LAST.front;
 if(!(QC&&OWNED.includes(QC))&&LAST.courier&&OWNED.includes(LAST.courier))st.courier=LAST.courier;
+if(st.auto)st.front=st.courier;
 
 const C=id=>CONTACTS.find(c=>c.id===id)||CANDIDATES.find(c=>c.id===id);
 /* 找筆友（暫定：同時最多 3 位筆友；配對對象與回應皆為假資料） */
@@ -700,7 +755,7 @@ function renderPanel(){
     h+=`<div class="row"><div class="ic">📮</div><div><div class="lbl">郵差</div><div class="pick">${MATES.map(k=>`<button class="${st.courier===k?"on":""}${busyC(k)?" busy":""}" data-courier="${k}" title="${NAME[k]}${busyC(k)?"（送信中）":""}" ${busyC(k)?"disabled":""}>${art(k)}</button>`).join("")}</div>
       ${MATES.some(busyC)?`<div class="src busyline">⏳ 送信中：${MATES.filter(busyC).map(k=>`${NAME[k]}（<span data-bz="${k}">${bzSec(k)}</span> 秒後回到郵站）`).join("、")}</div>`:""}
       <div class="src">${t.intl?(t.need?"離島要先飛到本島郵站，只有會飛的郵差能送（滑翔的不行）":"國外的信走轉運，郵差只送到郵站，所有郵差都能送"):(t.need?"這條路線要跨海，只有會飛的郵差能送（滑翔的不行）":"陸路，所有郵差都能送")}${t.intl?"":`｜${ME_CITY} → ${esc(c.where)}，約 ${t.km.toLocaleString()} km`}｜預估 ${t.ok?fmtH(t.h):"—"}${t.up.tags.length?`｜⭐ ${t.up.tags.join("、")}`:""}</div></div></div>`;
-    h+=`<div class="row"><div class="ic">🖼️</div><div><div class="lbl">明信片樣式</div><div class="pick">${FRONTS().map(k=>`<button class="${st.front===k?"on":""}" data-front="${k}" title="${nm(k)}${isSt(k)?"（駐站明信片）":OBSERVE_ONLY.includes(k)||FOREIGN_BY_ID[k]?"（特別明信片）":""}">${art(k)}</button>`).join("")}</div></div></div>`;
+    h+=`<div class="row"><div class="ic">🖼️</div><div><div class="lbl">明信片樣式</div><div class="sty"><span class="th">${art(st.front)}</span><div class="nm"><b>${esc(frontName(st.front))}</b><small>${frontTag(st.front)}</small></div><button class="btn sm" id="fpopen" type="button">換樣式 ›</button></div></div></div>`;   /* v0.65.0：樣式太多，寫信頁只留一行；點「換樣式」從底部拉出抽屜（fpick） */
     if(t.intl){const l3=lastLeg().h,dst=c.kind==="drift"?"配對對象的國家":esc(c.where);
       const stp=(i,ttl,d)=>`<div class="tstep"><span class="tdot">${i}</span><div><div class="lbl">${ttl}</div><div class="src">${d}</div></div></div>`;
       h+=`<div class="row"><div class="ic">🛫</div><div><div class="lbl">轉運路線（分三段送）</div><div class="tsteps">${stp(1,`${NAME[st.courier]}送到${t.hub}郵站`,`約 ${t.hubKm.toLocaleString()} km・約 ${fmtH(t.leg1)}（郵差只跑這一段）`)}${stp(2,`國際轉運到${dst}`,`約 ${t.ikm.toLocaleString()} km${t.est?"（估算）":""}・約 ${fmtH(t.leg2)}`)}${stp(3,"當地生物送到對方手上",`約 ${fmtH(l3)}`)}</div><div class="src">寄件人只知道對方的國家。</div></div></div>`;}
@@ -798,7 +853,7 @@ function render(){
   /* 畫面更新時記住捲動位置再還原（v0.53.0）：有信在路上時每秒更新一次，收件人下拉清單與抽屜會被拉回最上面（「跳走」） */
   const SC=[".panel",".rcptlist","#rows","#contacts"].map(q=>{const e=document.querySelector(q);return e&&e.scrollTop?[q,e.scrollTop]:null}).filter(Boolean);
   if(busyC(st.courier)){const fr=MATES.find(k=>!busyC(k));if(fr)st.courier=fr;}   /* 選到送信中的郵差時，自動換成第一隻待命的（v0.58.2） */
-  BUSY_SIG=busySig();applyView();CONTACTS.find(c=>c.kind==="drift").where=condText();renderContacts();renderCard();renderPanel();saveBox();try{updateAchDot()}catch(e){}
+  BUSY_SIG=busySig();try{fpRefresh()}catch(e){}applyView();CONTACTS.find(c=>c.kind==="drift").where=condText();renderContacts();renderCard();renderPanel();saveBox();try{updateAchDot()}catch(e){}
   SC.forEach(([q,t])=>{const e=document.querySelector(q);if(e)e.scrollTop=t;});
 }
 
@@ -858,7 +913,7 @@ document.addEventListener("click",e=>{
   if(t.dataset.drop){st.inbox.filter(m=>m.from===t.dataset.drop).forEach(m=>m.decided="drop");render();return;}
   if(t.dataset.to){st.to=t.dataset.to;st.rcptOpen=false;}
   else if(t.dataset.front){st.front=t.dataset.front;st.flip=false;saveLast();}
-  else if(t.dataset.courier){if(busyC(t.dataset.courier))return;st.courier=t.dataset.courier;restMsg="";saveLast();}
+  else if(t.dataset.courier){if(busyC(t.dataset.courier))return;st.courier=t.dataset.courier;if(st.auto)st.front=st.courier;restMsg="";saveLast();}
   else if(t.dataset.tab){st.tab=t.dataset.tab;if(st.tab==="match"&&!penLocked()&&penCount()<PEN_MAX)st.to="drift";}
   else if(t.id==="flip"){st.flip=!st.flip;}
   else if(t.dataset.report){epNotify("已送出檢舉（原型示意），我們會審查這封信。",{icon:"🚩",hist:false});st.tab="inbox";}

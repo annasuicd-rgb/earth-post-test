@@ -386,7 +386,7 @@ body:has(.stage.pt){padding:0;overflow:hidden;align-items:stretch}
   <section class="pcard" id="pcard"></section>
   <section class="mshow" id="mshow" aria-hidden="true"></section>
   <section class="panel">
-    <div class="tabs" id="tabs"><button class="on" data-tab="info">資料</button><button data-tab="mates">夥伴</button><button data-tab="stamps">郵戳冊</button><button data-tab="pcards">明信片冊</button><button data-tab="ach">成就</button></div>
+    <div class="tabs" id="tabs"><button class="on" data-tab="info">資料</button><button data-tab="stamps">郵戳冊</button><button data-tab="pcards">明信片冊</button><button data-tab="ach">成就</button></div>
     <div class="note" id="note"></div>
     <div class="rows" id="rows"></div>
     <div class="foot">原型資料為示意；經驗值與成就為遊戲設計</div>
@@ -444,7 +444,7 @@ let mapC="tw";
 let tab="info",editing=false,prevTab="info";
 let city="";try{const s=JSON.parse(localStorage.getItem("ep-settings")||"{}");if(s.city)city=s.city;}catch(e){}
 const saveSettings=(k,v)=>{try{const s=JSON.parse(localStorage.getItem("ep-settings")||"{}");s[k]=v;localStorage.setItem("ep-settings",JSON.stringify(s));}catch(e){}};
-const NOTES={info:"資料　你的觀察員紀錄",mates:"夥伴　已結識的生物與郵差狀態",stamps:"郵戳冊　探索點郵戳靠自己走到，國家郵戳靠明信片寄到",pcards:"明信片冊　筆友回信由哪種生物送來，就得到那種生物的明信片",ach:"成就　達成後可選為稱號"};
+const NOTES={info:"資料　你的觀察員紀錄",stamps:"郵戳冊　探索點郵戳靠自己走到，國家郵戳靠明信片寄到",pcards:"明信片冊　筆友回信由哪種生物送來，就得到那種生物的明信片",ach:"成就　達成後可選為稱號"};
 function render(){
   const L=level(XP),won=ACH.filter(a=>a.p>=a.n);
   document.getElementById("pcard").innerHTML=`<div class="pav">${avatarHTML()}</div>
@@ -472,10 +472,6 @@ function render(){
     h=`<div class="grid2">${[["送信數",STAT.sent+" 封"],["總送信距離",STAT.km+" km"],["探索次數",STAT.explore+" 次"],["遭遇次數",STAT.encounter+" 次"],
       ["圖鑑完成度",`${Object.values(DEX).filter(d=>d.state!=="none").length}／${Object.keys(DEX).length}`],["郵戳",(stamps.length+Object.keys(loadCountryStamps()).length)+"／"+(6+Object.keys(COUNTRY_EN).length)]].map(([k,n])=>`<div class="stat"><div class="k">${k}</div><div class="n">${n}</div></div>`).join("")}</div>
       <div class="src" style="text-align:center">區域：台灣（原型）｜統計數字為示意</div>`;
-  }else if(tab==="mates"){
-    h=ORDER.map(k=>{const m=MATES[k],ok=isMate(k);return `<div class="row" style="grid-template-columns:1fr"><div class="mate"><div class="face">${art(k)}</div><div>
-      <div class="lbl">${NAME[k]}<span class="badge ${ok?"b-s":"b-g"}">${ok?"郵差":"已記錄"}</span></div>
-      <div class="mini"><span>好感 ${m.aff}／${THRESH[k]}${ok?"＋":""}</span><span>送信 ${m.sent} 封</span><span>體力 ${sta[k]??100}%${(sta[k]??100)<100?`（${staFullText(sta[k],staT[k])}）`:""}</span></div></div></div></div>`}).join("");
   }else if(tab==="stamps"){
     const CS=loadCountryStamps(),CL=Object.keys(COUNTRY_EN);
     h=`<div class="lbl" style="margin:.2cqw .4cqw">探索點郵戳（台灣）・親自走到探索點時蓋章 ${stamps.length}／6</div>

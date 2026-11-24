@@ -627,7 +627,7 @@ function markProfileSeen(tab) {   // 看過這個分頁，紅點消失
 }
 function achDotCount() {   // 底部「我的」的紅點：有未領成就，或任何分頁有新東西
   const n = newDots();
-  return achUnclaimed() + n.mates + n.stamps + n.pcards;
+  return achUnclaimed() + n.stamps + n.pcards;   // v0.64.0：「夥伴」分頁併進圖鑑，不再有夥伴紅點
 }
 /* 明信片紅點（v0.52.0）：關掉遊戲再打開時，有信送達、有未讀的信、有新通知，底部「明信片」亮紅點（所有頁面）。
    送達與否由 ep-box 的「送信中」紀錄加上離開的時間推算；真正收進收件匣是開明信片頁時。 */
@@ -681,7 +681,7 @@ function fullSweep() {
   } catch (e) {}
 }
 (function () { const go = () => { setTimeout(fullSweep, 1500); setInterval(fullSweep, 30000); }; if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", go); else go(); })();
-const BUILD = { name: "測試版", ver: "v0.63.0", date: "2026-11-15" };
+const BUILD = { name: "測試版", ver: "v0.65.0", date: "2026-11-15" };
 const BUILD_LABEL = `${BUILD.name} ${BUILD.ver}（${BUILD.date}）`;
 (function addBuildBadge() {
   const put = () => {
