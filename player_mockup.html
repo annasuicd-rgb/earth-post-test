@@ -376,7 +376,7 @@ const SLOT={dawn:"清晨",day:"白天",dusk:"黃昏",night:"夜間"},WX={sunny:"
 const SAFE=["注意周遭與交通，不要邊走邊看手機。","不要進入危險水域、私人土地或封閉區域。","遇到野生動物保持距離，不餵食、不觸碰。"];
 const h=new Date().getHours();
 const ST={step:0,agree:false,loc:null,notify:null,name:"小小觀察員",slot:h>=5&&h<8?"dawn":h<16&&h>=8?"day":h<19&&h>=16?"dusk":"night",wx:"sunny",
-  met:null,owner:null,acted:null,sendEl:0,sending:false};
+  met:null,owner:null,acted:null,sendEl:0,sending:false,px:14,py:50,inr:false,lt:null,sent:false,sendAt:0};
 const DEF={mode:"gps",guard:true,src:"auto",nArrive:true,nFull:true,nNear:false,music:70,sfx:70,mute:false,lang:"zh-Hant",store:"device"};
 let SET={...DEF};
 try{Object.assign(SET,JSON.parse(localStorage.getItem("ep-settings")||"{}"))}catch(e){}
@@ -384,7 +384,7 @@ const saveSet=()=>{try{const{_arm,_about,...o}=SET;localStorage.setItem("ep-sett
 const view=new URLSearchParams(location.search).get("view")==="settings"?"settings":"onboard";
 const ART={};["dog","cat","butterfly","heron"].forEach(id=>{const im=new Image();im.onload=()=>{ART[id]=true;render()};im.src=`art/${id}.webp`;});
 const art=id=>ART[id]?`<img src="art/${id}.webp" alt="${NAME[id]}">`:`<div class="ph" style="font-size:1.6cqw">${NAME[id]}</div>`;
-const STEPS=["啟動","安全","權限","取名","探索","互動","郵戳","出發"];
+const STEPS=["啟動","安全","權限","取名","探索","互動","郵戳","寄信","出發"];
 const $=id=>document.getElementById(id);
 /* 第一次完成新手教學：圖鑑從新手狀態開始（教學那隻＝郵差，其他＝未發現），郵戳冊只有河岸。重看教學時不會改動進度。 */
 let FIRST=true;try{FIRST=!localStorage.getItem("ep-onboarded")}catch(e){}
@@ -427,11 +427,15 @@ function onboard(){
       <div class="lbl" style="margin-top:.8cqw">你的城市（必填）</div><select class="field" id="city" style="font-size:1.3cqw">${cityOptions(SET.city)}</select><div class="src" style="margin-top:.3cqw">用來計算明信片的送信距離；好友看得到，筆友只看到國家</div>
       <div class="lbl" style="margin-top:.8cqw">制服顏色</div><div class="rowsel">${Object.entries(UNIFORMS).map(([k,u])=>`<button class="chip${PL.uniform===k?" on":""}" data-uni="${k}"><span style="display:inline-block;width:1cqw;height:1cqw;border-radius:50%;background:${u.c};vertical-align:middle;margin-right:.3cqw"></span>${u.name}</button>`).join("")}</div>
       <div class="src" style="margin-top:.4cqw">之後也可以在「我的」上傳自己的照片當頭像</div>`;dis=!ST.name.trim()||!SET.city;}
-  if(s===4){L=ST.met?scene(ST.met):`<div class="hello" style="font-size:6cqw">🏙️<p>${SET.mode==="sim"||ST.loc===false?"模擬模式：":""}第一站：市區公園</p></div>`;
-    R+=`<div class="ttl">第一次探索</div><div class="txt">${ST.loc===false?"模擬模式下直接前往「市區公園」。":"前往離你最近的探索點（示意：市區公園）。"}遇到誰，要看現在的時段和天氣。</div>
+  if(s===4){
+    const C0={x:72,y:26,r:13};
+    const map=`<svg id="tmap" viewBox="0 0 100 64" role="img" aria-label="示意地圖：點一下，走向探索點的圈圈" style="width:100%;max-width:46cqw;display:block;border-radius:1.4cqw;border:.3cqw solid var(--cream-line);background:linear-gradient(#cdeaa6,#a9d98a);touch-action:manipulation;cursor:pointer"><path d="M0 52 Q25 42 45 50 T100 46 V64 H0Z" fill="#8cc9e8" opacity=".6"/><circle cx="${C0.x}" cy="${C0.y}" r="${C0.r}" fill="${ST.inr?"rgba(226,73,58,.18)":"rgba(255,255,255,.35)"}" stroke="${ST.inr?"#e2493a":"#fff"}" stroke-width="1.2" ${ST.inr?"":'stroke-dasharray="3 2"'}/><text x="${C0.x}" y="${C0.y-C0.r-1.5}" text-anchor="middle" font-size="4.2" font-weight="900" fill="#386b1f">市區公園（探索點）</text><circle id="tdot" cx="${ST.px}" cy="${ST.py}" r="2.6" fill="#2f7de1" stroke="#fff" stroke-width="1"/><text id="tme" x="${ST.px}" y="${ST.py+7}" text-anchor="middle" font-size="3.6" font-weight="900" fill="#1d4f9a">你</text></svg>`;
+    L=ST.met?scene(ST.met):`<div class="hello" style="padding:1.2cqw;max-width:none">${map}</div>`;
+    R+=`<div class="ttl">第一次探索</div><div class="txt">${ST.met?"遇到誰，要看現在的時段和天氣。":ST.inr?"走進圈圈了！現在可以探索。遇到誰，要看現在的時段和天氣。":"要<b>走進探索點的圈圈</b>才能探索。<b>點一下地圖</b>，你（藍點）會走向那裡。"}</div>
+      ${ST.met||ST.inr?"":`<div class="src">真正的遊戲裡是用 GPS：你走到現實中的探索點附近就會觸發；這裡用點的來示範。<button class="btn sm" data-walk="1" style="margin-left:.6cqw">自動走過去</button></div>`}
       <div class="row"><div class="ic">🌤️</div><div><div class="lbl">現在（原型可切換）</div>${chips("slot",SLOT,ST.slot)}${chips("wx",WX,ST.wx)}</div></div>`;
     if(ST.met){R+=`<div class="row"><div class="ic">✨</div><div class="val">遇到了：${NAME[ST.met]}${ST.met==="dog"?(ST.owner?"（有飼主陪同）":"（單獨出現）"):""}</div></div>`;go="開始互動";}
-    else go="探索";
+    else{go="探索";dis=!ST.inr;}
   }
   if(s===5){L=scene(ST.met);
     const acts=Object.keys(ACT).filter(k=>!(k==="greet"&&ST.met==="dog"&&!ST.owner));
@@ -441,14 +445,29 @@ function onboard(){
     R+=`<div class="row"><div class="ic">💗</div><div><div class="lbl">好感 ${Math.min(ta,TG)}／${TG}</div><div style="height:1cqw;border-radius:99px;background:#efe4c8;overflow:hidden;margin-top:.3cqw"><i style="display:block;height:100%;width:${Math.min(ta,TG)/TG*100}%;background:linear-gradient(90deg,#f4a6a0,#e2493a)"></i></div><div class="src">${ta?`互動 ${ST.tries} 次${ST.lastPref?"｜用對牠喜歡的方式，好感多 +1":""}`:"每次記錄成功 +1，用對牠喜歡的方式再 +1；好感到 3 牠就願意當郵差"}</div></div></div>`;
     if(ta&&ta<TG)R+=`<div class="row"><div class="ic">📖</div><div class="val sm">已記錄進圖鑑。再互動一次，讓牠更熟悉你！</div></div>`;
     if(ta>=TG)R+=`<div class="row"><div class="ic">📮</div><div><div class="val">好感滿了！</div><div class="val sm">${NAME[ST.met]}願意成為你的第一位郵差夥伴！</div></div></div>`;
+    R+=`<div class="row"><div class="ic">💬</div><div><div class="lbl">提示泡泡</div><div class="val sm">教學裡「發光」是在幫你認按鈕。真正的遊戲不會發光：遇過的生物，場景中間會冒出小泡泡，暗示牠喜歡怎麼相處（例如「好像對聲音有反應」），但不會直接給答案。</div></div></div>`;
     dis=ta<TG;go="下一步";}
   if(s===6){L=`<div class="bigart">${art(ST.met)}</div>`;
     R+=`<div class="ttl">第一個郵戳</div><div class="row"><div class="ic">📮</div><div class="arrive"><div class="stampcell">${stampSVG("tw","市區公園",true,stampDate("C")||todayStr())}</div><div><div class="val sm">你親自走到市區公園探索，蓋下第一個郵戳！</div><div class="src">每個探索點第一次探索時都會蓋章</div></div></div></div>
       <div class="row"><div class="ic">🔍</div><div><div class="lbl">觀察線索</div><div class="val sm">市區公園的清晨與黃昏，草叢邊偶爾有貓的身影。</div></div></div>`;
     go="下一步";}
-  if(s===7){L=`<div class="bigart">${art(ST.met)}</div>`;
+  if(s===7){
+    const nm=NAME[ST.met],opts=[`今天遇到了${nm}！`,"我開始當觀察員了，請多指教。","第一次探索很順利，向您報告。"];
+    L=`<div class="bigart" style="${ST.sent?"filter:grayscale(1) opacity(.55)":""}">${art(ST.met)}</div>`;
+    R+=`<div class="ttl">寄出第一封信</div><div class="txt">你是<b>觀察員</b>：負責走路、觀察、記錄。${nm}是你的<b>郵差</b>：負責把信送出去。先寄一封信，向郵站站長報告你的第一次觀察吧！</div>
+      <div class="row"><div class="ic">🏤</div><div><div class="lbl">收件人</div><div class="val sm">郵站站長（和你同一個城市）</div></div></div>
+      <div class="row"><div class="ic">📮</div><div><div class="lbl">郵差</div><div class="val sm">${nm}（剛才結識的夥伴）</div></div></div>
+      ${ST.sent?`<div class="row"><div class="ic">📝</div><div><div class="lbl">內容</div><div class="val sm">${opts[ST.lt]}</div></div></div>
+      <div class="row good"><div class="ic">✉️</div><div><div class="lbl">已寄出！</div><div class="val sm">${nm}送信中（頭像會變灰），約 <b id="tcd">${Math.max(0,Math.ceil((ST.sendAt-Date.now())/1000))}</b> 秒後回到郵站。${FIRST?"":"（重看教學：沒有真的寄出）"}</div></div></div>
+      <div class="row"><div class="ic">🔔</div><div class="val sm">信送到時會彈出通知，站長會回信，還會給你小花。你不用等，可以先往下走。</div></div>`
+      :`<div class="lbl" style="margin:.6cqw 0 .2cqw">選一句話</div><div class="rowsel">${opts.map((t,i)=>`<button class="chip${ST.lt===i?" on":""}" data-lt="${i}">${t}</button>`).join("")}</div>`}
+      <div class="row"><div class="ic">🌸</div><div><div class="lbl">小花與郵資</div><div class="val sm">今天第 1 封信免費；每天前 3 封免費（回信也算），之後每封 5 朵小花。小花可以付郵資、買道具；收到回信、記錄新生物、完成郵站委託都能賺。</div></div></div>`;
+    go=ST.sent?"下一步":"寄出";dis=!ST.sent&&ST.lt===null;
+  }
+  if(s===8){L=`<div class="bigart">${art(ST.met)}</div>`;
     R+=`<div class="ttl">準備出發！</div>
       <div class="row"><div class="ic">🚶</div><div class="val sm">到不同的探索點、換個時段和天氣，會遇到不同的生物，也能收集更多郵戳。</div></div>
+      <div class="row"><div class="ic">👀</div><div class="val sm"><b>你是觀察員</b>：走到各地觀察、記錄生物。<b>生物是郵差</b>：只負責把信送出去。牠們是你自己去認識的。</div></div>
       <div class="row"><div class="ic">✉️</div><div class="val sm">${NAME[ST.met]}已成為你的郵差，之後可以派牠把明信片寄給好友或筆友；寄到新的國家還能拿到國家郵戳。</div></div>
       ${FIRST?`<div class="src">圖鑑：${NAME[ST.met]}已成為你的第一位郵差，其他還等著你去發現。</div>`:`<div class="src">這是重看教學，你的圖鑑進度不會改變。</div>`}`;go="開始冒險";}
   $("left").innerHTML=L;$("rows").innerHTML=R;$("goText").textContent=go;$("go").disabled=dis;
@@ -485,6 +504,12 @@ function settings(){
 }
 function render(){ document.querySelectorAll(".modes a").forEach(a=>a.classList.toggle("on",a.id==="mMe"&&view==="settings")); view==="settings"?settings():onboard(); }
 
+/* 新手教學的小地圖：點哪裡就走向哪裡，進入探索點圈圈才算到達（v0.67.0） */
+let walkT=0;
+function tutWalk(tx,ty){clearInterval(walkT);walkT=setInterval(()=>{const dx=tx-ST.px,dy=ty-ST.py,d=Math.hypot(dx,dy);if(d<1.2){clearInterval(walkT);return;}
+  const stp=Math.min(1.6,d);ST.px+=dx/d*stp;ST.py+=dy/d*stp;const dot=document.getElementById("tdot");if(!dot){clearInterval(walkT);return;}
+  dot.setAttribute("cx",ST.px);dot.setAttribute("cy",ST.py);const me=document.getElementById("tme");if(me){me.setAttribute("x",ST.px);me.setAttribute("y",ST.py+7);}
+  if(Math.hypot(ST.px-72,ST.py-26)<=11&&!ST.inr){ST.inr=true;clearInterval(walkT);render();}},40);}
 document.addEventListener("click",e=>{
   const t=e.target;
   if(view==="settings"){
@@ -503,10 +528,16 @@ document.addEventListener("click",e=>{
   if(t.dataset.g&&ST.step===4&&!ST.met){ST[t.dataset.g]=t.dataset.v;render();return;}
   if(t.dataset.act&&ST.step===5){if((ST.taff||0)>=3)return;ST.acted=t.dataset.act;const lone=ST.met==="dog"&&!ST.owner;ST.lastPref=!lone&&PREF[ST.met]===ST.acted;ST.taff=(ST.taff||0)+1+(ST.lastPref?1:0);ST.tries=(ST.tries||0)+1;render();return;}
   if(t.dataset.uni){PL.uniform=t.dataset.uni;PL.avatar="char";savePlayer(PL);render();return;}
+  if(ST.step===4&&!ST.met){
+    if(t.dataset.walk){tutWalk(66,28);return;}
+    const sv=t.closest&&t.closest("#tmap");if(sv){const r=sv.getBoundingClientRect();tutWalk((e.clientX-r.left)/r.width*100,(e.clientY-r.top)/r.height*64);return;}
+  }
+  if(t.dataset.lt!==undefined&&ST.step===7&&!ST.sent){ST.lt=+t.dataset.lt;render();return;}
   if(!t.closest("#go"))return;
-  if(ST.step===4&&!ST.met){ST.met=roll();ST.owner=ST.met==="dog"?Math.random()<.7:null;render();return;}
+  if(ST.step===4&&!ST.met){if(!ST.inr)return;ST.met=roll();ST.owner=ST.met==="dog"?Math.random()<.7:null;render();return;}
   if(ST.step===6){ST.step=7;finishTutorial();render();return;}
-  if(ST.step===7){location.href="card_mockup.html";return;}
+  if(ST.step===7&&!ST.sent){if(ST.lt===null)return;ST.sendAt=FIRST?(epTutorialLetter(ST.met,NAME[ST.met])||Date.now()+60000):Date.now()+60000;ST.sent=true;render();clearInterval(ST.cd);ST.cd=setInterval(()=>{const e2=document.getElementById("tcd");if(!e2){clearInterval(ST.cd);return;}e2.textContent=Math.max(0,Math.ceil((ST.sendAt-Date.now())/1000));},1000);return;}
+  if(ST.step===8){location.href="card_mockup.html";return;}
   ST.step++;render();
 });
 ["input","change"].forEach(ev=>document.addEventListener(ev,e=>{

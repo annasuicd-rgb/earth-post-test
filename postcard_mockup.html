@@ -537,6 +537,8 @@ const CONTACTS=[
 // 筆友只用「國家」計算（首都對首都），避免從送達時間推算出對方的城市。漂流信在撿到前不知道對象，以 1,500 km 估算。
 let ME_CITY="台北市";try{const s=JSON.parse(localStorage.getItem("ep-settings")||"{}");if(s.city&&CITIES[s.city])ME_CITY=s.city;}catch(e){}
 const MYHUB=nearestHub(ME_CITY).hub;
+/* 郵站站長（v0.67.0）：新手教學的第一位收件人；算好友（未成年也能寄）但不佔好友名額、不能刪除；和玩家同城市，信固定最短 60 秒，自動回信 */
+CONTACTS.unshift({id:"master",kind:"friend",npc:true,name:"郵站站長",where:ME_CITY,area:"domestic",photo:false,uni:"brown",reply:"收到你的信了，辛苦啦！郵站隨時歡迎你。多走走、多認識幾位生物夥伴，有空也寄信給朋友吧。"});
 const DRIFT_KM=1500;
 const kmTo=c=>c.kind==="friend"?distKm(CITIES[ME_CITY],CITIES[c.where]):c.kind==="pen"?distKm(COUNTRIES["台灣"],COUNTRIES[c.where]):null;
 const island=city=>!!(CITIES[city]&&CITIES[city][2]);
@@ -656,11 +658,11 @@ function addReplyCard(card,country,from,text){if(!card)return;const isNew=addPCa
 const condText=()=>mt.mode==="interest"?`興趣：${mt.interest}`:mt.mode==="region"?`地區：${mt.region}`:"隨機配對";
 /* 好友上限（v0.39.20，使用者決定）：起始 6 位，每 5 級 +2；滿了不能再加，可刪除好友後再加 */
 const isFr=c=>c.kind==="friend"||c.isFriend;
-const friendCount=()=>CONTACTS.filter(isFr).length;
+const friendCount=()=>CONTACTS.filter(c=>isFr(c)&&!c.npc).length;   /* 站長不佔名額 */
 const friendMax=()=>6+2*Math.floor((typeof PLAYER_LEVEL==="number"?PLAYER_LEVEL:1)/5);
 const friendFull=()=>friendCount()>=friendMax();
 const penCount=()=>CONTACTS.filter(c=>c.kind==="pen"&&!c.isFriend).length;   /* 已升成好友的不再佔筆友名額（v0.39.13） */
-const face=c=>c.kind==="friend"&&c.photo?playerSVG(c.uni,true):c.kind==="drift"?`<div style="display:grid;place-items:center;height:100%"><img src="art/ui/x_match.png" alt="漂流瓶" style="width:78%;height:auto"></div>`:playerSVG(c.uni,true);
+const face=c=>c.npc?`<img src="art/ui/avatar_master.webp" alt="站長">`:c.kind==="friend"&&c.photo?playerSVG(c.uni,true):c.kind==="drift"?`<div style="display:grid;place-items:center;height:100%"><img src="art/ui/x_match.png" alt="漂流瓶" style="width:78%;height:auto"></div>`:playerSVG(c.uni,true);
 /* 未成年（M1′–M5′）：13 歲以下沒有家庭功能時不能寄明信片；未成年不開放筆友；滿 18 歲要自己打開筆友 */
 const noFam=()=>st.age==="childnofam";
 const penLocked=()=>st.minor||!st.penOn;
@@ -741,7 +743,7 @@ function renderPanel(){
     const armed=id=>st.frArm===id;
     document.getElementById("rows").innerHTML=
       `<h4 class="grph">好友 ${friendCount()}／${friendMax()}</h4><div class="src grpn">好友看得到你的：暱稱、頭貼（有分享照片才顯示照片）、你填的城市。</div>`+
-      (fr.length?fr.map(c=>card(c,c.kind==="pen"?"（原本是筆友，寄信規則仍算國外）":"",`<button class="btn sm${armed(c.id)?" pri":""}" data-delfriend="${c.id}">${armed(c.id)?"確定刪除好友？":"刪除好友"}</button>`)).join(""):`<div class="row"><div class="ic">🤝</div><div class="val sm">還沒有好友。收到筆友來信時，可以在收件匣按「邀請加好友」。</div></div>`)+
+      (fr.length?fr.map(c=>card(c,c.npc?"（郵站站長・不佔好友名額）":c.kind==="pen"?"（原本是筆友，寄信規則仍算國外）":"",c.npc?"":`<button class="btn sm${armed(c.id)?" pri":""}" data-delfriend="${c.id}">${armed(c.id)?"確定刪除好友？":"刪除好友"}</button>`)).join(""):`<div class="row"><div class="ic">🤝</div><div class="val sm">還沒有好友。收到筆友來信時，可以在收件匣按「邀請加好友」。</div></div>`)+
       `<h4 class="grph">筆友 ${penCount()}／${PEN_MAX}</h4><div class="src grpn">筆友只看得到：暱稱、觀察員角色、國家／地區；回信會自動翻譯。</div>`+
       (pens.length?pens.map(c=>{const inv=!!c.friendAsk||st.inbox.some(m=>m.from===c.id&&m.friendAsk);return card(c,`｜興趣：${esc(c.interest||"—")}${inv?"<br>好友邀請已送出，等對方回覆…":""}`,`${inv?"":`<button class="btn sm pri" data-askfriend="${c.id}"${friendFull()?" disabled":""}>${friendFull()?"好友已滿":"邀請加好友"}</button>`}<button class="btn sm${armed(c.id)?" pri":""}" data-endpen="${c.id}">${armed(c.id)?"確定結束通信？":"結束通信"}</button>`);}).join(""):`<div class="row"><div class="ic">✉️</div><div class="val sm">還沒有筆友。到「寫明信片 → 找筆友」寄配對明信片試試看。</div></div>`);
     return;

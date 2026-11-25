@@ -320,6 +320,20 @@ function loadCourierSta(defaults) {
 function saveCourierSta(sta, T) {
   try { const s = JSON.parse(localStorage.getItem("ep-send") || "{}"); s.sta = sta; s.staTk = T || {}; delete s.staT; localStorage.setItem("ep-send", JSON.stringify(s)); } catch (e) {}
 }
+/* 新手教學的第一封信（v0.67.0）：寄給郵站站長（站長和玩家同城市，距離 0，所以固定最短 60 秒、不耗體力、今天第 1 封免費）。
+   寫成和 postcard 頁一致的送信紀錄，送達與回信由明信片頁接手（關掉教學、換到別頁也會照常送）。回傳送達時間（毫秒）。 */
+function epTutorialLetter(courierId, courierName) {
+  try {
+    const now = Date.now(), d = new Date(), day = `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`;
+    const b = _lsj("ep-box", null) || {};
+    ["inbox", "blocked", "out", "kept", "friends", "rmFr"].forEach(k => { if (!Array.isArray(b[k])) b[k] = []; });
+    b.out.push({ to: "master", tn: "郵站站長", cn: courierName, courier: courierId, h: .1, el: 0, cond: {}, intl: false, est: false, l3: 0, fee: 0, feeWhy: "今天第 1 封免費（今天免費額度 1／3）", k: .1 / 60, savedAt: now });
+    localStorage.setItem("ep-box", JSON.stringify(b));
+    const c = loadCourierSta(); c.t[courierId] = now + 60000; saveCourierSta(c.sta, c.t);   // 送信途中不回復
+    localStorage.setItem("ep-postage", JSON.stringify({ day, sent: 1, free: 1 }));
+    return now + 60000;
+  } catch (e) { return 0; }
+}
 /* t：這位郵差開始回復的時間（還在送信時會在未來） */
 function staFullText(v, t) {
   const now = Date.now(); t = typeof t === "number" ? t : now;
@@ -681,7 +695,7 @@ function fullSweep() {
   } catch (e) {}
 }
 (function () { const go = () => { setTimeout(fullSweep, 1500); setInterval(fullSweep, 30000); }; if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", go); else go(); })();
-const BUILD = { name: "測試版", ver: "v0.66.1", date: "2026-11-15" };
+const BUILD = { name: "測試版", ver: "v0.67.2", date: "2026-11-15" };
 const BUILD_LABEL = `${BUILD.name} ${BUILD.ver}（${BUILD.date}）`;
 (function addBuildBadge() {
   const put = () => {
@@ -811,6 +825,19 @@ function iconizeEmoji(root) {
     el.textContent = ""; el.appendChild(img);
   });
 }
+/* 圓形頭貼裡的生物圖改用「置中縮圖」（v0.67.2）：原圖裡生物的位置、大小各不相同（有的偏下、偏左、很小），放進圓框會歪；
+   縮圖由 drafts/species_data/make_thumbs.py 依實際輪廓裁切置中（art/thumb/<id>.webp）。只換圓形頭貼容器裡的小圖，大圖（場景、明信片正面）不動。 */
+const THUMB_SEL = [".pick button", ".fgrid .fi .c", ".sty .th", ".av", ".req .face", ".avpick button", ".dx .im", ".pav"].map(q => q + " img").join(",");
+function thumbize(root) {
+  (root || document).querySelectorAll(THUMB_SEL).forEach(img => {
+    if (img.dataset.th) return;
+    const m = /^art\/([a-z0-9_]+)\.webp$/.exec(img.getAttribute("src") || "");
+    if (!m || !(m[1] in THRESH)) return;
+    img.dataset.th = "1"; const orig = img.getAttribute("src");
+    img.onerror = () => { img.onerror = null; img.src = orig; };
+    img.src = "art/thumb/" + m[1] + ".webp";
+  });
+}
 /* 文字裡夾的表情符號（提示、按鈕、標題等不在 .ic 裡的）也換成同一組圖示，用小圖接在字旁邊 */
 const EMOJI_RE = new RegExp("(" + Object.keys(EMOJI_ICON).map(k => k + "\\uFE0F?").join("|") + ")", "gu");
 function iconizeText(root) {
@@ -831,8 +858,8 @@ function iconizeText(root) {
 }
 (() => {
   const start = () => {
-    iconizeEmoji(); iconizeText();
-    new MutationObserver(() => { iconizeEmoji(); iconizeText(); }).observe(document.body, { childList: true, subtree: true });
+    iconizeEmoji(); iconizeText(); thumbize();
+    new MutationObserver(() => { iconizeEmoji(); iconizeText(); thumbize(); }).observe(document.body, { childList: true, subtree: true });
   };
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", start); else start();
 })();
