@@ -737,7 +737,7 @@ function renderPanel(){
   if(st.view==="friends"){
     const fr=CONTACTS.filter(isFr),pens=CONTACTS.filter(c=>c.kind==="pen"&&!c.isFriend);
     document.getElementById("note").textContent=`好友 ${friendCount()}／${friendMax()}　筆友 ${penCount()}／${PEN_MAX}`;
-    const card=(c,sub,del)=>`<div class="row" style="grid-template-columns:1fr"><div class="mailitem"><span class="fc">${face(c)}</span><div><div class="lbl">${esc(c.name)}</div><div class="val sm">${esc(c.where)}${sub}</div><div class="btns mailbtns" style="margin-top:.3cqw;display:flex;flex-wrap:wrap;gap:.4cqw"><button class="btn sm pri" data-writeto="${c.id}" ${allowed(c)?"":"disabled"}>寫信</button>${del}</div></div></div></div>`;
+    const card=(c,sub,del)=>`<div class="row" style="grid-template-columns:1fr"><div class="mailitem"><span class="fc">${face(c)}</span><div><div class="lbl">${esc(c.name)}</div><div class="val sm">${esc(c.where)}${sub}</div><div class="btns mailbtns" style="margin-top:.3cqw;display:flex;flex-wrap:wrap;gap:.4cqw"><button class="btn sm pri" data-writeto="${c.id}" ${allowed(c)?"":"disabled"}>寫信</button>${(()=>{const n=st.inbox.filter(m=>m.from===c.id).length,u=st.inbox.filter(m=>m.from===c.id&&!m.read).length;return `<button class="btn sm${u?" pri":""}" data-mailfrom="${c.id}" ${n?"":"disabled"}>來信 ${n}${u?`（未讀 ${u}）`:""}</button>`})()}${del}</div></div></div></div>`;
     const armed=id=>st.frArm===id;
     document.getElementById("rows").innerHTML=
       `<h4 class="grph">好友 ${friendCount()}／${friendMax()}</h4><div class="src grpn">好友看得到你的：暱稱、頭貼（有分享照片才顯示照片）、你填的城市。</div>`+
@@ -787,18 +787,20 @@ function renderPanel(){
     /* 收件匣分成「信件」和「通知」兩類（v0.24.6，使用者回報：通知和明信片混在一起很亂） */
     const isMail=m=>!!m.from,mailN=st.inbox.filter(isMail).length,unreadN=st.inbox.filter(m=>m.from&&!m.read).length;
     h+=`<div class="rowsel" style="display:flex;gap:.6cqw;margin:0 0 .6cqw"><span class="chip on" style="cursor:default">✉️ 信件（${mailN+st.out.length}）${unreadN?`<b style="color:#b1392d;margin-left:.3cqw">未讀 ${unreadN}</b>`:""}</span></div>`;
-    h+=st.out.map((o,oi)=>{const stage=!o.intl?0:o.el<o.leg1?0:o.el<o.h-(o.l3||o.h*.1)?1:2;
+    if(st.from){const fc=C(st.from),nm0=(fc&&fc.name)||"這位朋友",shown=st.inbox.filter(m=>isMail(m)&&m.from===st.from).length+st.out.filter(o=>o.to===st.from).length;
+      h+=`<div class="row"><div class="ic">✉️</div><div class="val sm">只顯示 ${esc(nm0)} 的來信</div><button class="btn sm" data-mailall="1">看全部</button></div>`+(shown?"":`<div class="row"><div class="ic">📭</div><div class="val sm">${esc(nm0)} 還沒有寄來的信。</div></div>`);}
+    h+=st.out.map((o,oi)=>[o,oi]).filter(([o])=>!st.from||o.to===st.from).map(([o,oi])=>{const stage=!o.intl?0:o.el<o.leg1?0:o.el<o.h-(o.l3||o.h*.1)?1:2;
       const who=!o.intl?`${NAME[o.courier]}送信中`:[NAME[o.courier]+"送往"+o.hub+"郵站","國際轉運中","當地生物送到對方手上"][stage];
       return `<div class="row"><div class="ic">🚚</div><div style="min-width:0"><div class="lbl">寄給 ${esc(C(o.to).name)}・${who}</div><div class="prog"><i style="width:${Math.min(100,o.el/o.h*100)}%"></i></div>
       <div class="src">${o.intl?"全程":""}剩約 ${fmtH(Math.max(0,o.h-o.el))}｜🌸 ${o.fee?`已付郵資 ${o.fee} 朵`:`郵資免費（${o.feeWhy}）`}</div>
       ${o.ev&&o.el/o.h>=.3?`<div class="src">🧳 路上：${esc(o.ev.line)}</div>`:""}
       ${o.intl?`<div class="btns" style="display:flex;margin-top:.3cqw"><button class="btn sm" data-oout="${oi}">${o.open?"收起三步進度 ▴":"看三步進度 ▾"}</button></div>${o.open?`<div class="tsteps">${tripSteps(o)}</div>`:""}`:""}</div></div>`;}).join("");
-    h+=st.inbox.map((m,j)=>[m,j]).reverse().filter(([m])=>isMail(m)).map(([m,j])=>{const R=(()=>{if(m.cstamp)return `<div class="row good"><div class="ic">📮</div><div class="arrive"><div class="stampcell">${countryStampSVG(m.cstamp,true,loadCountryStamps()[m.cstamp])}</div><div><div class="lbl">新的國家郵戳：${esc(m.cstamp)}</div><div class="val sm">你的明信片第一次寄到${esc(m.cstamp)}！</div><div class="src">🌸 小花 +${EARN.stamp}</div></div></div></div>`;if(m.sys)return `<div class="row"><div class="ic">${m.icon||"🔁"}</div><div><div class="val sm">${esc(m.text)}</div>${m.penBtn&&!st.penOn?`<div class="btns" style="display:flex;margin-top:.4cqw"><button class="btn sm pri" data-penon="1">前往設定：開啟筆友</button></div>`:""}</div></div>`;if(m.pcard){const f=FOREIGN_BY_ID[m.pcard];return `<div class="row good"><div class="ic">🖼️</div><div><div class="lbl">${m.isNew?"新的明信片":"又收到一張明信片"}：${esc(f.name)}（來自${esc(f.country)}）</div><div class="val sm">已收進「我的 → 明信片冊」；寫明信片時可以選為特別明信片樣式</div><div class="src">送信生物與小知識：部分查核（GPT 查證草稿）</div></div></div>`;}const c2=C(m.from);return `<div class="row${m.read?"":" unread"}" style="grid-template-columns:1fr"><div class="mailitem"><span class="fc">${face(c2)}</span><div>
+    h+=st.inbox.map((m,j)=>[m,j]).reverse().filter(([m])=>isMail(m)&&(!st.from||m.from===st.from)).map(([m,j])=>{const R=(()=>{if(m.cstamp)return `<div class="row good"><div class="ic">📮</div><div class="arrive"><div class="stampcell">${countryStampSVG(m.cstamp,true,loadCountryStamps()[m.cstamp])}</div><div><div class="lbl">新的國家郵戳：${esc(m.cstamp)}</div><div class="val sm">你的明信片第一次寄到${esc(m.cstamp)}！</div><div class="src">🌸 小花 +${EARN.stamp}</div></div></div></div>`;if(m.sys)return `<div class="row"><div class="ic">${m.icon||"🔁"}</div><div><div class="val sm">${esc(m.text)}</div>${m.penBtn&&!st.penOn?`<div class="btns" style="display:flex;margin-top:.4cqw"><button class="btn sm pri" data-penon="1">前往設定：開啟筆友</button></div>`:""}</div></div>`;if(m.pcard){const f=FOREIGN_BY_ID[m.pcard];return `<div class="row good"><div class="ic">🖼️</div><div><div class="lbl">${m.isNew?"新的明信片":"又收到一張明信片"}：${esc(f.name)}（來自${esc(f.country)}）</div><div class="val sm">已收進「我的 → 明信片冊」；寫明信片時可以選為特別明信片樣式</div><div class="src">送信生物與小知識：部分查核（GPT 查證草稿）</div></div></div>`;}const c2=C(m.from);return `<div class="row${m.read?"":" unread"}" style="grid-template-columns:1fr"><div class="mailitem"><span class="fc">${face(c2)}</span><div>
       <div class="lbl">${m.read?"":`<span class="udot"></span>`}${esc(m.name)}・${esc(c2.where)}${m.read?"":`<span class="badge" style="margin-left:.5cqw;background:#b1392d;color:#fff">未讀</span>`}${m.fl?`<span class="badge b-g" style="margin-left:.5cqw">🌸 +${m.fl}</span>`:""}</div><div class="val sm">${esc(m.text.length>16?m.text.slice(0,16)+"…":m.text)}</div>
       ${(()=>{const t=[m.match&&m.decided&&!(m.decided==="keep"&&c2.isFriend)?(m.decided==="keep"?"已成為筆友":"已結束這段配對"):"",c2.kind==="pen"?(c2.isFriend?"已是好友":""):""].filter(Boolean);return t.length?`<div class="src" style="margin-top:.2cqw">${t.join("・")}</div>`:""})()}
       <div class="btns mailbtns" style="margin-top:.3cqw;display:flex;flex-wrap:wrap;align-items:center;gap:.4cqw"><button class="btn sm pri" data-open="${j}">打開</button>${m.match&&!m.decided?`<button class="btn sm pri" data-keep="${m.from}" ${penCount()>=PEN_MAX?"disabled":""}>繼續通信（成為筆友）</button><button class="btn sm" data-drop="${m.from}">不繼續</button>`:""}<button class="btn sm" data-report="${m.from}">檢舉</button><button class="btn sm" data-block="${m.from}">封鎖</button></div>
     </div></div></div>`})();return addDel(R,j,m)}).join("");
-    if(!mailN&&!st.out.length)h+=`<div class="row"><div class="ic">📭</div><div class="val sm">還沒有信。寄一張明信片試試看！</div></div>`;
+    if(!st.from&&!mailN&&!st.out.length)h+=`<div class="row"><div class="ic">📭</div><div class="val sm">還沒有信。寄一張明信片試試看！</div></div>`;
   }
   document.getElementById("rows").innerHTML=h;
   /* 按鈕寫「派 郵差名字 寄出」（2026-11-11 使用者決定，原本固定寫「寄出」）：背面還沒寫字、或有其他問題時是灰色不能按；寫了字才變綠色可以按。原因寫在上方的提示列 */
@@ -880,7 +882,7 @@ document.addEventListener("click",e=>{
 });
 document.addEventListener("keydown",e=>{if(e.key==="Escape"&&RD)closeLetter();});
 document.addEventListener("click",e=>{
-  const t=e.target.closest("#rcpt,[data-endpen],[data-writeto],[data-delfriend],[data-del],[data-clearnotes],[data-to],[data-front],[data-courier],[data-tab],#flip,#go,[data-report],[data-block],[data-keep],[data-drop],[data-askfriend],[data-mmode],[data-mint],[data-mreg],[data-godrift],[data-penon],[data-restkit],[data-evuse],[data-boxv],[data-oout]");if(!t)return;
+  const t=e.target.closest("#rcpt,[data-endpen],[data-writeto],[data-mailfrom],[data-mailall],[data-delfriend],[data-del],[data-clearnotes],[data-to],[data-front],[data-courier],[data-tab],#flip,#go,[data-report],[data-block],[data-keep],[data-drop],[data-askfriend],[data-mmode],[data-mint],[data-mreg],[data-godrift],[data-penon],[data-restkit],[data-evuse],[data-boxv],[data-oout]");if(!t)return;
   if(t.dataset.evuse){const k=t.dataset.evuse==="cloak"?"evCloak":"evLamp";st[k]=!st[k];render();return;}
   if(t.dataset.restkit){const r=useRestkit(st.courier,STA);if(r){saveSta();restMsg=`${NAME[st.courier]}休息了一下，體力 +${RESTKIT.sta}%${r.first?"，好感 +1":"（今天已經加過好感）"}`;}render();return;}
   if(t.id==="rcpt"){st.rcptOpen=!st.rcptOpen;render();return;}
@@ -889,6 +891,8 @@ document.addEventListener("click",e=>{
     if(c){CONTACTS.splice(CONTACTS.indexOf(c),1);RM_FR.push(id);if(st.to===id)st.to="f1";
       epNotify(`已結束與「${c.name}」的通信。筆友名額 ${penCount()}／${PEN_MAX}，可以再配對新的筆友了。`,{icon:"✉️",hist:false});}
     render();return;}
+  if(t.dataset.mailfrom){st.from=t.dataset.mailfrom;st.tab="inbox";st.view="";st.rcptOpen=false;render();return;}   /* v0.66.0：好友頁「來信」→ 收件匣只顯示這位的來信 */
+  if(t.dataset.mailall){st.from="";render();return;}
   if(t.dataset.writeto){const c=C(t.dataset.writeto);if(!allowed(c))return;st.to=c.id;st.tab="write";st.view="";st.flip=true;st.rcptOpen=false;render();return;}
   if(t.dataset.delfriend){const id=t.dataset.delfriend;if(st.frArm!==id){st.frArm=id;render();return;}
     const c=CONTACTS.find(x=>x.id===id);st.frArm=null;
@@ -914,7 +918,7 @@ document.addEventListener("click",e=>{
   if(t.dataset.to){st.to=t.dataset.to;st.rcptOpen=false;}
   else if(t.dataset.front){st.front=t.dataset.front;st.flip=false;saveLast();}
   else if(t.dataset.courier){if(busyC(t.dataset.courier))return;st.courier=t.dataset.courier;if(st.auto)st.front=st.courier;restMsg="";saveLast();}
-  else if(t.dataset.tab){st.tab=t.dataset.tab;if(st.tab==="match"&&!penLocked()&&penCount()<PEN_MAX)st.to="drift";}
+  else if(t.dataset.tab){st.tab=t.dataset.tab;st.from="";if(st.tab==="match"&&!penLocked()&&penCount()<PEN_MAX)st.to="drift";}
   else if(t.id==="flip"){st.flip=!st.flip;}
   else if(t.dataset.report){epNotify("已送出檢舉（原型示意），我們會審查這封信。",{icon:"🚩",hist:false});st.tab="inbox";}
   else if(t.dataset.block){st.blocked.push(t.dataset.block);st.inbox=st.inbox.filter(m=>m.from!==t.dataset.block);if(st.to===t.dataset.block)st.to="f1";}
