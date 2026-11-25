@@ -140,10 +140,10 @@ const pcardKinds = () => [...new Set(loadPCards().map(c => c.id))];   // 可當�
    送信、明信片、「我的」都以這份名單為準。 */
 /* 圖鑑進度（原型存在裝置上）。state：none 未發現／seen 目擊／recorded 已記錄／courier 郵差 */
 const DEX_KEY = "ep-dex";
-/*SP:BEGIN player:THRESH*/const THRESH = {"dog": 3, "cat": 3, "butterfly": 2, "heron": 3, "macaque": 4, "dolphin": Infinity, "bluemagpie": 4, "barbet": 3, "thrush": 3, "frog": 3, "eagle": 4, "bpartridge": 3, "hare": 3, "civet": 3, "mikado": Infinity, "swinhoe": Infinity, "tpartridge": Infinity, "warbler": Infinity, "viper": Infinity, "badger": Infinity, "babbler": 3, "yuhina": 3, "keelback": Infinity, "shrew": 4, "flyingsq": 5, "squirrel": 3, "egret": 3, "reefheron": 4, "nheron": 3, "kingfisher": 3, "robin": 4, "liocichla": 3, "sparrow": 3, "munia": 3, "grassfrog": 3, "firefly": 3, "peacock": 3, "ghostcrab": 4, "rissos": 4, "bottlenose": 4, "gull": 3, "serow": Infinity, "anemonefish": 3 };/*SP:END player:THRESH*/   // 海洋生物（v0.51.0，遊戲規則・暫定）  // 認養地在地生物（v0.27.0，遊戲規則・暫定）   // 第三批（v0.21.0，草稿 new_species_batch3_v0.1.md）
+/*SP:BEGIN player:THRESH*/const THRESH = {"dog": 3, "cat": 3, "butterfly": 2, "heron": 3, "macaque": 4, "dolphin": Infinity, "bluemagpie": 4, "barbet": 3, "thrush": 3, "frog": 3, "eagle": 4, "bpartridge": 3, "hare": 3, "civet": 3, "mikado": Infinity, "swinhoe": Infinity, "tpartridge": Infinity, "warbler": Infinity, "viper": Infinity, "badger": Infinity, "babbler": 3, "yuhina": 3, "keelback": Infinity, "shrew": 4, "flyingsq": 5, "squirrel": 3, "egret": 3, "reefheron": 4, "nheron": 3, "kingfisher": 3, "robin": 4, "liocichla": 3, "sparrow": 3, "munia": 3, "grassfrog": 3, "firefly": 3, "peacock": 3, "ghostcrab": 4, "rissos": 4, "bottlenose": 4, "gull": 3, "serow": Infinity, "anemonefish": 3, "bulbul": 3, "whiteeye": 3, "swallow": 4, "dove": 3, "drongo": 4, "bbulbul": 3, "wagtail": 3, "plover": 4, "muntjac": 4, "redsq": 3, "bat": 4, "toad": 3, "treefrog": 3, "lizard": 3, "yellow": 2, "mormon": 3, "beetle": 3, "chub": Infinity };/*SP:END player:THRESH*/   // 海洋生物（v0.51.0，遊戲規則・暫定）  // 認養地在地生物（v0.27.0，遊戲規則・暫定）   // 第三批（v0.21.0，草稿 new_species_batch3_v0.1.md）
 /* 觀察限定：只觀察記錄、不能成為郵差（瀕危物種，以及 v0.11.0 加入的稀有、高海拔、要保持距離的生物）。
    觀察記錄成功後，解鎖特別明信片樣式。 */
-/*SP:BEGIN player:OBSERVE_ONLY*/const OBSERVE_ONLY = ["dolphin","mikado","swinhoe","tpartridge","warbler","viper","badger","keelback","serow"];/*SP:END player:OBSERVE_ONLY*/
+/*SP:BEGIN player:OBSERVE_ONLY*/const OBSERVE_ONLY = ["dolphin","mikado","swinhoe","tpartridge","warbler","viper","badger","keelback","serow","chub"];/*SP:END player:OBSERVE_ONLY*/
 /*SP:BEGIN player:OBS_TAG*/const OBS_TAG = {"dolphin": "瀕危", "viper": "保持距離", "badger": "保持距離", "keelback": "保持距離" };   // 其他：觀察限定/*SP:END player:OBS_TAG*/   // 其他：觀察限定
 const obsTag = k => OBS_TAG[k] || "觀察限定";
 const MOUNTAIN_SAFE = "高海拔山區：注意天候與裝備、走在步道上，不要為了找牠冒險";
@@ -156,7 +156,8 @@ const MOUNTAIN_SAFE = "高海拔山區：注意天候與裝備、走在步道上
   "viper": "毒蛇：請保持距離，不要靠近、觸碰或驚擾牠；看到就慢慢退開",
   "badger": "請保持距離，不要觸碰或撿拾；台灣鼬獾曾是狂犬病病毒的宿主",
   "keelback": "請保持距離，不要觸碰或撿拾；看到蛇時，慢慢繞開並告訴身邊的大人",
-  "serow": MOUNTAIN_SAFE
+  "serow": MOUNTAIN_SAFE,
+  "chub": "在河邊安靜地看，不要下水追逐、不要用網撈"
 };/*SP:END player:OBS_SAFETY*/
 /*SP:BEGIN player:DEX_DEMO*/const DEX_DEMO = {
   "dog": { state: "courier", aff: 4, notes: [] },
@@ -201,7 +202,25 @@ const MOUNTAIN_SAFE = "高海拔山區：注意天候與裝備、走在步道上
   "bottlenose": { state: "none", aff: 0, notes: [] },
   "gull": { state: "none", aff: 0, notes: [] },
   "serow": { state: "none", aff: 0, notes: [] },
-  "anemonefish": { state: "none", aff: 0, notes: [] }
+  "anemonefish": { state: "none", aff: 0, notes: [] },
+  "bulbul": { state: "none", aff: 0, notes: [] },
+  "whiteeye": { state: "none", aff: 0, notes: [] },
+  "swallow": { state: "none", aff: 0, notes: [] },
+  "dove": { state: "none", aff: 0, notes: [] },
+  "drongo": { state: "none", aff: 0, notes: [] },
+  "bbulbul": { state: "none", aff: 0, notes: [] },
+  "wagtail": { state: "none", aff: 0, notes: [] },
+  "plover": { state: "none", aff: 0, notes: [] },
+  "muntjac": { state: "none", aff: 0, notes: [] },
+  "redsq": { state: "none", aff: 0, notes: [] },
+  "bat": { state: "none", aff: 0, notes: [] },
+  "toad": { state: "none", aff: 0, notes: [] },
+  "treefrog": { state: "none", aff: 0, notes: [] },
+  "lizard": { state: "none", aff: 0, notes: [] },
+  "yellow": { state: "none", aff: 0, notes: [] },
+  "mormon": { state: "none", aff: 0, notes: [] },
+  "beetle": { state: "none", aff: 0, notes: [] },
+  "chub": { state: "none", aff: 0, notes: [] }
 };/*SP:END player:DEX_DEMO*/
 function loadDex() {
   let d = null;
@@ -369,7 +388,7 @@ const EV_ITEMS = {
   cloak: { n: "防雨斗篷", ic: "🌂", p: 5, d: "擋掉「躲雨」的插曲" },
   lamp:  { n: "小夜燈",   ic: "🏮", p: 5, d: "擋掉「夜間」的插曲" }
 };
-/*SP:BEGIN player:EV_GROUP*/const EV_GROUP = {"dog":"mammal","cat":"mammal","butterfly":"insect","macaque":"mammal","heron":"bird","bluemagpie":"bird","barbet":"bird","thrush":"bird","frog":"herp","eagle":"bird","bpartridge":"bird","hare":"mammal","civet":"mammal","babbler":"bird","yuhina":"bird","shrew":"mammal","flyingsq":"mammal","squirrel":"mammal","egret":"bird","reefheron":"bird","nheron":"bird","kingfisher":"bird","robin":"bird","liocichla":"bird","sparrow":"bird","munia":"bird","grassfrog":"herp","firefly":"insect","peacock":"insect","ghostcrab":"mammal","rissos":"sea","anemonefish":"sea","bottlenose":"sea","gull":"bird","serow":"mammal","dolphin":"mammal","mikado":"bird","swinhoe":"bird","tpartridge":"bird","warbler":"bird","viper":"herp","keelback":"herp","badger":"mammal"};/*SP:END player:EV_GROUP*/   // 由 species_data/species.json 產生（下面標記之間）
+/*SP:BEGIN player:EV_GROUP*/const EV_GROUP = {"dog":"mammal","cat":"mammal","butterfly":"insect","macaque":"mammal","heron":"bird","bluemagpie":"bird","barbet":"bird","thrush":"bird","frog":"herp","eagle":"bird","bpartridge":"bird","hare":"mammal","civet":"mammal","babbler":"bird","yuhina":"bird","shrew":"mammal","flyingsq":"mammal","squirrel":"mammal","egret":"bird","reefheron":"bird","nheron":"bird","kingfisher":"bird","robin":"bird","liocichla":"bird","sparrow":"bird","munia":"bird","grassfrog":"herp","firefly":"insect","peacock":"insect","ghostcrab":"mammal","rissos":"sea","anemonefish":"sea","bottlenose":"sea","gull":"bird","serow":"mammal","dolphin":"mammal","mikado":"bird","swinhoe":"bird","tpartridge":"bird","warbler":"bird","viper":"herp","keelback":"herp","badger":"mammal","bulbul":"bird","whiteeye":"bird","swallow":"bird","dove":"bird","drongo":"bird","bbulbul":"bird","wagtail":"bird","plover":"bird","muntjac":"mammal","redsq":"mammal","bat":"mammal","toad":"herp","treefrog":"herp","lizard":"herp","yellow":"insect","mormon":"insect","beetle":"insect","chub":"sea"};/*SP:END player:EV_GROUP*/   // 由 species_data/species.json 產生（下面標記之間）
 function evGroup(id) { return EV_GROUP[id] || "mammal"; }
 /* 說法：{名}＝郵差名字。delay 延誤、rain 躲雨（斗篷可擋）、night 夜間（小夜燈可擋）、mishap 輕微事故、tail 順風、gift 驚喜（小花） */
 const EV_TEXT = {
@@ -695,7 +714,7 @@ function fullSweep() {
   } catch (e) {}
 }
 (function () { const go = () => { setTimeout(fullSweep, 1500); setInterval(fullSweep, 30000); }; if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", go); else go(); })();
-const BUILD = { name: "測試版", ver: "v0.67.2", date: "2026-11-15" };
+const BUILD = { name: "測試版", ver: "v0.68.0", date: "2026-11-15" };
 const BUILD_LABEL = `${BUILD.name} ${BUILD.ver}（${BUILD.date}）`;
 (function addBuildBadge() {
   const put = () => {

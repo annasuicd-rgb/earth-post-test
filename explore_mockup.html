@@ -453,18 +453,21 @@ body:has(.stage.pt){padding:0;overflow:hidden;align-items:stretch}
  "sparrow":"麻雀","munia":"斑文鳥","grassfrog":"澤蛙","firefly":"黃緣螢","peacock":"巴黎翠鳳蝶","ghostcrab":"角眼沙蟹",
  "rissos":"花紋海豚","anemonefish":"克氏海葵魚","bottlenose":"瓶鼻海豚","gull":"黑尾鷗","serow":"台灣長鬃山羊","dolphin":"台灣白海豚",
  "mikado":"帝雉","swinhoe":"藍腹鷴","tpartridge":"台灣山鷓鴣","warbler":"冠羽柳鶯","viper":"赤尾青竹絲","keelback":"斯文豪氏遊蛇",
- "badger":"台灣鼬獾"};/*SP:END explore_parts:NAME*/
-/*SP:BEGIN explore_parts:ORDER*/const ORDER=["dog","cat","butterfly","macaque","heron","bluemagpie","barbet","thrush","frog","eagle","bpartridge","hare","civet","babbler","yuhina","shrew","flyingsq","squirrel","egret","reefheron","nheron","kingfisher","robin","liocichla","sparrow","munia","grassfrog","firefly","peacock","ghostcrab","rissos","anemonefish","bottlenose","gull","serow","dolphin","mikado","swinhoe","tpartridge","warbler","viper","keelback","badger"];/*SP:END explore_parts:ORDER*/
+ "badger":"台灣鼬獾","bulbul":"白頭翁","whiteeye":"斯氏繡眼（綠繡眼）","swallow":"洋燕","dove":"珠頸斑鳩","drongo":"大卷尾",
+ "bbulbul":"紅嘴黑鵯","wagtail":"白鶺鴒","plover":"小環頸鴴","muntjac":"山羌","redsq":"赤腹松鼠","bat":"東亞家蝠",
+ "toad":"黑眶蟾蜍","treefrog":"艾氏樹蛙","lizard":"斯文豪氏攀蜥","yellow":"黃蝶（荷氏黃蝶）","mormon":"大鳳蝶","beetle":"獨角仙",
+ "chub":"粗首馬口鱲（馬口魚）"};/*SP:END explore_parts:NAME*/
+/*SP:BEGIN explore_parts:ORDER*/const ORDER=["dog","cat","butterfly","macaque","heron","bluemagpie","barbet","thrush","frog","eagle","bpartridge","hare","civet","babbler","yuhina","shrew","flyingsq","squirrel","egret","reefheron","nheron","kingfisher","robin","liocichla","sparrow","munia","grassfrog","firefly","peacock","ghostcrab","rissos","anemonefish","bottlenose","gull","serow","dolphin","mikado","swinhoe","tpartridge","warbler","viper","keelback","badger","bulbul","whiteeye","swallow","dove","drongo","bbulbul","wagtail","plover","muntjac","redsq","bat","toad","treefrog","lizard","yellow","mormon","beetle","chub"];/*SP:END explore_parts:ORDER*/
 const P={M:{name:"山區",ic:"⛰️",h:"mountain",x:20,y:30,r:300},F:{name:"淺山森林",ic:"🌳",h:"forest",x:46,y:34,r:300},R:{name:"河岸",ic:"🏞️",h:"river",x:30,y:66,r:200},
  A:{name:"農田／聚落",ic:"🌾",h:"farm",x:74,y:52,r:200},C:{name:"市區公園",ic:"🏙️",h:"park",x:62,y:88,r:150},S:{name:"海邊",ic:"🌊",h:"coast",x:12,y:90,r:300}};
 /* v0.10.0 加入第一批新生物（權重為遊戲規則・暫定）：藍鵲、五色鳥、紫嘯鶇、莫氏樹蛙 */
 /* v0.11.0 第二批：大冠鷲、台灣竹雞、台灣野兔、白鼻心；觀察限定（權重低）：帝雉、藍腹鷴、台灣山鷓鴣、冠羽柳鶯、赤尾青竹絲、台灣鼬獾 */
-/*SP:BEGIN explore_parts:POOL*/const POOL={F:{butterfly:30,macaque:40,heron:15,bluemagpie:30,barbet:15,frog:15,eagle:10,bpartridge:10,civet:10,babbler:12,yuhina:10,shrew:6,flyingsq:3,squirrel:10,firefly:8,peacock:15,swinhoe:3,tpartridge:4,warbler:4,viper:5,keelback:4,badger:5,none:55},
- R:{cat:15,butterfly:25,heron:35,thrush:25,hare:10,egret:20,nheron:15,kingfisher:15,firefly:12,warbler:3,viper:4,keelback:6,none:48},
- M:{butterfly:20,macaque:50,bluemagpie:10,thrush:20,eagle:15,yuhina:15,shrew:4,flyingsq:6,squirrel:10,robin:15,liocichla:15,serow:4,mikado:6,swinhoe:5,tpartridge:6,badger:3,none:45},
- A:{dog:40,cat:30,butterfly:20,frog:15,bpartridge:15,hare:15,civet:10,babbler:8,egret:12,sparrow:25,munia:20,grassfrog:18,viper:3,keelback:3,badger:3,none:50},
- C:{dog:10,cat:30,butterfly:15,heron:50,bluemagpie:10,barbet:20,egret:10,sparrow:20,warbler:4,none:45},
- S:{dog:25,cat:20,reefheron:15,ghostcrab:18,rissos:7,anemonefish:14,bottlenose:6,gull:12,dolphin:8,none:45}};/*SP:END explore_parts:POOL*/
+/*SP:BEGIN explore_parts:POOL*/const POOL={F:{butterfly:30,macaque:40,heron:15,bluemagpie:30,barbet:15,frog:15,eagle:10,bpartridge:10,civet:10,babbler:12,yuhina:10,shrew:6,flyingsq:3,squirrel:10,firefly:8,peacock:15,swinhoe:3,tpartridge:4,warbler:4,viper:5,keelback:4,badger:5,bulbul:8,whiteeye:12,drongo:6,bbulbul:14,muntjac:12,redsq:12,treefrog:12,lizard:10,yellow:8,mormon:10,beetle:10,none:75},
+ R:{cat:15,butterfly:25,heron:35,thrush:25,hare:10,egret:20,nheron:15,kingfisher:15,firefly:12,warbler:3,viper:4,keelback:6,wagtail:14,plover:10,yellow:8,chub:14,none:58},
+ M:{butterfly:20,macaque:50,bluemagpie:10,thrush:20,eagle:15,yuhina:15,shrew:4,flyingsq:6,squirrel:10,robin:15,liocichla:15,serow:4,mikado:6,swinhoe:5,tpartridge:6,badger:3,bbulbul:10,muntjac:8,treefrog:6,lizard:6,beetle:6,none:55},
+ A:{dog:40,cat:30,butterfly:20,frog:15,bpartridge:15,hare:15,civet:10,babbler:8,egret:12,sparrow:25,munia:20,grassfrog:18,viper:3,keelback:3,badger:3,bulbul:16,whiteeye:8,swallow:14,dove:20,drongo:12,wagtail:10,redsq:6,bat:8,toad:14,lizard:4,yellow:16,mormon:6,none:75},
+ C:{dog:10,cat:30,butterfly:15,heron:50,bluemagpie:10,barbet:20,egret:10,sparrow:20,warbler:4,bulbul:22,whiteeye:18,swallow:12,dove:14,wagtail:6,redsq:14,bat:8,toad:10,yellow:12,mormon:8,none:70},
+ S:{dog:25,cat:20,reefheron:15,ghostcrab:18,rissos:7,anemonefish:14,bottlenose:6,gull:12,dolphin:8,swallow:6,wagtail:6,plover:12,none:50}};/*SP:END explore_parts:POOL*/
 /*SP:BEGIN explore_parts:TM*/const TM={"dog":{"dawn":1,"day":1,"dusk":0.8,"night":0.3},"cat":{"dawn":1.3,"day":0.5,"dusk":1.3,"night":1},"butterfly":{"dawn":0.6,"day":1.5,"dusk":0.5,"night":0},
  "macaque":{"dawn":1.2,"day":1,"dusk":1.2,"night":0},"heron":{"dawn":1.2,"day":0.8,"dusk":1.2,"night":1},"bluemagpie":{"dawn":1.2,"day":1,"dusk":1,"night":0},
  "barbet":{"dawn":1,"day":1.2,"dusk":0.8,"night":0},"thrush":{"dawn":1.3,"day":0.8,"dusk":1.3,"night":0},"frog":{"dawn":0.5,"day":0.2,"dusk":1,"night":1.6},
@@ -479,7 +482,13 @@ const P={M:{name:"山區",ic:"⛰️",h:"mountain",x:20,y:30,r:300},F:{name:"淺
  "gull":{"dawn":1.2,"day":1.1,"dusk":1,"night":0},"serow":{"dawn":1.3,"day":1,"dusk":1,"night":0},"dolphin":{"dawn":1,"day":1,"dusk":1,"night":0},
  "mikado":{"dawn":1.3,"day":0.6,"dusk":1.3,"night":0},"swinhoe":{"dawn":1.3,"day":0.7,"dusk":1.2,"night":0},"tpartridge":{"dawn":1.3,"day":0.8,"dusk":1.2,"night":0},
  "warbler":{"dawn":1.2,"day":1,"dusk":0.8,"night":0},"viper":{"dawn":0.6,"day":0.5,"dusk":1,"night":1.5},"keelback":{"dawn":0.6,"day":1.3,"dusk":0.6,"night":0},
- "badger":{"dawn":0.3,"day":0,"dusk":1,"night":1.5}};/*SP:END explore_parts:TM*/
+ "badger":{"dawn":0.3,"day":0,"dusk":1,"night":1.5},"bulbul":{"dawn":1.2,"day":1.2,"dusk":1,"night":0},"whiteeye":{"dawn":1.2,"day":1.2,"dusk":0.9,"night":0},
+ "swallow":{"dawn":1.1,"day":1.3,"dusk":1,"night":0},"dove":{"dawn":1.2,"day":1.2,"dusk":1,"night":0},"drongo":{"dawn":1.2,"day":1.3,"dusk":0.9,"night":0},
+ "bbulbul":{"dawn":1.3,"day":1.1,"dusk":0.9,"night":0},"wagtail":{"dawn":1.2,"day":1.2,"dusk":1,"night":0},"plover":{"dawn":1.2,"day":1.1,"dusk":1,"night":0},
+ "muntjac":{"dawn":1.3,"day":0.7,"dusk":1.3,"night":0.6},"redsq":{"dawn":1.2,"day":1.3,"dusk":0.7,"night":0},"bat":{"dawn":0.3,"day":0,"dusk":1.6,"night":1.3},
+ "toad":{"dawn":0.6,"day":0.3,"dusk":1.2,"night":1.5},"treefrog":{"dawn":0.5,"day":0.2,"dusk":1,"night":1.6},"lizard":{"dawn":1,"day":1.4,"dusk":0.7,"night":0},
+ "yellow":{"dawn":0.6,"day":1.5,"dusk":0.5,"night":0},"mormon":{"dawn":0.5,"day":1.5,"dusk":0.5,"night":0},"beetle":{"dawn":1.2,"day":0.2,"dusk":1,"night":1.6},
+ "chub":{"dawn":1,"day":1.4,"dusk":0.9,"night":0}};/*SP:END explore_parts:TM*/
 /*SP:BEGIN explore_parts:WM*/const WM={"dog":{"sunny":1,"cloudy":1,"rain":0.6},"cat":{"sunny":1,"cloudy":1,"rain":0.5},"butterfly":{"sunny":1.3,"cloudy":0.8,"rain":0.1},
  "macaque":{"sunny":1,"cloudy":1,"rain":0.5},"heron":{"sunny":0.9,"cloudy":1,"rain":1.5},"bluemagpie":{"sunny":1,"cloudy":1,"rain":0.6},
  "barbet":{"sunny":1.1,"cloudy":1,"rain":0.5},"thrush":{"sunny":0.9,"cloudy":1,"rain":1.2},"frog":{"sunny":0.6,"cloudy":1,"rain":1.6},
@@ -494,7 +503,13 @@ const P={M:{name:"山區",ic:"⛰️",h:"mountain",x:20,y:30,r:300},F:{name:"淺
  "gull":{"sunny":1,"cloudy":1,"rain":0.6},"serow":{"sunny":1,"cloudy":1,"rain":0.6},"dolphin":{"sunny":1,"cloudy":0.8,"rain":0.3},
  "mikado":{"sunny":0.8,"cloudy":1.2,"rain":1},"swinhoe":{"sunny":1,"cloudy":1,"rain":0.6},"tpartridge":{"sunny":1,"cloudy":1,"rain":0.7},
  "warbler":{"sunny":1,"cloudy":1,"rain":0.5},"viper":{"sunny":1,"cloudy":1,"rain":1.2},"keelback":{"sunny":0.9,"cloudy":1,"rain":1.3},
- "badger":{"sunny":1,"cloudy":1,"rain":0.8}};/*SP:END explore_parts:WM*/
+ "badger":{"sunny":1,"cloudy":1,"rain":0.8},"bulbul":{"sunny":1.1,"cloudy":1,"rain":0.6},"whiteeye":{"sunny":1.1,"cloudy":1,"rain":0.5},
+ "swallow":{"sunny":1.2,"cloudy":1,"rain":0.3},"dove":{"sunny":1,"cloudy":1,"rain":0.7},"drongo":{"sunny":1.1,"cloudy":1,"rain":0.5},
+ "bbulbul":{"sunny":1,"cloudy":1.1,"rain":0.6},"wagtail":{"sunny":1,"cloudy":1,"rain":0.6},"plover":{"sunny":1,"cloudy":1,"rain":0.5},
+ "muntjac":{"sunny":1,"cloudy":1,"rain":0.8},"redsq":{"sunny":1.1,"cloudy":1,"rain":0.5},"bat":{"sunny":1,"cloudy":1,"rain":0.6},
+ "toad":{"sunny":0.7,"cloudy":1,"rain":1.5},"treefrog":{"sunny":0.6,"cloudy":1,"rain":1.6},"lizard":{"sunny":1.4,"cloudy":1,"rain":0.3},
+ "yellow":{"sunny":1.3,"cloudy":0.8,"rain":0.1},"mormon":{"sunny":1.3,"cloudy":0.8,"rain":0.1},"beetle":{"sunny":1,"cloudy":1.1,"rain":0.5},
+ "chub":{"sunny":1.2,"cloudy":1,"rain":0.5}};/*SP:END explore_parts:WM*/
 /*SP:BEGIN explore_parts:SUCC*/const SUCC={"dogOwner":{"watch":0.4,"wait":0.3,"greet":0.8},"dogLone":{"watch":0.6,"wait":0.5},"cat":{"watch":0.5,"wait":0.7,"greet":0.5},
  "butterfly":{"watch":0.5,"wait":0.75,"greet":0.1},"macaque":{"watch":0.7,"wait":0.5,"greet":0.1},"heron":{"watch":0.6,"wait":0.7,"greet":0.35},
  "bluemagpie":{"watch":0.6,"wait":0.5,"greet":0.3},"barbet":{"watch":0.5,"wait":0.7,"greet":0.15},"thrush":{"watch":0.7,"wait":0.5,"greet":0.1},
@@ -509,12 +524,19 @@ const P={M:{name:"山區",ic:"⛰️",h:"mountain",x:20,y:30,r:300},F:{name:"淺
  "bottlenose":{"watch":0.6,"wait":0.4,"greet":0.1},"gull":{"watch":0.6,"wait":0.5,"greet":0.05},"serow":{"watch":0.5,"wait":0.45},
  "dolphin":{"watch":0.5,"wait":0.4},"mikado":{"watch":0.55,"wait":0.45},"swinhoe":{"watch":0.5,"wait":0.45},
  "tpartridge":{"watch":0.5,"wait":0.55},"warbler":{"watch":0.55,"wait":0.5},"viper":{"watch":0.7},
- "keelback":{"watch":0.7},"badger":{"watch":0.65}};/*SP:END explore_parts:SUCC*/
+ "keelback":{"watch":0.7},"badger":{"watch":0.65},"bulbul":{"watch":0.55,"wait":0.6,"greet":0.3},
+ "whiteeye":{"watch":0.6,"wait":0.5,"greet":0.2},"swallow":{"watch":0.6,"wait":0.4,"greet":0.1},"dove":{"watch":0.5,"wait":0.65,"greet":0.25},
+ "drongo":{"watch":0.65,"wait":0.45,"greet":0.1},"bbulbul":{"watch":0.6,"wait":0.5,"greet":0.2},"wagtail":{"watch":0.55,"wait":0.6,"greet":0.2},
+ "plover":{"watch":0.65,"wait":0.5,"greet":0.1},"muntjac":{"watch":0.6,"wait":0.55,"greet":0.05},"redsq":{"watch":0.6,"wait":0.5,"greet":0.4},
+ "bat":{"watch":0.6,"wait":0.4,"greet":0.05},"toad":{"watch":0.65,"wait":0.65,"greet":0.05},"treefrog":{"watch":0.6,"wait":0.7,"greet":0.05},
+ "lizard":{"watch":0.65,"wait":0.6,"greet":0.05},"yellow":{"watch":0.5,"wait":0.75,"greet":0.1},"mormon":{"watch":0.5,"wait":0.7,"greet":0.1},
+ "beetle":{"watch":0.55,"wait":0.7,"greet":0.05},"chub":{"watch":0.7,"wait":0.4}};/*SP:END explore_parts:SUCC*/
 /* 生物大小分級（v0.58.5）：人物 10.5cqw，生物依物種大小分四級（大 15／中 12.5／小 10.5／迷你 8.5，手機版）；電腦版整體 ×1.12 */
 /*SP:BEGIN explore_parts:CRSZ*/const CRSZ={"dog":"15","cat":"12.5","butterfly":"8.5","macaque":"15","heron":"12.5","bluemagpie":"12.5","eagle":"15","bpartridge":"12.5",
  "hare":"12.5","civet":"12.5","flyingsq":"12.5","egret":"12.5","reefheron":"12.5","nheron":"12.5","firefly":"8.5","peacock":"8.5",
  "ghostcrab":"8.5","rissos":"15","bottlenose":"15","serow":"12.5","dolphin":"15","mikado":"12.5","swinhoe":"12.5","tpartridge":"12.5",
- "viper":"12.5","keelback":"12.5","badger":"12.5"};/*SP:END explore_parts:CRSZ*/
+ "viper":"12.5","keelback":"12.5","badger":"12.5","muntjac":"12.5","bat":"8.5","treefrog":"8.5","yellow":"8.5","mormon":"8.5",
+ "beetle":"8.5"};/*SP:END explore_parts:CRSZ*/
 const crStyle=k=>` style="--cs:${CRSZ[k]||"10.5"}cqw"`;
 /*SP:BEGIN explore_parts:PREF*/const PREF={"dogOwner":"greet","dogLone":null,"cat":"wait","butterfly":"wait","macaque":"watch","heron":"wait",
  "bluemagpie":"watch","barbet":"wait","thrush":"watch","frog":"wait","eagle":"watch","bpartridge":"wait",
@@ -523,19 +545,22 @@ const crStyle=k=>` style="--cs:${CRSZ[k]||"10.5"}cqw"`;
  "liocichla":"wait","sparrow":"greet","munia":"watch","grassfrog":"wait","firefly":"wait","peacock":"wait",
  "ghostcrab":"watch","rissos":"watch","anemonefish":"watch","bottlenose":"watch","gull":"watch","serow":"watch",
  "dolphin":"watch","mikado":"watch","swinhoe":"watch","tpartridge":"wait","warbler":"watch","viper":"watch",
- "keelback":"watch","badger":"watch"};/*SP:END explore_parts:PREF*/
+ "keelback":"watch","badger":"watch","bulbul":"wait","whiteeye":"watch","swallow":"watch","dove":"wait",
+ "drongo":"watch","bbulbul":"watch","wagtail":"watch","plover":"watch","muntjac":"watch","redsq":"watch",
+ "bat":"watch","toad":"wait","treefrog":"wait","lizard":"wait","yellow":"wait","mormon":"wait",
+ "beetle":"wait","chub":"watch"};/*SP:END explore_parts:PREF*/
 const ACT={watch:["🔭","保持距離觀察","在遠處安靜地看"],wait:["🤫","安靜等待","不出聲，等牠自己靠近或繼續活動"],greet:["👋","輕聲打招呼","小聲打招呼"],
  listen:["👂","聆聽叫聲","閉上眼睛，聽牠在哪裡"],photo:["📷","拍照記錄","關掉閃光燈，慢慢舉起相機"],sketch:["✏️","素描","坐下來慢慢畫，動作越輕越好"],
  trace:["🐾","尋找痕跡","找腳印、羽毛或啃食的痕跡"],move:["🧭","換個位置","繞到上風處，換個角度看"],follow:["🚶","保持距離跟著走","順著牠移動的方向，遠遠跟一小段"]};
 /* 互動選項（v0.46.0）：9 種，每次遭遇只出現 3 種（偏好的方式一定在內）。新選項都不碰、不餵、不追近。
    安全限制：毒蛇、鼬獾、水龜類（viper/badger/keelback）和瀕危的白海豚（dolphin）只保留原本的選項。 */
 const ACT_ORDER=["watch","wait","greet","listen","photo","sketch","trace","move","follow"];
-/*SP:BEGIN explore_parts:BIRDS*/const BIRDS=["heron","bluemagpie","barbet","thrush","eagle","bpartridge","babbler","yuhina","egret","reefheron","nheron","kingfisher","robin","liocichla","sparrow","munia","mikado","swinhoe","tpartridge","warbler"];/*SP:END explore_parts:BIRDS*/
-/*SP:BEGIN explore_parts:ACT_SP*/const ACT_SP={listen:["macaque","heron","bluemagpie","barbet","thrush","frog","eagle","bpartridge","babbler","yuhina","flyingsq","egret","reefheron","nheron","kingfisher","robin","liocichla","sparrow","munia","grassfrog","rissos","bottlenose","gull","mikado","swinhoe","tpartridge","warbler"],
- sketch:["cat","butterfly","heron","barbet","frog","egret","reefheron","nheron","kingfisher","robin","sparrow","munia","grassfrog","firefly","peacock","ghostcrab","rissos","anemonefish","bottlenose","gull","serow"],
- trace:["cat","macaque","bpartridge","hare","civet","shrew","flyingsq","squirrel","ghostcrab","serow","mikado","swinhoe","tpartridge"],
- move:["macaque","bluemagpie","thrush","eagle","hare","civet","babbler","yuhina","flyingsq","squirrel","liocichla","warbler"],
- follow:["cat","macaque","heron","bpartridge","hare","civet","egret","reefheron","nheron","peacock","ghostcrab","gull","serow","mikado","swinhoe","tpartridge"]};/*SP:END explore_parts:ACT_SP*/
+/*SP:BEGIN explore_parts:BIRDS*/const BIRDS=["heron","bluemagpie","barbet","thrush","eagle","bpartridge","babbler","yuhina","egret","reefheron","nheron","kingfisher","robin","liocichla","sparrow","munia","mikado","swinhoe","tpartridge","warbler","bulbul","whiteeye","swallow","dove","drongo","bbulbul","wagtail","plover"];/*SP:END explore_parts:BIRDS*/
+/*SP:BEGIN explore_parts:ACT_SP*/const ACT_SP={listen:["macaque","heron","bluemagpie","barbet","thrush","frog","eagle","bpartridge","babbler","yuhina","flyingsq","egret","reefheron","nheron","kingfisher","robin","liocichla","sparrow","munia","grassfrog","rissos","bottlenose","gull","mikado","swinhoe","tpartridge","warbler","bulbul","whiteeye","swallow","dove","drongo","bbulbul","wagtail","plover","toad","treefrog"],
+ sketch:["cat","butterfly","heron","barbet","frog","egret","reefheron","nheron","kingfisher","robin","sparrow","munia","grassfrog","firefly","peacock","ghostcrab","rissos","anemonefish","bottlenose","gull","serow","bulbul","whiteeye","swallow","dove","drongo","bbulbul","wagtail","plover","bat","toad","treefrog","lizard","yellow","mormon","beetle","chub"],
+ trace:["cat","macaque","bpartridge","hare","civet","shrew","flyingsq","squirrel","ghostcrab","serow","mikado","swinhoe","tpartridge","dove","muntjac","redsq","lizard","beetle"],
+ move:["macaque","bluemagpie","thrush","eagle","hare","civet","babbler","yuhina","flyingsq","squirrel","liocichla","warbler","drongo","bbulbul","muntjac","redsq"],
+ follow:["cat","macaque","heron","bpartridge","hare","civet","egret","reefheron","nheron","peacock","ghostcrab","gull","serow","mikado","swinhoe","tpartridge","wagtail","plover","muntjac","mormon"]};/*SP:END explore_parts:ACT_SP*/
 /*SP:BEGIN explore_parts:ACT_LOCK*/const ACT_LOCK=["dolphin","viper","keelback","badger"];/*SP:END explore_parts:ACT_LOCK*/
 const FAILTXT={listen:"只聽到牠的叫聲，沒看清是誰。",photo:"照片拍糊了，只留下一個模糊的身影。",sketch:"才畫到一半，牠就走了。",trace:"找到了牠留下的痕跡，但牠已經離開。",move:"換位置時被牠發現了。",follow:"跟了一小段，牠鑽進草叢不見了。"};
 const OKTXT={listen:"你循著叫聲找到了牠。",photo:"你按下快門，拍到了牠。",sketch:"你把牠的樣子畫了下來。",trace:"你循著痕跡找到了牠。",move:"換個角度後，你看得更清楚了。",follow:"你遠遠跟著，看見牠自在的樣子。"};
