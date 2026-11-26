@@ -32,7 +32,7 @@ p{margin:0 0 12px;line-height:1.7;color:var(--muted)}
 
 <main class="card" id="home">
   <p class="brand">EARTH POST</p>
-  <h1>台灣原型・測試版 v0.70.0</h1>
+  <h1>台灣原型・測試版 v0.70.1</h1>
   <p>走到探索點觀察生物、結識郵差夥伴，再請牠們把明信片寄給好友和筆友。這是試玩用的原型：位置用點地圖模擬，好友和筆友是假資料，進度只存在你這台裝置上。</p>
   <p>建議用手機直拿開啟（iPhone 直式版面）；用電腦開會顯示成中間一支手機寬的畫面。</p>
   <a class="go" href="player_mockup.html">從新手流程開始</a>
@@ -131,5 +131,26 @@ const MU=(function(){
   };
 })();
 window.EPMUSIC=MU;
+/* 按壓回饋（v0.70.1）：手指按下去的瞬間縮小、變暗，至少停 0.14 秒。用 pointer 事件加 class，iPhone Safari 也看得到（:active 在手機上常常不顯示）。
+   用獨立的 scale 屬性，不會蓋掉元件原本用 transform 做的定位。對象＝按鈕、連結，以及游標是手指的元素；太大的區塊（地圖、場景）不套。 */
+(function () {
+  const st = document.createElement("style");
+  st.textContent = ".ep-press{scale:.92;filter:brightness(.82)!important;transition:none!important}*{-webkit-tap-highlight-color:transparent}";
+  (document.head || document.documentElement).appendChild(st);
+  let el = null, at = 0;
+  const find = t => {
+    if (!(t instanceof Element)) return null;
+    let e = t.closest("button,a[href],summary,[role=button]");
+    if (!e && getComputedStyle(t).cursor === "pointer") { e = t; while (e.parentElement && getComputedStyle(e.parentElement).cursor === "pointer") e = e.parentElement; }
+    if (!e || e.disabled) return null;
+    const r = e.getBoundingClientRect();
+    return r.width * r.height > innerWidth * innerHeight * .35 ? null : e;
+  };
+  const off = now => { const e = el; if (!e) return; el = null; const wait = now ? 0 : Math.max(0, 140 - (Date.now() - at)); setTimeout(() => { if (el !== e) e.classList.remove("ep-press"); }, wait); };
+  document.addEventListener("pointerdown", ev => { off(true); el = find(ev.target); if (el) { at = Date.now(); el.classList.add("ep-press"); } }, true);
+  document.addEventListener("pointerup", () => off(false), true);
+  document.addEventListener("pointercancel", () => off(true), true);   /* 開始捲動就取消 */
+  window.addEventListener("blur", () => off(true));
+})();
 document.addEventListener("click",()=>MU.kick(),true);
 </script>

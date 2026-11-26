@@ -714,7 +714,28 @@ function fullSweep() {
   } catch (e) {}
 }
 (function () { const go = () => { setTimeout(fullSweep, 1500); setInterval(fullSweep, 30000); }; if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", go); else go(); })();
-const BUILD = { name: "測試版", ver: "v0.70.0", date: "2026-11-26" };
+/* 按壓回饋（v0.70.1）：手指按下去的瞬間縮小、變暗，至少停 0.14 秒。用 pointer 事件加 class，iPhone Safari 也看得到（:active 在手機上常常不顯示）。
+   用獨立的 scale 屬性，不會蓋掉元件原本用 transform 做的定位。對象＝按鈕、連結，以及游標是手指的元素；太大的區塊（地圖、場景）不套。 */
+(function () {
+  const st = document.createElement("style");
+  st.textContent = ".ep-press{scale:.92;filter:brightness(.82)!important;transition:none!important}*{-webkit-tap-highlight-color:transparent}";
+  (document.head || document.documentElement).appendChild(st);
+  let el = null, at = 0;
+  const find = t => {
+    if (!(t instanceof Element)) return null;
+    let e = t.closest("button,a[href],summary,[role=button]");
+    if (!e && getComputedStyle(t).cursor === "pointer") { e = t; while (e.parentElement && getComputedStyle(e.parentElement).cursor === "pointer") e = e.parentElement; }
+    if (!e || e.disabled) return null;
+    const r = e.getBoundingClientRect();
+    return r.width * r.height > innerWidth * innerHeight * .35 ? null : e;
+  };
+  const off = now => { const e = el; if (!e) return; el = null; const wait = now ? 0 : Math.max(0, 140 - (Date.now() - at)); setTimeout(() => { if (el !== e) e.classList.remove("ep-press"); }, wait); };
+  document.addEventListener("pointerdown", ev => { off(true); el = find(ev.target); if (el) { at = Date.now(); el.classList.add("ep-press"); } }, true);
+  document.addEventListener("pointerup", () => off(false), true);
+  document.addEventListener("pointercancel", () => off(true), true);   /* 開始捲動就取消 */
+  window.addEventListener("blur", () => off(true));
+})();
+const BUILD = { name: "測試版", ver: "v0.70.1", date: "2026-11-26" };
 const BUILD_LABEL = `${BUILD.name} ${BUILD.ver}（${BUILD.date}）`;
 (function addBuildBadge() {
   const put = () => {
