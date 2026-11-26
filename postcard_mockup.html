@@ -320,6 +320,10 @@ body:has(.stage.pt){padding:0;overflow:hidden;align-items:stretch}
 .fgrid .fi .c img{width:86%;height:86%;object-fit:contain}.fgrid .fi .c .fx{font-size:4.4cqw}
 .fgrid .fi.on .c{border-color:var(--gold);box-shadow:0 0 0 .35cqw #fff3c2}
 .fgrid .fi small{font-size:1.1cqw;font-weight:700;line-height:1.25;text-align:center;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.fgrid .fi em{font-style:normal;font-size:1cqw;font-weight:700;color:var(--ink-2);line-height:1.2;text-align:center}
+.fgrid .fi.no{opacity:.45;cursor:default}
+.fsheet .src{font-size:1.05cqw;color:var(--ink-2)}
+#cptabs button{font-size:1.15cqw;padding:.7cqw 0;white-space:nowrap}
 .fgrid .none{grid-column:1/-1;text-align:center;color:var(--ink-2);font-size:1.3cqw;padding:3cqw 0}
 .pick{display:flex;gap:.5cqw;flex-wrap:wrap;margin-top:.3cqw}
 .pick button{width:3.6cqw;height:3.6cqw;border-radius:50%;border:.22cqw solid var(--cream-line);background:var(--cream-2);padding:0;overflow:hidden;cursor:pointer;display:grid;place-items:center}
@@ -483,6 +487,7 @@ body:has(.stage.pt){padding:0;overflow:hidden;align-items:stretch}
   <div class="bar" id="bar"></div>
   <button class="go" id="go"><svg viewBox="0 0 72 56" aria-hidden="true"><use href="#env"/></svg><span id="goText">寄出明信片</span></button>
   <div class="fpick" id="fpick" hidden></div>
+  <div class="fpick" id="cpick" hidden></div>
 </main>
 
 <script src="player.js"></script>
@@ -620,6 +625,53 @@ document.addEventListener("click",e=>{
 });
 document.addEventListener("input",e=>{if(e.target.id==="fpq"){FP.q=e.target.value;fpRefresh();}});
 document.addEventListener("keydown",e=>{if(e.key==="Escape")fpClose();});
+/* 郵差選擇（v0.69.0）：郵差太多，寫信頁只留一行，點「改派」從底部拉出抽屜。
+   分頁用郵務用語：站長推薦（這封信最快送到的幾隻）｜熟面孔（最近派過的）｜空郵（會飛）｜陸郵（地面、滑翔）｜海郵（會游）。
+   送不了的變灰排在最後並寫原因。抽屜放在 render() 重建區外，搜尋框不會失焦。 */
+const CP_TABS=[["rec","站長推薦"],["recent","熟面孔"],["air","空郵"],["land","陸郵"],["sea","海郵"]];
+const CP={tab:"rec",q:""};
+const cpKind=k=>SWIM.includes(k)?"sea":FLY.includes(k)?"air":"land";
+function cpInfo(k){let t;try{t=trip(k)}catch(e){return{ok:false,why:"",h:1e9,time:"",rest:false}}
+  const h=t.h+(t.intl?lastLeg().h:0);
+  const why=busyC(k)?"出勤中":!t.ok?(SWIM.includes(k)?"只走海路":"過不了海"):"";
+  return{ok:!why,why,h,time:fmtH(h),rest:t.rest>0};}
+const recentCouriers=()=>{try{return (JSON.parse(localStorage.getItem("ep-send")||"{}").recentC||[]).filter(k=>MATES.includes(k))}catch(e){return []}};
+const pushCourier=k=>{try{const s=JSON.parse(localStorage.getItem("ep-send")||"{}");s.recentC=[k].concat((s.recentC||[]).filter(x=>x!==k)).slice(0,8);localStorage.setItem("ep-send",JSON.stringify(s));}catch(e){}};
+function cpList(tab,q){
+  q=(q||"").trim();
+  const info=new Map(MATES.map(k=>[k,cpInfo(k)]));
+  const aff=k=>(DEX[k]&&DEX[k].aff)||0;   /* 時間一樣時，先列熟的（好感高） */
+  const sortFast=L=>L.slice().sort((a,b)=>(info.get(b).ok-info.get(a).ok)||(info.get(a).h-info.get(b).h)||(aff(b)-aff(a)));
+  let L;
+  if(q)L=sortFast(MATES.filter(k=>NAME[k].includes(q)));
+  else if(tab==="rec")L=sortFast(MATES.filter(k=>info.get(k).ok)).slice(0,8);
+  else if(tab==="recent")L=recentCouriers();
+  else L=sortFast(MATES.filter(k=>cpKind(k)===tab));
+  return L.map(k=>[k,info.get(k)]);
+}
+function cpRefresh(){const el=document.getElementById("cpick");if(!el||el.hidden)return;
+  const tb=document.getElementById("cptabs"),gr=document.getElementById("cpgrid");if(!tb||!gr)return;
+  tb.innerHTML=CP_TABS.map(([k,t])=>{const n=cpList(k,"").length;return `<button type="button" class="${CP.tab===k&&!CP.q?"on":""}" data-cptab="${k}" ${n?"":"disabled"}>${t}</button>`}).join("");
+  const L=cpList(CP.tab,CP.q);
+  const nt=document.getElementById("cpnote");if(nt){const all=cpList("rec","").map(x=>x[1].h),tied=all.length>1&&Math.max(...all)-Math.min(...all)<=.2;
+    nt.textContent=CP.q?"":CP.tab!=="rec"?"時間是遊戲裡的預估送達時間。":tied?"這封信各郵差差不多快，這裡先列出你熟的（好感高）。":"站長推薦：這封信最快送到的郵差。";}
+  gr.innerHTML=L.length?L.map(([k,i])=>`<button type="button" class="fi${st.courier===k?" on":""}${i.ok?"":" no"}" data-cpick="${k}" ${i.ok?"":"disabled"} title="${NAME[k]}"><span class="c">${art(k)}</span><small>${NAME[k]}</small><em>${i.why||`${i.time}${i.rest?"・需休息":""}`}</em></button>`).join(""):`<div class="none">${CP.q?"找不到這個名字":"這裡還沒有郵差"}</div>`;}
+function cpOpen(){const el=document.getElementById("cpick");CP.q="";CP.tab="rec";if(!cpList("rec","").length)CP.tab="air";
+  el.innerHTML=`<div class="fsheet" role="dialog" aria-label="選擇郵差"><div class="fhd"><b>選擇郵差</b><button class="btn sm" id="cpclose" type="button">關閉</button></div>
+    <div class="src" id="cpnote"></div>
+    <div class="ftabs" id="cptabs"></div><input class="fsearch" id="cpq" type="search" placeholder="搜尋名字" autocomplete="off" aria-label="搜尋郵差"><div class="fgrid" id="cpgrid"></div></div>`;
+  el.hidden=false;cpRefresh();}
+const cpClose=()=>{const el=document.getElementById("cpick");if(el)el.hidden=true;};
+document.addEventListener("click",e=>{
+  if(e.target.closest("#cpopen")){cpOpen();return;}
+  const el=document.getElementById("cpick");if(!el||el.hidden)return;
+  if(e.target===el||e.target.closest("#cpclose")){cpClose();return;}
+  const tb=e.target.closest("[data-cptab]");if(tb){CP.tab=tb.dataset.cptab;CP.q="";const q=document.getElementById("cpq");if(q)q.value="";cpRefresh();return;}
+  const it=e.target.closest("[data-cpick]");
+  if(it&&!it.disabled){const k=it.dataset.cpick;st.courier=k;if(st.auto)st.front=k;restMsg="";pushCourier(k);saveLast();cpClose();render();}
+});
+document.addEventListener("input",e=>{if(e.target.id==="cpq"){CP.q=e.target.value;cpRefresh();}});
+document.addEventListener("keydown",e=>{if(e.key==="Escape")cpClose();});
 const PL=loadPlayer();let ME="小小觀察員";try{const s=JSON.parse(localStorage.getItem("ep-settings")||"{}");if(s.name&&!["島嶼郵差","島嶼觀察員"].includes(s.name))ME=s.name;}catch(e){}
 const esc=t=>String(t).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const QC=new URLSearchParams(location.search).get("courier");
@@ -680,26 +732,26 @@ function issues(){
   const out=[];FILTERS.concat(st.minor?MINOR_FILTERS:[]).forEach(([re,n])=>{if(re.test(st.text))out.push(n)});
   if([...st.text].length>maxLen())out.push(`超過 ${maxLen()} 字`);return out;
 }
-function trip(){
-  const c=C(st.to),up=courierBonus(st.courier);
+function trip(k=st.courier){
+  const c=C(st.to),up=courierBonus(k);
   if(c.kind==="friend"){                                       // 好友：自己的郵差直接送到對方城市
-    const need=island(ME_CITY)||island(c.where),ok=canCarry(need,st.courier);
+    const need=island(ME_CITY)||island(c.where),ok=canCarry(need,k);
     const km=kmTo(c);
-    const travel=km/100*8/(SPD[st.courier]*up.spd);
-    const cost=Math.min(100,Math.round(km/40*14/(RANGE[st.courier]*up.range)));
-    const rest=Math.max(0,cost-STA[st.courier])/2/60;
+    const travel=km/100*8/(SPD[k]*up.spd);
+    const cost=Math.min(100,Math.round(km/40*14/(RANGE[k]*up.range)));
+    const rest=Math.max(0,cost-STA[k])/2/60;
     const h=Math.max(.1,Math.round((travel+rest)*10)/10);   /* 同城市或很近時不會變成 0（v0.50.2：會一下子就送到） */
-    return {intl:false,need,ok,h,km,up,est:false,cost,rest,after:Math.max(0,STA[st.courier]-cost)};
+    return {intl:false,need,ok,h,km,up,est:false,cost,rest,after:Math.max(0,STA[k]-cost)};
   }
   /* 筆友、配對明信片：轉運接力（T1–T3、T8）。郵差只跑第一段到最近的郵站；同城市也算 5 km 的市區路程 */
-  const hub=nearestHub(ME_CITY),hubKm=Math.max(5,hub.km),need=island(ME_CITY),ok=canCarry(need,st.courier);
+  const hub=nearestHub(ME_CITY),hubKm=Math.max(5,hub.km),need=island(ME_CITY),ok=canCarry(need,k);
   const ikm=c.kind==="drift"?DRIFT_KM:distKm(COUNTRIES["台灣"],COUNTRIES[c.where]);
-  const leg1=hubKm/100*8/(SPD[st.courier]*up.spd);
-  const cost=Math.min(100,Math.round(hubKm/40*14/(RANGE[st.courier]*up.range)));
-  const rest=Math.max(0,cost-STA[st.courier])/2/60;
+  const leg1=hubKm/100*8/(SPD[k]*up.spd);
+  const cost=Math.min(100,Math.round(hubKm/40*14/(RANGE[k]*up.range)));
+  const rest=Math.max(0,cost-STA[k])/2/60;
   const leg2=ikm/1000*INTL_H_PER_1000;
   const h=Math.round((leg1+rest+leg2)*10)/10;
-  return {intl:true,need,ok,h,km:hubKm+ikm,hub:hub.hub,hubKm,ikm,leg1:leg1+rest,leg2,up,est:c.kind==="drift",cost,rest,after:Math.max(0,STA[st.courier]-cost)};
+  return {intl:true,need,ok,h,km:hubKm+ikm,hub:hub.hub,hubKm,ikm,leg1:leg1+rest,leg2,up,est:c.kind==="drift",cost,rest,after:Math.max(0,STA[k]-cost)};
 }
 /* 回信最後一段：郵站 → 玩家，由駐站生物送；駐站好感 5／15 快 20%／35% */
 function lastLeg(){const hub=nearestHub(ME_CITY),sk=stationCourier(hub.hub),a=stationAff()[sk]||0,p=stationPerk(a);
@@ -763,9 +815,11 @@ function renderPanel(){
     if(noFam())h+=`<div class="row warn"><div class="ic">🔒</div><div class="val sm">13 歲以下：請家長設定家庭功能（Apple 家人共享／Google Family Link）後，才能寄明信片、加好友。探索、圖鑑、探索點之間送信都可以照常玩。</div></div>`;
     else if(st.minor)h+=`<div class="row"><div class="ic">🛡️</div><div><div class="lbl">未成年保護</div><div class="val sm">只能寄給好友${st.age==="child"?"；加好友要經家長核准（家庭功能）":""}</div>
       <div class="src">好友看得到你的：暱稱、觀察員角色。城市與照片預設不公開，可到設定打開${st.age==="child"?"（打開要家長核准）":""}。明信片另外擋約見面、問住址的字眼與不雅字詞</div></div></div>`;
-    h+=`<div class="row"><div class="ic">📮</div><div><div class="lbl">郵差</div><div class="pick">${MATES.map(k=>`<button class="${st.courier===k?"on":""}${busyC(k)?" busy":""}" data-courier="${k}" title="${NAME[k]}${busyC(k)?"（送信中）":""}" ${busyC(k)?"disabled":""}>${art(k)}</button>`).join("")}</div>
+    {const ci=cpInfo(st.courier);   /* v0.69.0：郵差太多（50 位以上），寫信頁只留一行；點「改派」從底部拉出抽屜（cpick） */
+    h+=`<div class="row"><div class="ic">📮</div><div><div class="lbl">郵差</div><div class="sty"><span class="th">${art(st.courier)}</span><div class="nm"><b>${NAME[st.courier]}</b><small>${ci.why?ci.why:`約 ${ci.time} 送達${ci.rest?"・途中要休息":""}`}</small></div><button class="btn sm" id="cpopen" type="button">改派 ›</button></div>
       ${MATES.some(busyC)?`<div class="src busyline">⏳ 送信中：${MATES.filter(busyC).map(k=>`${NAME[k]}（<span data-bz="${k}">${bzSec(k)}</span> 秒後回到郵站）`).join("、")}</div>`:""}
       <div class="src">${t.intl?(t.need?"離島要先飛到本島郵站，只有會飛的郵差能送（滑翔的不行）":"國外的信走轉運，郵差只送到郵站，所有郵差都能送"):(t.need?"這條路線要跨海，只有會飛的郵差能送（滑翔的不行）":"陸路，所有郵差都能送")}${t.intl?"":`｜${ME_CITY} → ${esc(c.where)}，約 ${t.km.toLocaleString()} km`}｜預估 ${t.ok?fmtH(t.h):"—"}${t.up.tags.length?`｜⭐ ${t.up.tags.join("、")}`:""}</div></div></div>`;
+    }
     h+=`<div class="row"><div class="ic">🖼️</div><div><div class="lbl">明信片樣式</div><div class="sty"><span class="th">${art(st.front)}</span><div class="nm"><b>${esc(frontName(st.front))}</b><small>${frontTag(st.front)}</small></div><button class="btn sm" id="fpopen" type="button">換樣式 ›</button></div></div></div>`;   /* v0.65.0：樣式太多，寫信頁只留一行；點「換樣式」從底部拉出抽屜（fpick） */
     if(t.intl){const l3=lastLeg().h,dst=c.kind==="drift"?"配對對象的國家":esc(c.where);
       const stp=(i,ttl,d)=>`<div class="tstep"><span class="tdot">${i}</span><div><div class="lbl">${ttl}</div><div class="src">${d}</div></div></div>`;
@@ -866,7 +920,7 @@ function render(){
   /* 畫面更新時記住捲動位置再還原（v0.53.0）：有信在路上時每秒更新一次，收件人下拉清單與抽屜會被拉回最上面（「跳走」） */
   const SC=[".panel",".rcptlist","#rows","#contacts"].map(q=>{const e=document.querySelector(q);return e&&e.scrollTop?[q,e.scrollTop]:null}).filter(Boolean);
   if(busyC(st.courier)){const fr=MATES.find(k=>!busyC(k));if(fr)st.courier=fr;}   /* 選到送信中的郵差時，自動換成第一隻待命的（v0.58.2） */
-  BUSY_SIG=busySig();try{fpRefresh()}catch(e){}applyView();CONTACTS.find(c=>c.kind==="drift").where=condText();renderContacts();renderCard();renderPanel();saveBox();try{updateAchDot()}catch(e){}
+  BUSY_SIG=busySig();try{fpRefresh()}catch(e){}try{cpRefresh()}catch(e){}applyView();CONTACTS.find(c=>c.kind==="drift").where=condText();renderContacts();renderCard();renderPanel();saveBox();try{updateAchDot()}catch(e){}
   SC.forEach(([q,t])=>{const e=document.querySelector(q);if(e)e.scrollTop=t;});
 }
 
