@@ -735,7 +735,7 @@ function fullSweep() {
   document.addEventListener("pointercancel", () => off(true), true);   /* 開始捲動就取消 */
   window.addEventListener("blur", () => off(true));
 })();
-const BUILD = { name: "測試版", ver: "v0.70.1", date: "2026-11-26" };
+const BUILD = { name: "測試版", ver: "v0.70.2", date: "2026-11-27" };
 const BUILD_LABEL = `${BUILD.name} ${BUILD.ver}（${BUILD.date}）`;
 (function addBuildBadge() {
   const put = () => {
